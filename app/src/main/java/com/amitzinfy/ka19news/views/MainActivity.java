@@ -1,8 +1,10 @@
-package com.amitzinfy.ka19news;
+package com.amitzinfy.ka19news.views;
 
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.amitzinfy.ka19news.R;
 
 public class MainActivity extends AppCompatActivity {
 
