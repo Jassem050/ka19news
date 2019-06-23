@@ -8,4 +8,5 @@
 
     <color name="white">#ffffff</color>
     <color name="navigationGrey">#9E9E9E</color>
+    <color name="DividerColor">#EEEEEE</color>
 </resources>
