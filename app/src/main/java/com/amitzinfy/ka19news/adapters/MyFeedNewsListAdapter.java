@@ -10,7 +10,7 @@ import androidx.appcompat.widget.AppCompatTextView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.amitzinfy.ka19news.R;
-import com.amitzinfy.ka19news.models.News;
+import com.amitzinfy.ka19news.models.retrofit.News;
 
 import java.util.List;
 

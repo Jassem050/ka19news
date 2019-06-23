@@ -1,4 +1,4 @@
-package com.amitzinfy.ka19news.models;
+package com.amitzinfy.ka19news.models.retrofit;
 
 public class News {
 

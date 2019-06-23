@@ -2,7 +2,7 @@ package com.amitzinfy.ka19news.repositories;
 
 import android.app.Application;
 
-import com.amitzinfy.ka19news.models.News;
+import com.amitzinfy.ka19news.models.retrofit.News;
 
 import java.util.ArrayList;
 import java.util.List;

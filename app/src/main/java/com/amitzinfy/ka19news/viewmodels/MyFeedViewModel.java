@@ -5,7 +5,7 @@ import android.app.Application;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 
-import com.amitzinfy.ka19news.models.News;
+import com.amitzinfy.ka19news.models.retrofit.News;
 import com.amitzinfy.ka19news.repositories.MyFeedRepository;
 
 import java.util.List;

@@ -14,7 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.amitzinfy.ka19news.R;
 import com.amitzinfy.ka19news.adapters.MyFeedNewsListAdapter;
-import com.amitzinfy.ka19news.models.News;
+import com.amitzinfy.ka19news.models.retrofit.News;
 import com.amitzinfy.ka19news.viewmodels.MyFeedViewModel;
 
 import java.util.List;
