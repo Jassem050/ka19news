@@ -8,14 +8,15 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.amitzinfy.ka19news.R;
 import com.amitzinfy.ka19news.adapters.MyFeedNewsListAdapter;
 import com.amitzinfy.ka19news.models.News;
+import com.amitzinfy.ka19news.viewmodels.MyFeedViewModel;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -37,6 +38,8 @@ public class HomeFragment extends Fragment {
     private OnFragmentInteractionListener mListener;
     private MyFeedNewsListAdapter myFeedNewsListAdapter;
     private RecyclerView recyclerView;
+    private List<News> newsList;
+    private MyFeedViewModel myFeedViewModel;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -72,21 +75,14 @@ public class HomeFragment extends Fragment {
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setHasFixedSize(true);
         recyclerView.setAdapter(myFeedNewsListAdapter);
-        loadNewsList();
+        myFeedViewModel = ViewModelProviders.of(this).get(MyFeedViewModel.class);
 
+        newsList = myFeedViewModel.loadNewsList();
+        myFeedNewsListAdapter.setNewsList(newsList);
+        myFeedNewsListAdapter.notifyDataSetChanged();
         return rootView;
     }
 
-    private void loadNewsList(){
-        List<News> newsList = new ArrayList<>();
-        for (int i = 0; i < 5; i++){
-            newsList.add(new News("Mangalore News Portal"));
-        }
-        myFeedNewsListAdapter.setNewsList(newsList);
-        recyclerView.setAdapter(myFeedNewsListAdapter);
-        myFeedNewsListAdapter.notifyDataSetChanged();
-
-    }
 
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {
