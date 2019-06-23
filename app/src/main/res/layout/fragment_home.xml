@@ -5,6 +5,7 @@
     android:layout_height="match_parent"
     tools:context=".views.HomeFragment">
 
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/mynews_recyclerview"
         android:layout_width="match_parent"
