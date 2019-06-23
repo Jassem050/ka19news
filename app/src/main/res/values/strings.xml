@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">KA19NEWS</string>
+    <string name="my_news">My News</string>
+    <string name="headlines">Headlines</string>
+    <string name="favourites">Favourites</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
