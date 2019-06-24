@@ -5,11 +5,15 @@
     android:layout_height="match_parent"
     tools:context=".views.HomeFragment">
 
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/mynews_recyclerview"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginBottom="56dp"/>
+        android:layout_height="match_parent">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/mynews_recyclerview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="55dp" />
+    </RelativeLayout>
 
 </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
