@@ -5,6 +5,7 @@ import android.app.Application;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 
+import com.amitzinfy.ka19news.models.retrofit.Category;
 import com.amitzinfy.ka19news.models.retrofit.News;
 import com.amitzinfy.ka19news.repositories.MyFeedRepository;
 
@@ -21,5 +22,9 @@ public class MyFeedViewModel extends AndroidViewModel {
 
     public List<News> loadNewsList(){
        return myFeedRepository.loadNewsList();
+    }
+
+    public List<Category> getCategories(){
+        return myFeedRepository.getCategories();
     }
 }
