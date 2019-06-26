@@ -1,9 +1,18 @@
 package com.amitzinfy.ka19news.models.retrofit;
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
+
 public class News {
 
+    @SerializedName("news_title")
+    @Expose
     private String title;
+    @SerializedName("news_image")
+    @Expose
     private String image;
+    @SerializedName("news_time")
+    @Expose
     private String time;
 
     public News(String title) {

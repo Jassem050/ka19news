@@ -4,6 +4,7 @@ import android.app.Application;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
+import androidx.lifecycle.LiveData;
 
 import com.amitzinfy.ka19news.models.retrofit.Category;
 import com.amitzinfy.ka19news.models.retrofit.News;
@@ -17,14 +18,14 @@ public class MyFeedViewModel extends AndroidViewModel {
 
     public MyFeedViewModel(@NonNull Application application) {
         super(application);
-        myFeedRepository = new MyFeedRepository(application);
+        myFeedRepository = MyFeedRepository.getInstance();
     }
 
-    public List<News> loadNewsList(){
-       return myFeedRepository.loadNewsList();
+    public LiveData<List<News>> getNewsList(){
+       return myFeedRepository.getNewsList();
     }
 
-    public List<Category> getCategories(){
+    public LiveData<List<Category>> getCategories(){
         return myFeedRepository.getCategories();
     }
 }

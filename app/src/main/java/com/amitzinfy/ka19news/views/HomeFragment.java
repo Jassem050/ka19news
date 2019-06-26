@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -38,7 +39,6 @@ public class HomeFragment extends Fragment {
     private OnFragmentInteractionListener mListener;
     private MyFeedNewsListAdapter myFeedNewsListAdapter;
     private RecyclerView recyclerView;
-    private List<News> newsList;
     private MyFeedViewModel myFeedViewModel;
 
     public HomeFragment() {
@@ -76,12 +76,22 @@ public class HomeFragment extends Fragment {
         recyclerView.setHasFixedSize(true);
         recyclerView.setAdapter(myFeedNewsListAdapter);
         myFeedViewModel = ViewModelProviders.of(this).get(MyFeedViewModel.class);
+        myFeedViewModel.getNewsList().observe(getViewLifecycleOwner(), new Observer<List<News>>() {
+            @Override
+            public void onChanged(List<News> news) {
+                if (news != null) {
+                    myFeedNewsListAdapter.setNewsList(news);
+                    myFeedNewsListAdapter.notifyDataSetChanged();
+                }
+            }
+        });
 
-        newsList = myFeedViewModel.loadNewsList();
-        myFeedNewsListAdapter.setNewsList(newsList);
-        myFeedNewsListAdapter.notifyDataSetChanged();
+
+
         return rootView;
     }
+
+
 
 
     public void onButtonPressed(Uri uri) {

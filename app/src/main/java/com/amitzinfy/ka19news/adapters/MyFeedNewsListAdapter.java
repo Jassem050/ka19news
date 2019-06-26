@@ -86,7 +86,7 @@ public class MyFeedNewsListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
 
     @Override
     public int getItemCount() {
-        if (newsList.size() > 0){
+        if (newsList != null){
             return newsList.size();
         } else {
             return 0;
