@@ -7,6 +7,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
@@ -17,6 +19,7 @@ import com.amitzinfy.ka19news.R;
 import com.amitzinfy.ka19news.adapters.MyFeedNewsListAdapter;
 import com.amitzinfy.ka19news.models.retrofit.News;
 import com.amitzinfy.ka19news.viewmodels.MyFeedViewModel;
+import com.google.android.material.appbar.MaterialToolbar;
 
 import java.util.List;
 
@@ -40,6 +43,8 @@ public class HomeFragment extends Fragment {
     private MyFeedNewsListAdapter myFeedNewsListAdapter;
     private RecyclerView recyclerView;
     private MyFeedViewModel myFeedViewModel;
+    private MaterialToolbar materialToolbar;
+    private ActionBar actionBar;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -70,12 +75,9 @@ public class HomeFragment extends Fragment {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_home, container, false);
 
-        recyclerView = rootView.findViewById(R.id.mynews_recyclerview);
-        myFeedNewsListAdapter = new MyFeedNewsListAdapter(getActivity());
-        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        recyclerView.setHasFixedSize(true);
-        recyclerView.setAdapter(myFeedNewsListAdapter);
-        myFeedViewModel = ViewModelProviders.of(this).get(MyFeedViewModel.class);
+        setToolbar(rootView);
+        init(rootView);
+
         myFeedViewModel.getNewsList().observe(getViewLifecycleOwner(), new Observer<List<News>>() {
             @Override
             public void onChanged(List<News> news) {
@@ -89,6 +91,23 @@ public class HomeFragment extends Fragment {
 
 
         return rootView;
+    }
+
+    private void init(View view){
+        recyclerView = view.findViewById(R.id.mynews_recyclerview);
+        myFeedNewsListAdapter = new MyFeedNewsListAdapter(getActivity());
+        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setAdapter(myFeedNewsListAdapter);
+        myFeedViewModel = ViewModelProviders.of(this).get(MyFeedViewModel.class);
+    }
+
+
+    private void setToolbar(View view){
+        materialToolbar = (MaterialToolbar) view.findViewById(R.id.myfeed_toolbar);
+        ((AppCompatActivity) getActivity()).setSupportActionBar(materialToolbar);
+        actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+        actionBar.setTitle(getResources().getString(R.string.app_name));
     }
 
 

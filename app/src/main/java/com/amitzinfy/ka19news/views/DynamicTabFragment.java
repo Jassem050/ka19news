@@ -8,8 +8,15 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.amitzinfy.ka19news.R;
+import com.amitzinfy.ka19news.adapters.CategoryNewsAdapter;
+import com.amitzinfy.ka19news.models.retrofit.News;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -28,6 +35,8 @@ public class DynamicTabFragment extends Fragment {
     private int mCategoryId;
 
     private OnFragmentInteractionListener mListener;
+    private RecyclerView recyclerView;
+    private CategoryNewsAdapter categoryNewsAdapter;
 
     public DynamicTabFragment() {
         // Required empty public constructor
@@ -71,7 +80,17 @@ public class DynamicTabFragment extends Fragment {
 
     // initializing or binding views
     private void init(View view){
-
+        recyclerView = (RecyclerView) view.findViewById(R.id.headline_recycler_view);
+        categoryNewsAdapter = new CategoryNewsAdapter(getActivity());
+        recyclerView.setAdapter(categoryNewsAdapter);
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        List<News> newsList = new ArrayList<>();
+        for (int i = 0; i< 10; i++){
+            newsList.add(new News("news of category: " + mCategoryId));
+        }
+        categoryNewsAdapter.setNewsList(newsList);
+        categoryNewsAdapter.notifyDataSetChanged();
     }
 
 

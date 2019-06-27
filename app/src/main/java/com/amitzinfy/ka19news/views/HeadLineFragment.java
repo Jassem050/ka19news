@@ -7,6 +7,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentStatePagerAdapter;
 import androidx.lifecycle.Observer;
@@ -17,6 +19,7 @@ import com.amitzinfy.ka19news.R;
 import com.amitzinfy.ka19news.adapters.CategoryAdapter;
 import com.amitzinfy.ka19news.models.room.NewsCategory;
 import com.amitzinfy.ka19news.viewmodels.HeadLinesViewModel;
+import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.tabs.TabLayout;
 
 import java.util.List;
@@ -42,6 +45,8 @@ public class HeadLineFragment extends Fragment {
     private ViewPager viewPager;
     private CategoryAdapter categoryAdapter;
     private HeadLinesViewModel headLinesViewModel;
+    private MaterialToolbar materialToolbar;
+    private ActionBar actionBar;
 
     public HeadLineFragment() {
         // Required empty public constructor
@@ -79,6 +84,7 @@ public class HeadLineFragment extends Fragment {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_head_line, container, false);
 
+        setToolbar(rootView);
         init(rootView);
         viewPager.setAdapter(categoryAdapter);
         tabLayout.setupWithViewPager(viewPager, true);
@@ -90,6 +96,22 @@ public class HeadLineFragment extends Fragment {
                 categoryAdapter.notifyDataSetChanged();
             }
         });
+//        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+//            @Override
+//            public void onTabSelected(TabLayout.Tab tab) {
+//                viewPager.setCurrentItem(tab.getPosition());
+//            }
+//
+//            @Override
+//            public void onTabUnselected(TabLayout.Tab tab) {
+//
+//            }
+//
+//            @Override
+//            public void onTabReselected(TabLayout.Tab tab) {
+//
+//            }
+//        });
 
         return rootView;
     }
@@ -104,6 +126,13 @@ public class HeadLineFragment extends Fragment {
         }
         headLinesViewModel = ViewModelProviders.of(this).get(HeadLinesViewModel.class);
 
+    }
+
+    private void setToolbar(View view){
+        materialToolbar = (MaterialToolbar) view.findViewById(R.id.headline_toolbar);
+        ((AppCompatActivity) getActivity()).setSupportActionBar(materialToolbar);
+        actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+        actionBar.setTitle(getResources().getString(R.string.app_name));
     }
 
     public void onButtonPressed(Uri uri) {
