@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="8dp">
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/news_category"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="sports"
+        android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"/>
+
+    <LinearLayout
+        android:id="@+id/title_row"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/news_category"
+        android:orientation="horizontal">
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/news_title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="62"
+            android:fontFamily="@font/poppins_semibold"
+            android:text="Trial of the Day"
+            android:textSize="17sp"
+            app:fontFamily="@font/poppins_bold" />
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="0dp"
+            android:layout_weight="38"
+            android:layout_height="100dp"
+            app:cardElevation="5dp"
+            android:background="@drawable/bg_round">
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/news_image"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                android:src="@drawable/four"/>
+
+        </com.google.android.material.card.MaterialCardView>
+
+    </LinearLayout>
+
+    <RelativeLayout
+        android:id="@+id/date_row"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="16dp"
+        android:layout_below="@+id/title_row">
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/news_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="9 hours ago"/>
+
+        <androidx.appcompat.widget.AppCompatToggleButton
+            android:id="@+id/news_toggle_btn"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:background="@drawable/button_favourite"
+            android:textOff=""
+            android:textOn=""
+            android:checked="false"
+            android:layout_toLeftOf="@+id/news_share_btn"
+            android:layout_toStartOf="@+id/news_share_btn" />
+
+        <androidx.appcompat.widget.AppCompatImageButton
+            android:id="@+id/news_share_btn"
+            android:layout_width="wrap_content"
+            android:paddingTop="3dp"
+            android:paddingLeft="6dp"
+            android:paddingRight="6dp"
+            android:layout_height="wrap_content"
+            android:background="@color/white"
+            app:srcCompat="@drawable/ic_share_black_24dp"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true" />
+    </RelativeLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/DividerColor"
+        android:layout_below="@+id/date_row"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"/>
+
+</RelativeLayout>

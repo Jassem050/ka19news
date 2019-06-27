@@ -7,5 +7,7 @@
     <color name="colorAccent">#00BCD4</color>
 
     <color name="white">#ffffff</color>
+    <color name="black">#000000</color>
     <color name="navigationGrey">#9E9E9E</color>
+    <color name="DividerColor">#EEEEEE</color>
 </resources>

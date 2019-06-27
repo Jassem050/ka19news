@@ -6,4 +6,7 @@
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="feed_personalization_title_1">Choose what you like to fill your feed</string>
+    <string name="feed_personalization_title_2">This helps us personalize your news experience.</string>
+    <string name="save">save</string>
 </resources>

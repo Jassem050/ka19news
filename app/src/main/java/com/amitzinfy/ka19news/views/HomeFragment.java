@@ -8,8 +8,17 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.amitzinfy.ka19news.R;
+import com.amitzinfy.ka19news.adapters.MyFeedNewsListAdapter;
+import com.amitzinfy.ka19news.models.retrofit.News;
+import com.amitzinfy.ka19news.viewmodels.MyFeedViewModel;
+
+import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -20,30 +29,23 @@ import com.amitzinfy.ka19news.R;
  * create an instance of this fragment.
  */
 public class HomeFragment extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
-    // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
 
     private OnFragmentInteractionListener mListener;
+    private MyFeedNewsListAdapter myFeedNewsListAdapter;
+    private RecyclerView recyclerView;
+    private MyFeedViewModel myFeedViewModel;
 
     public HomeFragment() {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment HomeFragment.
-     */
-    // TODO: Rename and change types and number of parameters
+
     public static HomeFragment newInstance(String param1, String param2) {
         HomeFragment fragment = new HomeFragment();
         Bundle args = new Bundle();
@@ -66,10 +68,32 @@ public class HomeFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_home, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_home, container, false);
+
+        recyclerView = rootView.findViewById(R.id.mynews_recyclerview);
+        myFeedNewsListAdapter = new MyFeedNewsListAdapter(getActivity());
+        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setAdapter(myFeedNewsListAdapter);
+        myFeedViewModel = ViewModelProviders.of(this).get(MyFeedViewModel.class);
+        myFeedViewModel.getNewsList().observe(getViewLifecycleOwner(), new Observer<List<News>>() {
+            @Override
+            public void onChanged(List<News> news) {
+                if (news != null) {
+                    myFeedNewsListAdapter.setNewsList(news);
+                    myFeedNewsListAdapter.notifyDataSetChanged();
+                }
+            }
+        });
+
+
+
+        return rootView;
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
+
+
+
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {
             mListener.onFragmentInteraction(uri);
@@ -104,7 +128,7 @@ public class HomeFragment extends Fragment {
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
+
         void onFragmentInteraction(Uri uri);
     }
 }
