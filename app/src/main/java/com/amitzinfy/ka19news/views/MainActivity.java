@@ -13,7 +13,8 @@ import com.amitzinfy.ka19news.R;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class MainActivity extends AppCompatActivity implements HomeFragment.OnFragmentInteractionListener,
-        HeadLineFragment.OnFragmentInteractionListener, FavouriteFragment.OnFragmentInteractionListener {
+        HeadLineFragment.OnFragmentInteractionListener, FavouriteFragment.OnFragmentInteractionListener,
+        DynamicTabFragment.OnFragmentInteractionListener{
 
     private BottomNavigationView bottomNavigationView;
 

@@ -8,42 +8,28 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentStatePagerAdapter;
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProviders;
-import androidx.viewpager.widget.ViewPager;
 
 import com.amitzinfy.ka19news.R;
-import com.amitzinfy.ka19news.adapters.CategoryAdapter;
-import com.amitzinfy.ka19news.models.room.NewsCategory;
-import com.amitzinfy.ka19news.viewmodels.HeadLinesViewModel;
-import com.google.android.material.tabs.TabLayout;
-
-import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link HeadLineFragment.OnFragmentInteractionListener} interface
+ * {@link DynamicTabFragment.OnFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link HeadLineFragment#newInstance} factory method to
+ * Use the {@link DynamicTabFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class HeadLineFragment extends Fragment {
+public class DynamicTabFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+    private static final String TAB_POSITION = "param1";
+    private static final String CATEGORY_ID = "param2";
 
-    private String mParam1;
-    private String mParam2;
+    private int mTabPosition;
+    private int mCategoryId;
 
     private OnFragmentInteractionListener mListener;
-    private TabLayout tabLayout;
-    private ViewPager viewPager;
-    private CategoryAdapter categoryAdapter;
-    private HeadLinesViewModel headLinesViewModel;
 
-    public HeadLineFragment() {
+    public DynamicTabFragment() {
         // Required empty public constructor
     }
 
@@ -53,13 +39,13 @@ public class HeadLineFragment extends Fragment {
      *
      * @param param1 Parameter 1.
      * @param param2 Parameter 2.
-     * @return A new instance of fragment HeadLineFragment.
+     * @return A new instance of fragment DynamicTabFragment.
      */
-    public static HeadLineFragment newInstance(String param1, String param2) {
-        HeadLineFragment fragment = new HeadLineFragment();
+    public static DynamicTabFragment newInstance(int param1, int param2) {
+        DynamicTabFragment fragment = new DynamicTabFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
+        args.putInt(TAB_POSITION, param1);
+        args.putInt(CATEGORY_ID, param2);
         fragment.setArguments(args);
         return fragment;
     }
@@ -68,8 +54,8 @@ public class HeadLineFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+            mTabPosition = getArguments().getInt(TAB_POSITION);
+            mCategoryId = getArguments().getInt(CATEGORY_ID);
         }
     }
 
@@ -77,34 +63,17 @@ public class HeadLineFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View rootView = inflater.inflate(R.layout.fragment_head_line, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_dynamic_tab, container, false);
 
         init(rootView);
-        viewPager.setAdapter(categoryAdapter);
-        tabLayout.setupWithViewPager(viewPager, true);
-
-        headLinesViewModel.getNewsCategories().observe(this, new Observer<List<NewsCategory>>() {
-            @Override
-            public void onChanged(List<NewsCategory> newsCategories) {
-                categoryAdapter.setCategoryList(newsCategories);
-                categoryAdapter.notifyDataSetChanged();
-            }
-        });
-
         return rootView;
     }
 
     // initializing or binding views
     private void init(View view){
-        tabLayout = (TabLayout) view.findViewById(R.id.tab_layout);
-        viewPager = (ViewPager) view.findViewById(R.id.view_pager);
-        if (categoryAdapter == null){
-            categoryAdapter = new CategoryAdapter(getChildFragmentManager(),
-                    FragmentStatePagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
-        }
-        headLinesViewModel = ViewModelProviders.of(this).get(HeadLinesViewModel.class);
 
     }
+
 
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {
@@ -140,7 +109,7 @@ public class HeadLineFragment extends Fragment {
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
+
         void onFragmentInteraction(Uri uri);
     }
 }
