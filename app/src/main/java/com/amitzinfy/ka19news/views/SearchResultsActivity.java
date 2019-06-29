@@ -11,9 +11,15 @@ import android.widget.Toast;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
 
 import com.amitzinfy.ka19news.R;
+import com.amitzinfy.ka19news.models.retrofit.News;
+import com.amitzinfy.ka19news.viewmodels.SearchNewsViewModel;
 import com.google.android.material.appbar.MaterialToolbar;
+
+import java.util.List;
 
 public class SearchResultsActivity extends AppCompatActivity {
 
@@ -21,6 +27,8 @@ public class SearchResultsActivity extends AppCompatActivity {
 
     private MaterialToolbar materialToolbar;
     private ActionBar actionBar;
+    private SearchNewsViewModel searchNewsViewModel;
+    private Observer<List<News>> newsObserver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +45,17 @@ public class SearchResultsActivity extends AppCompatActivity {
         if (actionBar != null) {
             actionBar.setDisplayShowTitleEnabled(false);
         }
+        searchNewsViewModel = ViewModelProviders.of(this).get(SearchNewsViewModel.class);
+    }
+
+    private void subscribe(String searchQuery){
+        newsObserver = new Observer<List<News>>() {
+            @Override
+            public void onChanged(List<News> news) {
+
+            }
+        };
+        searchNewsViewModel.getSearchNews(searchQuery).observe(this, newsObserver);
     }
 
     @Override
@@ -61,6 +80,7 @@ public class SearchResultsActivity extends AppCompatActivity {
             @Override
             public boolean onQueryTextChange(String newText) {
                 Toast.makeText(SearchResultsActivity.this, newText, Toast.LENGTH_SHORT).show();
+                subscribe(newText);
                 return true;
             }
         });
