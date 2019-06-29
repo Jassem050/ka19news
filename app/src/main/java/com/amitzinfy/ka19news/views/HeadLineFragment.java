@@ -7,9 +7,22 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentStatePagerAdapter;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
+import androidx.viewpager.widget.ViewPager;
 
 import com.amitzinfy.ka19news.R;
+import com.amitzinfy.ka19news.adapters.CategoryAdapter;
+import com.amitzinfy.ka19news.models.room.NewsCategory;
+import com.amitzinfy.ka19news.viewmodels.HeadLinesViewModel;
+import com.google.android.material.appbar.MaterialToolbar;
+import com.google.android.material.tabs.TabLayout;
+
+import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -20,16 +33,20 @@ import com.amitzinfy.ka19news.R;
  * create an instance of this fragment.
  */
 public class HeadLineFragment extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
-    // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
 
     private OnFragmentInteractionListener mListener;
+    private TabLayout tabLayout;
+    private ViewPager viewPager;
+    private CategoryAdapter categoryAdapter;
+    private HeadLinesViewModel headLinesViewModel;
+    private MaterialToolbar materialToolbar;
+    private ActionBar actionBar;
 
     public HeadLineFragment() {
         // Required empty public constructor
@@ -43,7 +60,6 @@ public class HeadLineFragment extends Fragment {
      * @param param2 Parameter 2.
      * @return A new instance of fragment HeadLineFragment.
      */
-    // TODO: Rename and change types and number of parameters
     public static HeadLineFragment newInstance(String param1, String param2) {
         HeadLineFragment fragment = new HeadLineFragment();
         Bundle args = new Bundle();
@@ -66,10 +82,59 @@ public class HeadLineFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_head_line, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_head_line, container, false);
+
+        setToolbar(rootView);
+        init(rootView);
+        viewPager.setAdapter(categoryAdapter);
+        tabLayout.setupWithViewPager(viewPager, true);
+
+        headLinesViewModel.getNewsCategories().observe(this, new Observer<List<NewsCategory>>() {
+            @Override
+            public void onChanged(List<NewsCategory> newsCategories) {
+                categoryAdapter.setCategoryList(newsCategories);
+                categoryAdapter.notifyDataSetChanged();
+            }
+        });
+//        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+//            @Override
+//            public void onTabSelected(TabLayout.Tab tab) {
+//                viewPager.setCurrentItem(tab.getPosition());
+//            }
+//
+//            @Override
+//            public void onTabUnselected(TabLayout.Tab tab) {
+//
+//            }
+//
+//            @Override
+//            public void onTabReselected(TabLayout.Tab tab) {
+//
+//            }
+//        });
+
+        return rootView;
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
+    // initializing or binding views
+    private void init(View view){
+        tabLayout = (TabLayout) view.findViewById(R.id.tab_layout);
+        viewPager = (ViewPager) view.findViewById(R.id.view_pager);
+        if (categoryAdapter == null){
+            categoryAdapter = new CategoryAdapter(getChildFragmentManager(),
+                    FragmentStatePagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
+        }
+        headLinesViewModel = ViewModelProviders.of(this).get(HeadLinesViewModel.class);
+
+    }
+
+    private void setToolbar(View view){
+        materialToolbar = (MaterialToolbar) view.findViewById(R.id.headline_toolbar);
+        ((AppCompatActivity) getActivity()).setSupportActionBar(materialToolbar);
+        actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+        actionBar.setTitle(getResources().getString(R.string.app_name));
+    }
+
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {
             mListener.onFragmentInteraction(uri);

@@ -13,7 +13,8 @@ import com.amitzinfy.ka19news.R;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class MainActivity extends AppCompatActivity implements HomeFragment.OnFragmentInteractionListener,
-        HeadLineFragment.OnFragmentInteractionListener, FavouriteFragment.OnFragmentInteractionListener {
+        HeadLineFragment.OnFragmentInteractionListener, FavouriteFragment.OnFragmentInteractionListener,
+        DynamicTabFragment.OnFragmentInteractionListener{
 
     private BottomNavigationView bottomNavigationView;
 
@@ -57,7 +58,7 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnFr
     private void loadFragment(Fragment fragment){
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction.replace(R.id.content_main_frame, fragment);
-        fragmentTransaction.addToBackStack(null);
+//        fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
     }
 

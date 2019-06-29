@@ -10,4 +10,6 @@
     <color name="black">#000000</color>
     <color name="navigationGrey">#9E9E9E</color>
     <color name="DividerColor">#EEEEEE</color>
+    <color name="tab_text_color">#B0E0E6</color>
+    <color name="shimmer_background">#dddddd</color>
 </resources>

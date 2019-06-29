@@ -61,6 +61,7 @@
             android:paddingRight="6dp"
             android:layout_height="wrap_content"
             android:background="@color/white"
+            android:backgroundTint="@color/white"
             app:srcCompat="@drawable/ic_share_black_24dp"
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true" />

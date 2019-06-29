@@ -7,9 +7,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
 import com.amitzinfy.ka19news.R;
+import com.google.android.material.appbar.MaterialToolbar;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -30,6 +33,8 @@ public class FavouriteFragment extends Fragment {
     private String mParam2;
 
     private OnFragmentInteractionListener mListener;
+    private MaterialToolbar materialToolbar;
+    private ActionBar actionBar;
 
     public FavouriteFragment() {
         // Required empty public constructor
@@ -66,10 +71,20 @@ public class FavouriteFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_favourite, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_favourite, container, false);
+
+        setToolbar(rootView);
+        return rootView;
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
+    private void setToolbar(View view){
+        materialToolbar = (MaterialToolbar) view.findViewById(R.id.favourite_toolbar);
+        ((AppCompatActivity) getActivity()).setSupportActionBar(materialToolbar);
+        actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+        actionBar.setTitle(getResources().getString(R.string.app_name));
+    }
+
+
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {
             mListener.onFragmentInteraction(uri);

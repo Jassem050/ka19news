@@ -7,8 +7,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
@@ -17,50 +15,54 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.amitzinfy.ka19news.R;
-import com.amitzinfy.ka19news.adapters.MyFeedNewsListAdapter;
+import com.amitzinfy.ka19news.adapters.CategoryNewsAdapter;
 import com.amitzinfy.ka19news.models.retrofit.News;
-import com.amitzinfy.ka19news.viewmodels.MyFeedViewModel;
+import com.amitzinfy.ka19news.viewmodels.HeadLinesViewModel;
 import com.facebook.shimmer.ShimmerFrameLayout;
-import com.google.android.material.appbar.MaterialToolbar;
 
 import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link HomeFragment.OnFragmentInteractionListener} interface
+ * {@link DynamicTabFragment.OnFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link HomeFragment#newInstance} factory method to
+ * Use the {@link DynamicTabFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class HomeFragment extends Fragment {
+public class DynamicTabFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+    private static final String TAB_POSITION = "param1";
+    private static final String CATEGORY_ID = "param2";
 
-    private String mParam1;
-    private String mParam2;
+    private int mTabPosition;
+    private int mCategoryId;
 
     private OnFragmentInteractionListener mListener;
-    private MyFeedNewsListAdapter myFeedNewsListAdapter;
     private RecyclerView recyclerView;
-    private MyFeedViewModel myFeedViewModel;
-    private MaterialToolbar materialToolbar;
-    private ActionBar actionBar;
+    private CategoryNewsAdapter categoryNewsAdapter;
     private ShimmerFrameLayout shimmerFrameLayout;
-    private SwipeRefreshLayout swipeRefreshLayout;
+    private HeadLinesViewModel headLinesViewModel;
     private Observer<List<News>> newsObserver;
+    private SwipeRefreshLayout swipeRefreshLayout;
 
-    public HomeFragment() {
+    public DynamicTabFragment() {
         // Required empty public constructor
     }
 
-
-    public static HomeFragment newInstance(String param1, String param2) {
-        HomeFragment fragment = new HomeFragment();
+    /**
+     * Use this factory method to create a new instance of
+     * this fragment using the provided parameters.
+     *
+     * @param param1 Parameter 1.
+     * @param param2 Parameter 2.
+     * @return A new instance of fragment DynamicTabFragment.
+     */
+    public static DynamicTabFragment newInstance(int param1, int param2) {
+        DynamicTabFragment fragment = new DynamicTabFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
+        args.putInt(TAB_POSITION, param1);
+        args.putInt(CATEGORY_ID, param2);
         fragment.setArguments(args);
         return fragment;
     }
@@ -69,8 +71,8 @@ public class HomeFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+            mTabPosition = getArguments().getInt(TAB_POSITION);
+            mCategoryId = getArguments().getInt(CATEGORY_ID);
         }
     }
 
@@ -78,18 +80,14 @@ public class HomeFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View rootView = inflater.inflate(R.layout.fragment_home, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_dynamic_tab, container, false);
 
-        setToolbar(rootView);
         init(rootView);
-
         subscribe();
-
 
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                subscribe();
                 swipeRefreshLayout.setRefreshing(false);
             }
         });
@@ -97,42 +95,36 @@ public class HomeFragment extends Fragment {
         return rootView;
     }
 
+    // initializing or binding views
+    private void init(View view){
+        recyclerView = (RecyclerView) view.findViewById(R.id.headline_recycler_view);
+        categoryNewsAdapter = new CategoryNewsAdapter(getActivity());
+        recyclerView.setAdapter(categoryNewsAdapter);
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+//        List<News> newsList = new ArrayList<>();
+//        for (int i = 0; i< 10; i++){
+//            newsList.add(new News("news of category: " + mCategoryId));
+//        }
+
+        swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.headline_swiperefresh);
+        shimmerFrameLayout = (ShimmerFrameLayout) view.findViewById(R.id.shimmer_layout);
+        shimmerFrameLayout.startShimmer();
+        headLinesViewModel = ViewModelProviders.of(this).get(HeadLinesViewModel.class);
+    }
+
     private void subscribe(){
         newsObserver = new Observer<List<News>>() {
             @Override
             public void onChanged(List<News> news) {
-                if (news != null) {
-                    myFeedNewsListAdapter.setNewsList(news);
-                    myFeedNewsListAdapter.notifyDataSetChanged();
-                    shimmerFrameLayout.stopShimmer();
-                    shimmerFrameLayout.setVisibility(View.GONE);
-                }
+                categoryNewsAdapter.setNewsList(news);
+                categoryNewsAdapter.notifyDataSetChanged();
+                shimmerFrameLayout.stopShimmer();
+                shimmerFrameLayout.setVisibility(View.GONE);
             }
         };
-        myFeedViewModel.getNewsList().observe(getViewLifecycleOwner(), newsObserver);
+        headLinesViewModel.getNewsList(mCategoryId).observe(this, newsObserver);
     }
-
-    private void init(View view){
-        recyclerView = view.findViewById(R.id.mynews_recyclerview);
-        myFeedNewsListAdapter = new MyFeedNewsListAdapter(getActivity());
-        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        recyclerView.setHasFixedSize(true);
-        recyclerView.setAdapter(myFeedNewsListAdapter);
-        myFeedViewModel = ViewModelProviders.of(this).get(MyFeedViewModel.class);
-        swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_refresh_layout);
-        shimmerFrameLayout = (ShimmerFrameLayout) view.findViewById(R.id.shimmer_layout);
-        shimmerFrameLayout.startShimmer();
-    }
-
-
-    private void setToolbar(View view){
-        materialToolbar = (MaterialToolbar) view.findViewById(R.id.myfeed_toolbar);
-        ((AppCompatActivity) getActivity()).setSupportActionBar(materialToolbar);
-        actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
-        actionBar.setTitle(getResources().getString(R.string.app_name));
-    }
-
-
 
 
     public void onButtonPressed(Uri uri) {

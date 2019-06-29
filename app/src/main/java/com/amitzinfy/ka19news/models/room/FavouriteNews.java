@@ -9,6 +9,7 @@ import androidx.room.PrimaryKey;
 public class FavouriteNews {
 
     @PrimaryKey
+    @ColumnInfo
     private int id;
 
     @ColumnInfo(name = "news_title")
@@ -20,7 +21,7 @@ public class FavouriteNews {
     @ColumnInfo(name = "news_image")
     private String image;
 
-    public FavouriteNews(@NonNull int id, @NonNull String title, @NonNull String description, String image){
+    public FavouriteNews(int id, @NonNull String title, @NonNull String description, String image){
         this.id = id;
         this.title = title;
         this.description = description;

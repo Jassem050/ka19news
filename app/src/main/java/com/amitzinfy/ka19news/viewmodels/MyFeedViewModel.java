@@ -21,6 +21,13 @@ public class MyFeedViewModel extends AndroidViewModel {
         myFeedRepository = MyFeedRepository.getInstance();
     }
 
+    public void init() {
+        myFeedRepository = null;
+        if (myFeedRepository == null){
+            myFeedRepository = MyFeedRepository.getInstance();
+        }
+    }
+
     public LiveData<List<News>> getNewsList(){
        return myFeedRepository.getNewsList();
     }
