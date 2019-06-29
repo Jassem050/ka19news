@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.amitzinfy.ka19news.R;
 import com.amitzinfy.ka19news.adapters.CategoryNewsAdapter;
 import com.amitzinfy.ka19news.models.retrofit.News;
+import com.facebook.shimmer.ShimmerFrameLayout;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,6 +38,7 @@ public class DynamicTabFragment extends Fragment {
     private OnFragmentInteractionListener mListener;
     private RecyclerView recyclerView;
     private CategoryNewsAdapter categoryNewsAdapter;
+    private ShimmerFrameLayout shimmerFrameLayout;
 
     public DynamicTabFragment() {
         // Required empty public constructor
@@ -75,6 +77,8 @@ public class DynamicTabFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_dynamic_tab, container, false);
 
         init(rootView);
+        shimmerFrameLayout.stopShimmer();
+        shimmerFrameLayout.setVisibility(View.GONE);
         return rootView;
     }
 
@@ -91,6 +95,8 @@ public class DynamicTabFragment extends Fragment {
         }
         categoryNewsAdapter.setNewsList(newsList);
         categoryNewsAdapter.notifyDataSetChanged();
+        shimmerFrameLayout = (ShimmerFrameLayout) view.findViewById(R.id.shimmer_layout);
+        shimmerFrameLayout.startShimmer();
     }
 
 

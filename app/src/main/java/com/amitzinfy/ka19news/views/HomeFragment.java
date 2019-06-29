@@ -14,11 +14,13 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.amitzinfy.ka19news.R;
 import com.amitzinfy.ka19news.adapters.MyFeedNewsListAdapter;
 import com.amitzinfy.ka19news.models.retrofit.News;
 import com.amitzinfy.ka19news.viewmodels.MyFeedViewModel;
+import com.facebook.shimmer.ShimmerFrameLayout;
 import com.google.android.material.appbar.MaterialToolbar;
 
 import java.util.List;
@@ -45,6 +47,9 @@ public class HomeFragment extends Fragment {
     private MyFeedViewModel myFeedViewModel;
     private MaterialToolbar materialToolbar;
     private ActionBar actionBar;
+    private ShimmerFrameLayout shimmerFrameLayout;
+    private SwipeRefreshLayout swipeRefreshLayout;
+    private Observer<List<News>> newsObserver;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -78,19 +83,33 @@ public class HomeFragment extends Fragment {
         setToolbar(rootView);
         init(rootView);
 
-        myFeedViewModel.getNewsList().observe(getViewLifecycleOwner(), new Observer<List<News>>() {
+        subscribe();
+
+
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                subscribe();
+                swipeRefreshLayout.setRefreshing(false);
+            }
+        });
+
+        return rootView;
+    }
+
+    private void subscribe(){
+        newsObserver = new Observer<List<News>>() {
             @Override
             public void onChanged(List<News> news) {
                 if (news != null) {
                     myFeedNewsListAdapter.setNewsList(news);
                     myFeedNewsListAdapter.notifyDataSetChanged();
+                    shimmerFrameLayout.stopShimmer();
+                    shimmerFrameLayout.setVisibility(View.GONE);
                 }
             }
-        });
-
-
-
-        return rootView;
+        };
+        myFeedViewModel.getNewsList().observe(getViewLifecycleOwner(), newsObserver);
     }
 
     private void init(View view){
@@ -100,6 +119,9 @@ public class HomeFragment extends Fragment {
         recyclerView.setHasFixedSize(true);
         recyclerView.setAdapter(myFeedNewsListAdapter);
         myFeedViewModel = ViewModelProviders.of(this).get(MyFeedViewModel.class);
+        swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_refresh_layout);
+        shimmerFrameLayout = (ShimmerFrameLayout) view.findViewById(R.id.shimmer_layout);
+        shimmerFrameLayout.startShimmer();
     }
 
 

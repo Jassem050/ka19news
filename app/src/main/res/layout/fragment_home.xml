@@ -16,20 +16,55 @@
             android:id="@+id/myfeed_toolbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:titleTextColor="@color/white"
-            android:theme="@style/AppTheme.PopupOverlay" />
+            android:theme="@style/AppTheme.PopupOverlay"
+            app:titleTextColor="@color/white" />
 
     </com.google.android.material.appbar.AppBarLayout>
 
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipe_refresh_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
 
+
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
+
+            <com.facebook.shimmer.ShimmerFrameLayout
+                android:id="@+id/shimmer_layout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:shimmer_direction="left_to_right"
+                app:shimmer_duration="800">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+
+                    <include layout="@layout/news_item_placeholder" />
+
+                    <include layout="@layout/news_item_placeholder_1" />
+
+                    <include layout="@layout/news_item_placeholder_1" />
+
+                    <include layout="@layout/news_item_placeholder_1" />
+
+                    <include layout="@layout/news_item_placeholder_1" />
+
+                    <include layout="@layout/news_item_placeholder_1" />
+
+                    <include layout="@layout/news_item_placeholder_1" />
+
+                    <include layout="@layout/news_item_placeholder_1" />
+                </LinearLayout>
+
+
+            </com.facebook.shimmer.ShimmerFrameLayout>
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/mynews_recyclerview"

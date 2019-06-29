@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="8dp">
+
+    <View
+        android:id="@+id/news_category"
+        android:layout_width="100dp"
+        android:layout_height="10dp"
+        android:background="@color/shimmer_background"
+        android:layout_marginBottom="8dp"/>
+
+    <LinearLayout
+        android:id="@+id/title_row"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/news_category"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_weight="62"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="10dp"
+                android:layout_marginRight="18dp"
+                android:layout_marginBottom="8dp"
+                android:background="@color/shimmer_background"/>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="10dp"
+                android:layout_marginRight="18dp"
+                android:background="@color/shimmer_background"/>
+
+        </LinearLayout>
+
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="0dp"
+            android:layout_weight="38"
+            android:layout_height="100dp"
+            app:cardElevation="5dp"
+            android:background="@drawable/bg_round">
+            <View
+                android:id="@+id/news_image"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/shimmer_background"/>
+
+        </com.google.android.material.card.MaterialCardView>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/date_row"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="16dp"
+        android:layout_below="@+id/title_row">
+
+        <View
+            android:id="@+id/news_date"
+            android:layout_width="0dp"
+            android:layout_weight="50"
+            android:layout_height="10dp"
+            android:layout_marginRight="8dp"
+            android:background="@color/shimmer_background"/>
+
+        <View
+            android:id="@+id/news_toggle_btn"
+            android:layout_width="0dp"
+            android:layout_weight="50"
+            android:layout_height="10dp"
+            android:layout_marginLeft="10dp"
+            android:background="@color/shimmer_background"/>
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/DividerColor"
+        android:layout_below="@+id/date_row"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"/>
+
+</RelativeLayout>

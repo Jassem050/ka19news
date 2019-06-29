@@ -10,6 +10,7 @@ import com.amitzinfy.ka19news.models.retrofit.News;
 import com.amitzinfy.ka19news.utils.ApiInterface;
 import com.amitzinfy.ka19news.utils.RetrofitClient;
 
+import java.util.Collections;
 import java.util.List;
 
 import retrofit2.Call;
@@ -41,6 +42,7 @@ public class MyFeedRepository {
         call.enqueue(new Callback<List<News>>() {
             @Override
             public void onResponse(Call<List<News>> call, Response<List<News>> response) {
+                Collections.reverse(response.body());
                 newsList.postValue(response.body());
                 Log.d(TAG, "onResponse: news: " + response.body().get(0).getTitle());
             }
