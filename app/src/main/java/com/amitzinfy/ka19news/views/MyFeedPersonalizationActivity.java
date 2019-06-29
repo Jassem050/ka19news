@@ -5,6 +5,7 @@ import android.util.Log;
 import android.util.TypedValue;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
@@ -55,7 +56,7 @@ public class MyFeedPersonalizationActivity extends AppCompatActivity {
                     chip[i] = new Chip(MyFeedPersonalizationActivity.this);
                     chip[i].setCheckable(true);
                     chip[i].setText(categoryList.get(i).getName());
-                    chip[i].setTextColor(getResources().getColorStateList(R.color.chip_text_color));
+                    chip[i].setTextColor(ContextCompat.getColorStateList(this, R.color.chip_text_color));
                     chip[i].setChipStrokeColorResource(R.color.colorPrimary);
                     chip[i].setChipStrokeWidth(4);
                     chip[i].setCheckedIconVisible(false);

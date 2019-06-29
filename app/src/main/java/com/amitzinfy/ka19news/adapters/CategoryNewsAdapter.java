@@ -6,11 +6,14 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.widget.AppCompatImageView;
 import androidx.appcompat.widget.AppCompatTextView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.amitzinfy.ka19news.R;
 import com.amitzinfy.ka19news.models.retrofit.News;
+import com.amitzinfy.ka19news.utils.GlideApp;
+import com.amitzinfy.ka19news.utils.NetworkUtils;
 
 import java.util.List;
 
@@ -21,10 +24,12 @@ public class CategoryNewsAdapter extends RecyclerView.Adapter<CategoryNewsAdapte
 
     public class NewsViewHolder extends RecyclerView.ViewHolder {
         private AppCompatTextView newsTitle;
+        private AppCompatImageView newsImage;
 
         public NewsViewHolder(@NonNull View itemView) {
             super(itemView);
             newsTitle = itemView.findViewById(R.id.news_title);
+            newsImage = (AppCompatImageView) itemView.findViewById(R.id.news_image);
         }
     }
 
@@ -50,6 +55,7 @@ public class CategoryNewsAdapter extends RecyclerView.Adapter<CategoryNewsAdapte
     public void onBindViewHolder(@NonNull NewsViewHolder holder, int position) {
         News news = newsList.get(position);
         holder.newsTitle.setText(news.getTitle());
+        GlideApp.with(context).load(NetworkUtils.IMAGE_URL + news.getImage()).into(holder.newsImage);
 
     }
 

@@ -8,15 +8,18 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.amitzinfy.ka19news.R;
 import com.amitzinfy.ka19news.adapters.CategoryNewsAdapter;
 import com.amitzinfy.ka19news.models.retrofit.News;
+import com.amitzinfy.ka19news.viewmodels.HeadLinesViewModel;
 import com.facebook.shimmer.ShimmerFrameLayout;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -39,6 +42,9 @@ public class DynamicTabFragment extends Fragment {
     private RecyclerView recyclerView;
     private CategoryNewsAdapter categoryNewsAdapter;
     private ShimmerFrameLayout shimmerFrameLayout;
+    private HeadLinesViewModel headLinesViewModel;
+    private Observer<List<News>> newsObserver;
+    private SwipeRefreshLayout swipeRefreshLayout;
 
     public DynamicTabFragment() {
         // Required empty public constructor
@@ -77,8 +83,15 @@ public class DynamicTabFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_dynamic_tab, container, false);
 
         init(rootView);
-        shimmerFrameLayout.stopShimmer();
-        shimmerFrameLayout.setVisibility(View.GONE);
+        subscribe();
+
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                swipeRefreshLayout.setRefreshing(false);
+            }
+        });
+
         return rootView;
     }
 
@@ -89,14 +102,28 @@ public class DynamicTabFragment extends Fragment {
         recyclerView.setAdapter(categoryNewsAdapter);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        List<News> newsList = new ArrayList<>();
-        for (int i = 0; i< 10; i++){
-            newsList.add(new News("news of category: " + mCategoryId));
-        }
-        categoryNewsAdapter.setNewsList(newsList);
-        categoryNewsAdapter.notifyDataSetChanged();
+//        List<News> newsList = new ArrayList<>();
+//        for (int i = 0; i< 10; i++){
+//            newsList.add(new News("news of category: " + mCategoryId));
+//        }
+
+        swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.headline_swiperefresh);
         shimmerFrameLayout = (ShimmerFrameLayout) view.findViewById(R.id.shimmer_layout);
         shimmerFrameLayout.startShimmer();
+        headLinesViewModel = ViewModelProviders.of(this).get(HeadLinesViewModel.class);
+    }
+
+    private void subscribe(){
+        newsObserver = new Observer<List<News>>() {
+            @Override
+            public void onChanged(List<News> news) {
+                categoryNewsAdapter.setNewsList(news);
+                categoryNewsAdapter.notifyDataSetChanged();
+                shimmerFrameLayout.stopShimmer();
+                shimmerFrameLayout.setVisibility(View.GONE);
+            }
+        };
+        headLinesViewModel.getNewsList(mCategoryId).observe(this, newsObserver);
     }
 
 

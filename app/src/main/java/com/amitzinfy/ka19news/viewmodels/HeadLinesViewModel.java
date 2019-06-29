@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 
+import com.amitzinfy.ka19news.models.retrofit.News;
 import com.amitzinfy.ka19news.models.room.NewsCategory;
 import com.amitzinfy.ka19news.repositories.HeadLinesRepository;
 
@@ -21,5 +22,9 @@ public class HeadLinesViewModel extends AndroidViewModel {
 
     public LiveData<List<NewsCategory>> getNewsCategories(){
         return headLinesRepository.getNewsCategories();
+    }
+
+    public LiveData<List<News>> getNewsList(int categoryId){
+        return headLinesRepository.getNewsList(categoryId);
     }
 }
