@@ -1,12 +1,17 @@
 package com.amitzinfy.ka19news.views;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
@@ -77,6 +82,7 @@ public class HomeFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        setHasOptionsMenu(true);
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_home, container, false);
 
@@ -127,13 +133,29 @@ public class HomeFragment extends Fragment {
 
     private void setToolbar(View view){
         materialToolbar = (MaterialToolbar) view.findViewById(R.id.myfeed_toolbar);
-        ((AppCompatActivity) getActivity()).setSupportActionBar(materialToolbar);
-        actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
-        actionBar.setTitle(getResources().getString(R.string.app_name));
+        if (getActivity() != null) {
+            ((AppCompatActivity) getActivity()).setSupportActionBar(materialToolbar);
+            actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+            actionBar.setTitle(getResources().getString(R.string.app_name));
+        }
     }
 
 
+    @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+        inflater.inflate(R.menu.search_menu, menu);
 
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if (item.getItemId() == R.id.action_search){
+            startActivity(new Intent(getActivity(), SearchResultsActivity.class));
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {
