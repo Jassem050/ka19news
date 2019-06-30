@@ -4,6 +4,8 @@ import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
@@ -13,8 +15,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.amitzinfy.ka19news.R;
+import com.amitzinfy.ka19news.adapters.SearchNewsAdapter;
 import com.amitzinfy.ka19news.models.retrofit.News;
 import com.amitzinfy.ka19news.viewmodels.SearchNewsViewModel;
 import com.google.android.material.appbar.MaterialToolbar;
@@ -29,6 +34,8 @@ public class SearchResultsActivity extends AppCompatActivity {
     private ActionBar actionBar;
     private SearchNewsViewModel searchNewsViewModel;
     private Observer<List<News>> newsObserver;
+    private SearchNewsAdapter searchNewsAdapter;
+    private RecyclerView recyclerView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,17 +52,27 @@ public class SearchResultsActivity extends AppCompatActivity {
         if (actionBar != null) {
             actionBar.setDisplayShowTitleEnabled(false);
         }
+        searchNewsAdapter = new SearchNewsAdapter(this);
+        recyclerView = (RecyclerView) findViewById(R.id.search_recyclerview);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setAdapter(searchNewsAdapter);
         searchNewsViewModel = ViewModelProviders.of(this).get(SearchNewsViewModel.class);
     }
 
     private void subscribe(String searchQuery){
-        newsObserver = new Observer<List<News>>() {
-            @Override
-            public void onChanged(List<News> news) {
-
+        newsObserver = news -> {
+            if (news != null && news.size() > 0) {
+                Log.d(TAG, "onChanged: searchresultsactivity: " + news.get(0).getTitle());
+                searchNewsAdapter.setNewsList(news);
+                searchNewsAdapter.notifyDataSetChanged();
             }
         };
-        searchNewsViewModel.getSearchNews(searchQuery).observe(this, newsObserver);
+//        searchNewsAdapter.clearAllNews();
+//        searchNewsAdapter.setNewsList(searchNewsViewModel.getSearchNews(searchQuery));
+//        searchNewsAdapter.notifyDataSetChanged();
+        searchNewsViewModel.setSearchQueryText(searchQuery);
+        searchNewsViewModel.getSearchNews().observe(this, newsObserver);
     }
 
     @Override
@@ -64,7 +81,7 @@ public class SearchResultsActivity extends AppCompatActivity {
 
         SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
         final SearchView searchView = (SearchView) menu.findItem(R.id.action_search_menu).getActionView();
-        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+        searchView.setSearchableInfo(searchManager != null ? searchManager.getSearchableInfo(getComponentName()) : null);
         searchView.setIconifiedByDefault(false);
         searchView.setMaxWidth(Integer.MAX_VALUE);
         searchView.setIconified(false);
@@ -79,9 +96,11 @@ public class SearchResultsActivity extends AppCompatActivity {
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                Toast.makeText(SearchResultsActivity.this, newText, Toast.LENGTH_SHORT).show();
-                subscribe(newText);
-                return true;
+                if (!TextUtils.isEmpty(newText) && newText.length() > 3) {
+                    Toast.makeText(SearchResultsActivity.this, newText, Toast.LENGTH_SHORT).show();
+                    subscribe(newText);
+                }
+                return false;
             }
         });
 
@@ -107,6 +126,7 @@ public class SearchResultsActivity extends AppCompatActivity {
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
             String query = intent.getStringExtra(SearchManager.QUERY);
             Toast.makeText(this, query, Toast.LENGTH_SHORT).show();
+            subscribe(query);
         }
     }
 }

@@ -43,10 +43,8 @@ public class MyFeedNewsListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
     }
 
     public void setNewsList(List<News> newsList){
-        if (this.newsList == null){
             this.newsList = newsList;
             notifyDataSetChanged();
-        }
     }
 
     @Override

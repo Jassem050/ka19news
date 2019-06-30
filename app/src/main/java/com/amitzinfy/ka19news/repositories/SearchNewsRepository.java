@@ -2,7 +2,6 @@ package com.amitzinfy.ka19news.repositories;
 
 import android.util.Log;
 
-import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.amitzinfy.ka19news.models.retrofit.News;
@@ -20,7 +19,7 @@ public class SearchNewsRepository {
     private static final String TAG = "SearchNewsRepository";
 
     private static SearchNewsRepository searchNewsRepository;
-    private MutableLiveData<List<News>> newsList;
+    private MutableLiveData<List<News>> newsList = new MutableLiveData<>();
 
     public static SearchNewsRepository getInstance(){
         if (searchNewsRepository == null){
@@ -39,8 +38,10 @@ public class SearchNewsRepository {
         call.enqueue(new Callback<List<News>>() {
             @Override
             public void onResponse(Call<List<News>> call, Response<List<News>> response) {
-                Collections.reverse(response.body());
-                newsList.postValue(response.body());
+                if (response.isSuccessful() && response.body() != null) {
+                    Collections.reverse(response.body());
+                    newsList.postValue(response.body());
+                }
             }
 
             @Override
@@ -50,7 +51,7 @@ public class SearchNewsRepository {
         });
     }
 
-    public LiveData<List<News>> getSearchNews(String searchQuery){
+    public MutableLiveData<List<News>> getSearchNews(String searchQuery){
         loadSearchNewsList(searchQuery);
         return newsList;
     }

@@ -17,23 +17,23 @@ import com.amitzinfy.ka19news.utils.NetworkUtils;
 
 import java.util.List;
 
-public class CategoryNewsAdapter extends RecyclerView.Adapter<CategoryNewsAdapter.NewsViewHolder> {
+public class SearchNewsAdapter extends RecyclerView.Adapter<SearchNewsAdapter.SearchNewsViewHolder> {
 
     private Context context;
     private List<News> newsList;
 
-    public class NewsViewHolder extends RecyclerView.ViewHolder {
+    public static class SearchNewsViewHolder extends RecyclerView.ViewHolder{
         private AppCompatTextView newsTitle;
         private AppCompatImageView newsImage;
 
-        public NewsViewHolder(@NonNull View itemView) {
+        public SearchNewsViewHolder(@NonNull View itemView) {
             super(itemView);
             newsTitle = itemView.findViewById(R.id.news_title);
             newsImage = itemView.findViewById(R.id.news_image);
         }
     }
 
-    public CategoryNewsAdapter(Context context){
+    public SearchNewsAdapter(Context context){
         this.context = context;
     }
 
@@ -42,28 +42,29 @@ public class CategoryNewsAdapter extends RecyclerView.Adapter<CategoryNewsAdapte
             notifyDataSetChanged();
     }
 
+    public void clearAllNews(){
+        if (newsList != null){
+            newsList.clear();
+        }
+    }
+
     @NonNull
     @Override
-    public NewsViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public SearchNewsViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.news_item_row_1, parent, false);
-        return new NewsViewHolder(view);
+        return new SearchNewsViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull NewsViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull SearchNewsViewHolder holder, int position) {
         News news = newsList.get(position);
         holder.newsTitle.setText(news.getTitle());
         GlideApp.with(context).load(NetworkUtils.IMAGE_URL + news.getImage()).into(holder.newsImage);
-
     }
 
     @Override
     public int getItemCount() {
-        if (newsList != null){
-            return newsList.size();
-        } else {
-            return 0;
-        }
+        return newsList != null ? newsList.size() : 0;
     }
 
 
