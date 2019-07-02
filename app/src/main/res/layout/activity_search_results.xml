@@ -23,18 +23,30 @@
         android:layout_height="match_parent"
         app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
 
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/search_query"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="8dp"
+            android:layout_alignParentTop="true"
+            android:background="@color/DividerColor"
+            android:visibility="gone"/>
+
         <com.airbnb.lottie.LottieAnimationView
+            android:id="@+id/search_progress"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
             app:lottie_loop="true"
             app:lottie_autoPlay="true"
-            app:lottie_rawRes="@raw/search_processing"/>
+            app:lottie_rawRes="@raw/search_loader"
+            android:visibility="gone"/>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/search_recyclerview"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
+            android:layout_height="match_parent"
+            android:layout_below="@+id/search_query"/>
     </RelativeLayout>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

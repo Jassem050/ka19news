@@ -4,20 +4,25 @@ import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.AppCompatTextView;
 import androidx.appcompat.widget.SearchView;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.airbnb.lottie.LottieAnimationView;
 import com.amitzinfy.ka19news.R;
 import com.amitzinfy.ka19news.adapters.SearchNewsAdapter;
 import com.amitzinfy.ka19news.models.retrofit.News;
@@ -36,6 +41,10 @@ public class SearchResultsActivity extends AppCompatActivity {
     private Observer<List<News>> newsObserver;
     private SearchNewsAdapter searchNewsAdapter;
     private RecyclerView recyclerView;
+    private LottieAnimationView searchAnimation;
+    private Handler handler;
+    private Runnable mRunnable;
+    private AppCompatTextView searchQueryText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,6 +67,10 @@ public class SearchResultsActivity extends AppCompatActivity {
         recyclerView.setHasFixedSize(true);
         recyclerView.setAdapter(searchNewsAdapter);
         searchNewsViewModel = ViewModelProviders.of(this).get(SearchNewsViewModel.class);
+        searchAnimation = (LottieAnimationView) findViewById(R.id.search_progress);
+        handler = new Handler();
+        searchQueryText = (AppCompatTextView) findViewById(R.id.search_query);
+
     }
 
     private void subscribe(String searchQuery){
@@ -68,9 +81,6 @@ public class SearchResultsActivity extends AppCompatActivity {
                 searchNewsAdapter.notifyDataSetChanged();
             }
         };
-//        searchNewsAdapter.clearAllNews();
-//        searchNewsAdapter.setNewsList(searchNewsViewModel.getSearchNews(searchQuery));
-//        searchNewsAdapter.notifyDataSetChanged();
         searchNewsViewModel.setSearchQueryText(searchQuery);
         searchNewsViewModel.getSearchNews().observe(this, newsObserver);
     }
@@ -81,12 +91,28 @@ public class SearchResultsActivity extends AppCompatActivity {
 
         SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
         final SearchView searchView = (SearchView) menu.findItem(R.id.action_search_menu).getActionView();
+        setSearchView(searchView, searchManager);
+
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    // set searchView in toolbar
+    private void setSearchView(SearchView searchView, SearchManager searchManager){
         searchView.setSearchableInfo(searchManager != null ? searchManager.getSearchableInfo(getComponentName()) : null);
         searchView.setIconifiedByDefault(false);
         searchView.setMaxWidth(Integer.MAX_VALUE);
         searchView.setIconified(false);
         searchView.requestFocus();
         searchView.onActionViewExpanded();
+        ImageView closeButton = (ImageView)searchView.findViewById(R.id.search_close_btn);
+        closeButton.setOnClickListener(view -> {
+            Log.d(TAG, "onClick: clicked");
+            searchView.clearFocus();
+            searchView.setQuery("", true);
+            closeButton.setVisibility(View.GONE);
+            searchAnimation.setVisibility(View.GONE);
+            searchQueryText.setVisibility(View.GONE);
+        });
 
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
@@ -96,15 +122,23 @@ public class SearchResultsActivity extends AppCompatActivity {
 
             @Override
             public boolean onQueryTextChange(String newText) {
+                searchQueryText.setVisibility(View.VISIBLE);
+                recyclerView.setVisibility(View.GONE);
+                searchAnimation.setVisibility(View.VISIBLE);
+                searchQueryText.setText(String.format("%s%s", getString(R.string.search_results_text) + ": ", newText));
                 if (!TextUtils.isEmpty(newText) && newText.length() > 3) {
-                    Toast.makeText(SearchResultsActivity.this, newText, Toast.LENGTH_SHORT).show();
-                    subscribe(newText);
+                    handler.postDelayed(mRunnable = () -> {
+                        Toast.makeText(SearchResultsActivity.this, newText, Toast.LENGTH_SHORT).show();
+                        subscribe(newText);
+                        recyclerView.setVisibility(View.VISIBLE);
+                        searchAnimation.setVisibility(View.GONE);
+                    }, 1000);
+
                 }
                 return false;
             }
         });
 
-        return super.onCreateOptionsMenu(menu);
     }
 
     @Override
@@ -128,5 +162,11 @@ public class SearchResultsActivity extends AppCompatActivity {
             Toast.makeText(this, query, Toast.LENGTH_SHORT).show();
             subscribe(query);
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        handler.removeCallbacks(mRunnable);
+        super.onDestroy();
     }
 }
