@@ -5,18 +5,32 @@ import com.google.gson.annotations.SerializedName;
 
 public class News {
 
+    @Expose
+    @SerializedName("news_id")
+    private int id;
+    @Expose
     @SerializedName("news_title")
-    @Expose
     private String title;
+    @Expose
+    @SerializedName("news_description")
+    private String description;
+    @Expose
     @SerializedName("news_image")
-    @Expose
     private String image;
-    @SerializedName("news_time")
     @Expose
+    @SerializedName("news_time")
     private String time;
 
     public News(String title) {
         this.title = title;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getTitle() {
@@ -25,6 +39,14 @@ public class News {
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public String getImage() {

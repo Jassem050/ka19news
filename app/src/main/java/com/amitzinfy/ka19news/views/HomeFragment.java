@@ -24,6 +24,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import com.amitzinfy.ka19news.R;
 import com.amitzinfy.ka19news.adapters.MyFeedNewsListAdapter;
 import com.amitzinfy.ka19news.models.retrofit.News;
+import com.amitzinfy.ka19news.models.room.FavouriteNews;
 import com.amitzinfy.ka19news.viewmodels.MyFeedViewModel;
 import com.facebook.shimmer.ShimmerFrameLayout;
 import com.google.android.material.appbar.MaterialToolbar;
@@ -38,7 +39,7 @@ import java.util.List;
  * Use the {@link HomeFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class HomeFragment extends Fragment {
+public class HomeFragment extends Fragment implements MyFeedNewsListAdapter.NewsItemClickListener {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
@@ -55,6 +56,7 @@ public class HomeFragment extends Fragment {
     private ShimmerFrameLayout shimmerFrameLayout;
     private SwipeRefreshLayout swipeRefreshLayout;
     private Observer<List<News>> newsObserver;
+    private List<News> newsList;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -108,6 +110,7 @@ public class HomeFragment extends Fragment {
             @Override
             public void onChanged(List<News> news) {
                 if (news != null) {
+                    newsList = news;
                     myFeedNewsListAdapter.setNewsList(news);
                     myFeedNewsListAdapter.notifyDataSetChanged();
                     shimmerFrameLayout.stopShimmer();
@@ -120,7 +123,7 @@ public class HomeFragment extends Fragment {
 
     private void init(View view){
         recyclerView = view.findViewById(R.id.mynews_recyclerview);
-        myFeedNewsListAdapter = new MyFeedNewsListAdapter(getActivity());
+        myFeedNewsListAdapter = new MyFeedNewsListAdapter(getActivity(), this);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setHasFixedSize(true);
         recyclerView.setAdapter(myFeedNewsListAdapter);
@@ -178,6 +181,17 @@ public class HomeFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
+    }
+
+    @Override
+    public void onItemToggleButtonChecked(int position) {
+        News news = newsList.get(position);
+        myFeedViewModel.insert(new FavouriteNews(news.getId(),news.getTitle(), news.getDescription(), news.getImage()));
+    }
+
+    @Override
+    public void onItemToggleButtonUnChecked(int position) {
+
     }
 
     /**
