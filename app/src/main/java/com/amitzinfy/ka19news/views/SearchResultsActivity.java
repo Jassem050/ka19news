@@ -44,7 +44,7 @@ public class SearchResultsActivity extends AppCompatActivity {
     private LottieAnimationView searchAnimation;
     private Handler handler;
     private Runnable mRunnable;
-    private AppCompatTextView searchQueryText;
+    private AppCompatTextView searchQueryText, noResultsText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,6 +70,7 @@ public class SearchResultsActivity extends AppCompatActivity {
         searchAnimation = (LottieAnimationView) findViewById(R.id.search_progress);
         handler = new Handler();
         searchQueryText = (AppCompatTextView) findViewById(R.id.search_query);
+        noResultsText = (AppCompatTextView) findViewById(R.id.no_results);
 
     }
 
@@ -79,6 +80,14 @@ public class SearchResultsActivity extends AppCompatActivity {
                 Log.d(TAG, "onChanged: searchresultsactivity: " + news.get(0).getTitle());
                 searchNewsAdapter.setNewsList(news);
                 searchNewsAdapter.notifyDataSetChanged();
+            } else {
+                recyclerView.setVisibility(View.GONE);
+                handler.postDelayed(mRunnable = new Runnable() {
+                    @Override
+                    public void run() {
+                        noResultsText.setVisibility(View.VISIBLE);
+                    }
+                }, 1500);
             }
         };
         searchNewsViewModel.setSearchQueryText(searchQuery);
@@ -112,29 +121,45 @@ public class SearchResultsActivity extends AppCompatActivity {
             closeButton.setVisibility(View.GONE);
             searchAnimation.setVisibility(View.GONE);
             searchQueryText.setVisibility(View.GONE);
+            recyclerView.setVisibility(View.GONE);
+            noResultsText.setVisibility(View.GONE);
         });
 
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
+                noResultsText.setVisibility(View.GONE);
+                searchQueryText.setVisibility(View.VISIBLE);
+                recyclerView.setVisibility(View.GONE);
+                searchAnimation.setVisibility(View.VISIBLE);
+                searchQueryText.setText(String.format("%s%s", getString(R.string.search_results_text) + ": ", query));
+                if (!TextUtils.isEmpty(query) && query.length() > 3) {
+                    handler.postDelayed(mRunnable = () -> {
+                        Toast.makeText(SearchResultsActivity.this, query, Toast.LENGTH_SHORT).show();
+                        subscribe(query);
+                        recyclerView.setVisibility(View.VISIBLE);
+                        searchAnimation.setVisibility(View.GONE);
+                    }, 1500);
+
+                }
                 return false;
             }
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                searchQueryText.setVisibility(View.VISIBLE);
-                recyclerView.setVisibility(View.GONE);
-                searchAnimation.setVisibility(View.VISIBLE);
-                searchQueryText.setText(String.format("%s%s", getString(R.string.search_results_text) + ": ", newText));
-                if (!TextUtils.isEmpty(newText) && newText.length() > 3) {
-                    handler.postDelayed(mRunnable = () -> {
-                        Toast.makeText(SearchResultsActivity.this, newText, Toast.LENGTH_SHORT).show();
-                        subscribe(newText);
-                        recyclerView.setVisibility(View.VISIBLE);
-                        searchAnimation.setVisibility(View.GONE);
-                    }, 1000);
-
-                }
+//                searchQueryText.setVisibility(View.VISIBLE);
+//                recyclerView.setVisibility(View.GONE);
+//                searchAnimation.setVisibility(View.VISIBLE);
+//                searchQueryText.setText(String.format("%s%s", getString(R.string.search_results_text) + ": ", newText));
+//                if (!TextUtils.isEmpty(newText) && newText.length() > 3) {
+//                    handler.postDelayed(mRunnable = () -> {
+//                        Toast.makeText(SearchResultsActivity.this, newText, Toast.LENGTH_SHORT).show();
+//                        subscribe(newText);
+//                        recyclerView.setVisibility(View.VISIBLE);
+//                        searchAnimation.setVisibility(View.GONE);
+//                    }, 1500);
+//
+//                }
                 return false;
             }
         });
