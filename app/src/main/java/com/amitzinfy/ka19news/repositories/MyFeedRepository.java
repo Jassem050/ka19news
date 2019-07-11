@@ -23,10 +23,6 @@ public class MyFeedRepository {
 
     private MutableLiveData<List<Category>> categoryList = new MutableLiveData<>();
     private MutableLiveData<List<News>> newsList = new MutableLiveData<>();
-
-//    public MyFeedRepository(Application application) {
-//
-//    }
     private static MyFeedRepository myFeedRepository;
 
     public static MyFeedRepository getInstance(){
@@ -42,9 +38,14 @@ public class MyFeedRepository {
         call.enqueue(new Callback<List<News>>() {
             @Override
             public void onResponse(Call<List<News>> call, Response<List<News>> response) {
-                Collections.reverse(response.body());
-                newsList.postValue(response.body());
-                Log.d(TAG, "onResponse: news: " + response.body().get(0).getTitle());
+                if (response.isSuccessful()) {
+                    if (response.body() != null) {
+                        Collections.reverse(response.body());
+                        newsList.postValue(response.body());
+                        Log.d(TAG, "onResponse: news: " + response.body().get(0).getTitle());
+                    }
+
+                }
             }
 
             @Override
@@ -61,9 +62,13 @@ public class MyFeedRepository {
         call.enqueue(new Callback<List<Category>>() {
             @Override
             public void onResponse(Call<List<Category>> call, Response<List<Category>> response) {
-                categoryList.postValue(response.body());
-                List<Category> categoryList = response.body();
-                Log.d(TAG, "onResponse: categories" + categoryList.get(0).getName());
+                if (response.isSuccessful()){
+                    if (response.body() != null){
+                        categoryList.postValue(response.body());
+                        List<Category> categoryList = response.body();
+                        Log.d(TAG, "onResponse: categories" + categoryList.get(0).getName());
+                    }
+                }
             }
 
             @Override

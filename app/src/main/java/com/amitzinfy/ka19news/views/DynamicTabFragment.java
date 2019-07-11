@@ -85,11 +85,9 @@ public class DynamicTabFragment extends Fragment {
         init(rootView);
         subscribe();
 
-        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                swipeRefreshLayout.setRefreshing(false);
-            }
+        swipeRefreshLayout.setOnRefreshListener(() -> {
+            subscribe();
+            swipeRefreshLayout.setRefreshing(false);
         });
 
         return rootView;
@@ -102,10 +100,6 @@ public class DynamicTabFragment extends Fragment {
         recyclerView.setAdapter(categoryNewsAdapter);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-//        List<News> newsList = new ArrayList<>();
-//        for (int i = 0; i< 10; i++){
-//            newsList.add(new News("news of category: " + mCategoryId));
-//        }
 
         swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.headline_swiperefresh);
         shimmerFrameLayout = (ShimmerFrameLayout) view.findViewById(R.id.shimmer_layout);
@@ -114,16 +108,13 @@ public class DynamicTabFragment extends Fragment {
     }
 
     private void subscribe(){
-        newsObserver = new Observer<List<News>>() {
-            @Override
-            public void onChanged(List<News> news) {
-                categoryNewsAdapter.setNewsList(news);
-                categoryNewsAdapter.notifyDataSetChanged();
-                shimmerFrameLayout.stopShimmer();
-                shimmerFrameLayout.setVisibility(View.GONE);
-            }
+        newsObserver = news -> {
+            categoryNewsAdapter.setNewsList(news);
+            categoryNewsAdapter.notifyDataSetChanged();
+            shimmerFrameLayout.stopShimmer();
+            shimmerFrameLayout.setVisibility(View.GONE);
         };
-        headLinesViewModel.getNewsList(mCategoryId).observe(this, newsObserver);
+        headLinesViewModel.getNewsList(mCategoryId).observe(getViewLifecycleOwner(), newsObserver);
     }
 
 

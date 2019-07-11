@@ -37,6 +37,7 @@ public class HeadLinesRepository {
 
     }
 
+    // load categories from server
     private void loadCategories(){
         ApiInterface apiInterface = RetrofitClient.getRetrofitClient().create(ApiInterface.class);
         Call<List<Category>> call = apiInterface.getCategoryList(1);
@@ -63,6 +64,7 @@ public class HeadLinesRepository {
 
     }
 
+    // load news from server
     private void loadNewsList(int categoryId){
         ApiInterface apiInterface = RetrofitClient.getRetrofitClient().create(ApiInterface.class);
         Call<List<News>> call = apiInterface.getCategoryNewsList(1, categoryId);

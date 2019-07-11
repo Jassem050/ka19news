@@ -1,11 +1,11 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 28
+    compileSdkVersion 29
     defaultConfig {
         applicationId "com.amitzinfy.ka19news"
-        minSdkVersion 15
-        targetSdkVersion 28
+        minSdkVersion 16
+        targetSdkVersion 29
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -17,11 +17,16 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+    compileOptions {
+        sourceCompatibility = '1.8'
+        targetCompatibility = '1.8'
+    }
 }
 
 dependencies {
     def lifecycle_version = "2.0.0"
     def room_version = "2.1.0"
+    def lottieVersion = "3.0.7"
 
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation 'androidx.appcompat:appcompat:1.0.2'
@@ -56,5 +61,8 @@ dependencies {
     implementation 'com.google.code.gson:gson:2.8.5'
 
     // Shimmer Effect
-    implementation 'com.facebook.shimmer:shimmer:0.3.0'
+    implementation 'com.facebook.shimmer:shimmer:0.4.0'
+
+    // Lottie Animation
+    implementation "com.airbnb.android:lottie:$lottieVersion"
 }

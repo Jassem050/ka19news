@@ -8,6 +8,7 @@ import java.util.List;
 import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Path;
+import retrofit2.http.Query;
 
 public interface ApiInterface {
 
@@ -16,4 +17,7 @@ public interface ApiInterface {
 
     @GET("categories/{language_id}")
     Call<List<Category>> getCategoryList(@Path("language_id") int languageId);
+
+    @GET("searchnews")
+    Call<List<News>> getSearchNewsList(@Query("data") String searchQuery);
 }
