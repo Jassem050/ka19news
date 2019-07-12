@@ -4,6 +4,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ToggleButton;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.AppCompatImageView;
@@ -34,6 +35,7 @@ public class MyFeedNewsListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
             newsTitle = itemView.findViewById(R.id.news_title);
             newsImage = itemView.findViewById(R.id.news_image);
             favToggleButton = itemView.findViewById(R.id.news_toggle_btn);
+
             favToggleButton.setOnCheckedChangeListener((compoundButton, b) -> {
                 if (b){
                     newsItemClickListener.onItemToggleButtonChecked(getAdapterPosition());
@@ -107,12 +109,18 @@ public class MyFeedNewsListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
             ((TopNewsViewHolder) holder).newsTitle.setText(news.getTitle());
             GlideApp.with(context).load(NetworkUtils.IMAGE_URL +  news.getImage()).
                     into(((TopNewsViewHolder) holder).newsImage);
+            newsItemClickListener.setItemToggleButton(((TopNewsViewHolder) holder).favToggleButton, holder.getAdapterPosition());
+
         } else {
             ((BottomNewsViewHolder) holder).newsTitle.setText(news.getTitle());
             GlideApp.with(context).load(NetworkUtils.IMAGE_URL +  news.getImage()).
                     into(((BottomNewsViewHolder) holder).newsImage);
+            newsItemClickListener.setItemToggleButton(((BottomNewsViewHolder) holder).favToggleButton, holder.getAdapterPosition());
+
         }
     }
+
+
 
     @Override
     public int getItemCount() {
@@ -126,6 +134,7 @@ public class MyFeedNewsListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
     public interface NewsItemClickListener{
         void onItemToggleButtonChecked(int position);
         void onItemToggleButtonUnChecked(int position);
+        void setItemToggleButton(ToggleButton toggleButton, int position);
     }
 
 }

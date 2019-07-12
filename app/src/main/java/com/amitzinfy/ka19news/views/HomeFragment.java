@@ -10,6 +10,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ToggleButton;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
@@ -186,13 +187,27 @@ public class HomeFragment extends Fragment implements MyFeedNewsListAdapter.News
     @Override
     public void onItemToggleButtonChecked(int position) {
         News news = newsList.get(position);
-        myFeedViewModel.insert(new FavouriteNews(news.getId(),news.getTitle(), news.getDescription(), news.getImage()));
+        myFeedViewModel.insertFavNews(new FavouriteNews(news.getId(),news.getTitle(), news.getDescription(), news.getImage()));
     }
 
     @Override
     public void onItemToggleButtonUnChecked(int position) {
-
+        News news = newsList.get(position);
+        myFeedViewModel.deleteFavNews(new FavouriteNews(news.getId(),news.getTitle(), news.getDescription(), news.getImage()));
     }
+
+    @Override
+    public void setItemToggleButton(ToggleButton toggleButton, int position) {
+//        if (newsList != null && newsList.size() > 0) {
+//            News news = newsList.get(position);
+//            if (myFeedViewModel.getFavouriteNews(news.getId()) > 0) {
+//                toggleButton.setChecked(true);
+//            } else {
+//                toggleButton.setChecked(false);
+//            }
+//        }
+    }
+
 
     /**
      * This interface must be implemented by activities that contain this

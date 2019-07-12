@@ -10,6 +10,7 @@ android {
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         android.defaultConfig.vectorDrawables.useSupportLibrary = true
+        resValue("string", "PORT_NUMBER", "8081")
     }
     buildTypes {
         release {
@@ -65,4 +66,7 @@ dependencies {
 
     // Lottie Animation
     implementation "com.airbnb.android:lottie:$lottieVersion"
+
+    //sqlite viewer
+    debugImplementation 'com.amitshekhar.android:debug-db:1.0.4'
 }

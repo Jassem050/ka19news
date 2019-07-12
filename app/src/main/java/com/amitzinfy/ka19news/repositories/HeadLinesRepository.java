@@ -84,7 +84,7 @@ public class HeadLinesRepository {
         });
     }
 
-    // insert NewsCategory to room in background
+    // insertFavNews NewsCategory to room in background
     private static class InsertAsyncTask extends AsyncTask<NewsCategory, Void, Void>{
 
         private NewsCategoryDao mAsyncTaskDao;
@@ -107,7 +107,7 @@ public class HeadLinesRepository {
         return categoryList;
     }
 
-    // insert to news_categories room table
+    // insertFavNews to news_categories room table
     private void insert(NewsCategory newsCategory){
         new InsertAsyncTask(categoryDao).execute(newsCategory);
     }

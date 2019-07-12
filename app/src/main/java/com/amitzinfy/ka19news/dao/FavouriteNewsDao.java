@@ -10,6 +10,8 @@ import androidx.room.Update;
 
 import com.amitzinfy.ka19news.models.room.FavouriteNews;
 
+import java.util.List;
+
 @Dao
 public interface FavouriteNewsDao {
 
@@ -23,7 +25,7 @@ public interface FavouriteNewsDao {
     void update(FavouriteNews favouriteNews);
 
     @Query("SELECT * from favourite_table")
-    LiveData<FavouriteNews> getAllFavNews();
+    LiveData<List<FavouriteNews>> getAllFavNews();
 
     @Query("SELECT * FROM favourite_table WHERE id = :id")
     FavouriteNews[] getFavouriteNews(int id);

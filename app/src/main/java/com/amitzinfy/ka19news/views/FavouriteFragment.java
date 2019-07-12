@@ -10,14 +10,19 @@ import android.view.ViewGroup;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.amitzinfy.ka19news.R;
 import com.amitzinfy.ka19news.adapters.FavouriteNewsAdapter;
+import com.amitzinfy.ka19news.models.room.FavouriteNews;
 import com.amitzinfy.ka19news.viewmodels.FavouritesViewModel;
+import com.facebook.shimmer.ShimmerFrameLayout;
 import com.google.android.material.appbar.MaterialToolbar;
+
+import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -27,7 +32,7 @@ import com.google.android.material.appbar.MaterialToolbar;
  * Use the {@link FavouriteFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class FavouriteFragment extends Fragment {
+public class FavouriteFragment extends Fragment implements FavouriteNewsAdapter.FavNewsItemClickListener {
 
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
@@ -41,6 +46,7 @@ public class FavouriteFragment extends Fragment {
     private FavouritesViewModel favouritesViewModel;
     private RecyclerView recyclerView;
     private FavouriteNewsAdapter favouriteNewsAdapter;
+    private ShimmerFrameLayout shimmerFrameLayout;
 
     public FavouriteFragment() {
         // Required empty public constructor
@@ -80,6 +86,8 @@ public class FavouriteFragment extends Fragment {
 
         setToolbar(rootView);
         init(rootView);
+        subscribe();
+
         return rootView;
     }
 
@@ -94,11 +102,26 @@ public class FavouriteFragment extends Fragment {
 
     private void init(View view){
         favouritesViewModel = ViewModelProviders.of(this).get(FavouritesViewModel.class);
-        favouriteNewsAdapter = new FavouriteNewsAdapter(getActivity());
+        favouriteNewsAdapter = new FavouriteNewsAdapter(getActivity(), this);
         recyclerView = view.findViewById(R.id.favnews_recyclerview);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setHasFixedSize(true);
         recyclerView.setAdapter(favouriteNewsAdapter);
+        shimmerFrameLayout = view.findViewById(R.id.shimmer_layout);
+    }
+
+    // checking fav news LiveData
+    private void subscribe(){
+        favouritesViewModel.getAllFavNews().observe(getViewLifecycleOwner(), new Observer<List<FavouriteNews>>() {
+            @Override
+            public void onChanged(List<FavouriteNews> favouriteNews) {
+                if (favouriteNews != null){
+                    shimmerFrameLayout.setVisibility(View.GONE);
+                    favouriteNewsAdapter.setFavouriteNewsList(favouriteNews);
+                    favouriteNewsAdapter.notifyDataSetChanged();
+                }
+            }
+        });
     }
 
 
@@ -123,6 +146,11 @@ public class FavouriteFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
+    }
+
+    @Override
+    public void onItemToggleButtonUnChecked(int position) {
+//        favouritesViewModel.deleteFavNews();
     }
 
     /**

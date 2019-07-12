@@ -30,7 +30,15 @@ public class MyFeedViewModel extends AndroidViewModel {
         return myFeedRepository.getCategories();
     }
 
-    public void insert(FavouriteNews favouriteNews){
+    public void insertFavNews(FavouriteNews favouriteNews){
         myFeedRepository.insertFavNews(favouriteNews);
+    }
+
+    public void deleteFavNews(FavouriteNews favouriteNews){
+        myFeedRepository.deleteFavNews(favouriteNews);
+    }
+
+    public int getFavouriteNews(int id){
+        return myFeedRepository.getFavouriteNews(id);
     }
 }

@@ -31,6 +31,7 @@ public class MyFeedRepository {
     private static MyFeedRepository myFeedRepository;
     private  NewsRoomDatabase newsRoomDatabase;
     private FavouriteNewsDao favouriteNewsDao;
+    private int favNewsLength;
 
     public MyFeedRepository(Application application){
         newsRoomDatabase = NewsRoomDatabase.getDatabase(application);
@@ -100,7 +101,7 @@ public class MyFeedRepository {
         new InsertFavouriteAsyncTask(favouriteNewsDao).execute(favouriteNews);
     }
 
-    private class InsertFavouriteAsyncTask extends AsyncTask<FavouriteNews, Void, Void>{
+    private static class InsertFavouriteAsyncTask extends AsyncTask<FavouriteNews, Void, Void>{
 
         private FavouriteNewsDao asyncTaskDao;
 
@@ -112,6 +113,44 @@ public class MyFeedRepository {
         @Override
         protected Void doInBackground(FavouriteNews... favouriteNews) {
             asyncTaskDao.insert(favouriteNews[0]);
+            return null;
+        }
+    }
+
+    public void deleteFavNews(FavouriteNews favouriteNews){
+        new DeleteFavNewsAsyncTask(favouriteNewsDao).execute(favouriteNews);
+    }
+
+    private static class DeleteFavNewsAsyncTask extends AsyncTask<FavouriteNews, Void, Void>{
+        private FavouriteNewsDao asyncTaskDao;
+
+        DeleteFavNewsAsyncTask(FavouriteNewsDao dao){
+            this.asyncTaskDao = dao;
+        }
+        @Override
+        protected Void doInBackground(FavouriteNews... favouriteNews) {
+            asyncTaskDao.delete(favouriteNews[0]);
+            return null;
+        }
+    }
+
+    public int getFavouriteNews(int id){
+        new FavouriteNewsAsyncTask(favouriteNewsDao).execute(id);
+        return favNewsLength;
+    }
+
+    private class FavouriteNewsAsyncTask extends AsyncTask<Integer, Void, Void>{
+
+        private FavouriteNewsDao asyncTaskDao;
+
+        FavouriteNewsAsyncTask(FavouriteNewsDao dao){
+            this.asyncTaskDao = dao;
+        }
+
+        @Override
+        protected Void doInBackground(Integer... integers) {
+            favNewsLength = asyncTaskDao.getFavouriteNews(integers[0]).length;
+            Log.d(TAG, "doInBackground: length: " + favNewsLength);
             return null;
         }
     }
