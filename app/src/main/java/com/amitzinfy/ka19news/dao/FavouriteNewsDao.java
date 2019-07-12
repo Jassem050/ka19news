@@ -1,5 +1,6 @@
 package com.amitzinfy.ka19news.dao;
 
+import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
@@ -20,6 +21,9 @@ public interface FavouriteNewsDao {
 
     @Update
     void update(FavouriteNews favouriteNews);
+
+    @Query("SELECT * from favourite_table")
+    LiveData<FavouriteNews> getAllFavNews();
 
     @Query("SELECT * FROM favourite_table WHERE id = :id")
     FavouriteNews[] getFavouriteNews(int id);

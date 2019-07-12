@@ -10,8 +10,13 @@ import android.view.ViewGroup;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.amitzinfy.ka19news.R;
+import com.amitzinfy.ka19news.adapters.FavouriteNewsAdapter;
+import com.amitzinfy.ka19news.viewmodels.FavouritesViewModel;
 import com.google.android.material.appbar.MaterialToolbar;
 
 /**
@@ -23,18 +28,19 @@ import com.google.android.material.appbar.MaterialToolbar;
  * create an instance of this fragment.
  */
 public class FavouriteFragment extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
+
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
-    // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
 
     private OnFragmentInteractionListener mListener;
     private MaterialToolbar materialToolbar;
     private ActionBar actionBar;
+    private FavouritesViewModel favouritesViewModel;
+    private RecyclerView recyclerView;
+    private FavouriteNewsAdapter favouriteNewsAdapter;
 
     public FavouriteFragment() {
         // Required empty public constructor
@@ -48,7 +54,6 @@ public class FavouriteFragment extends Fragment {
      * @param param2 Parameter 2.
      * @return A new instance of fragment FavouriteFragment.
      */
-    // TODO: Rename and change types and number of parameters
     public static FavouriteFragment newInstance(String param1, String param2) {
         FavouriteFragment fragment = new FavouriteFragment();
         Bundle args = new Bundle();
@@ -74,14 +79,26 @@ public class FavouriteFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_favourite, container, false);
 
         setToolbar(rootView);
+        init(rootView);
         return rootView;
     }
 
     private void setToolbar(View view){
         materialToolbar = (MaterialToolbar) view.findViewById(R.id.favourite_toolbar);
-        ((AppCompatActivity) getActivity()).setSupportActionBar(materialToolbar);
-        actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
-        actionBar.setTitle(getResources().getString(R.string.app_name));
+        if (getActivity() != null) {
+            ((AppCompatActivity) getActivity()).setSupportActionBar(materialToolbar);
+            actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+            actionBar.setTitle(getResources().getString(R.string.app_name));
+        }
+    }
+
+    private void init(View view){
+        favouritesViewModel = ViewModelProviders.of(this).get(FavouritesViewModel.class);
+        favouriteNewsAdapter = new FavouriteNewsAdapter(getActivity());
+        recyclerView = view.findViewById(R.id.favnews_recyclerview);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setAdapter(favouriteNewsAdapter);
     }
 
 
@@ -119,7 +136,6 @@ public class FavouriteFragment extends Fragment {
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
     }
 }
