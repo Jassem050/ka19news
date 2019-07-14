@@ -28,6 +28,7 @@
         android:layout_height="wrap_content"
         android:paddingTop="8dp"
         android:paddingBottom="8dp"
+        android:fontFamily="@font/lato_bold"
         android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
         android:text="Mangalore News"/>
 

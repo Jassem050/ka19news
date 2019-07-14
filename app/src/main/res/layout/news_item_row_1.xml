@@ -4,6 +4,8 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:layout_marginLeft="16dp"
+    android:layout_marginRight="16dp"
     android:padding="8dp">
 
     <androidx.appcompat.widget.AppCompatTextView
@@ -25,15 +27,17 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="62"
-            android:fontFamily="@font/poppins_semibold"
+            android:fontFamily="@font/lato_bold"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
             android:text="Trial of the Day"
+            android:textStyle="bold"
             android:textSize="17sp"
-            app:fontFamily="@font/poppins_bold" />
+            app:fontFamily="@font/lato_bold" />
 
         <com.google.android.material.card.MaterialCardView
             android:layout_width="0dp"
-            android:layout_weight="38"
-            android:layout_height="100dp"
+            android:layout_weight="30"
+            android:layout_height="80dp"
             app:cardElevation="5dp"
             android:background="@drawable/bg_round">
             <androidx.appcompat.widget.AppCompatImageView
