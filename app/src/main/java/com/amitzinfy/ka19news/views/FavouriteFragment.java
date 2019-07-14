@@ -6,15 +6,18 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ToggleButton;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.AppCompatTextView;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.airbnb.lottie.LottieAnimationView;
 import com.amitzinfy.ka19news.R;
 import com.amitzinfy.ka19news.adapters.FavouriteNewsAdapter;
 import com.amitzinfy.ka19news.models.room.FavouriteNews;
@@ -47,6 +50,9 @@ public class FavouriteFragment extends Fragment implements FavouriteNewsAdapter.
     private RecyclerView recyclerView;
     private FavouriteNewsAdapter favouriteNewsAdapter;
     private ShimmerFrameLayout shimmerFrameLayout;
+    private List<FavouriteNews> favouriteNewsList;
+    private LottieAnimationView lottieAnimationView;
+    private AppCompatTextView favEmtyText;
 
     public FavouriteFragment() {
         // Required empty public constructor
@@ -108,6 +114,8 @@ public class FavouriteFragment extends Fragment implements FavouriteNewsAdapter.
         recyclerView.setHasFixedSize(true);
         recyclerView.setAdapter(favouriteNewsAdapter);
         shimmerFrameLayout = view.findViewById(R.id.shimmer_layout);
+        lottieAnimationView = view.findViewById(R.id.fav_empty_anim);
+        favEmtyText = view.findViewById(R.id.fav_empty_text);
     }
 
     // checking fav news LiveData
@@ -115,10 +123,18 @@ public class FavouriteFragment extends Fragment implements FavouriteNewsAdapter.
         favouritesViewModel.getAllFavNews().observe(getViewLifecycleOwner(), new Observer<List<FavouriteNews>>() {
             @Override
             public void onChanged(List<FavouriteNews> favouriteNews) {
-                if (favouriteNews != null){
+                if (favouriteNews != null && favouriteNews.size() > 0){
+                    lottieAnimationView.setVisibility(View.GONE);
+                    favEmtyText.setVisibility(View.GONE);
+                    favouriteNewsList = favouriteNews;
                     shimmerFrameLayout.setVisibility(View.GONE);
                     favouriteNewsAdapter.setFavouriteNewsList(favouriteNews);
                     favouriteNewsAdapter.notifyDataSetChanged();
+                } else {
+                    recyclerView.setVisibility(View.GONE);
+                    shimmerFrameLayout.setVisibility(View.GONE);
+                    lottieAnimationView.setVisibility(View.VISIBLE);
+                    favEmtyText.setVisibility(View.VISIBLE);
                 }
             }
         });
@@ -150,7 +166,23 @@ public class FavouriteFragment extends Fragment implements FavouriteNewsAdapter.
 
     @Override
     public void onItemToggleButtonUnChecked(int position) {
-//        favouritesViewModel.deleteFavNews();
+        FavouriteNews favouriteNews = favouriteNewsList.get(position);
+        favouritesViewModel.deleteFavNews(favouriteNews);
+    }
+
+    @Override
+    public void setItemToggleButton(ToggleButton toggleButton, int position) {
+        FavouriteNews favouriteNews = favouriteNewsList.get(position);
+        favouritesViewModel.getFavouriteNews(favouriteNews.getId()).observe(this, new Observer<FavouriteNews[]>() {
+            @Override
+            public void onChanged(FavouriteNews[] favouriteNews) {
+                if (favouriteNews.length > 0){
+                    if (!toggleButton.isChecked()){
+                        toggleButton.setChecked(true);
+                    }
+                }
+            }
+        });
     }
 
     /**

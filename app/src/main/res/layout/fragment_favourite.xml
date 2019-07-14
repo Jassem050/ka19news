@@ -31,6 +31,28 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
+            <com.airbnb.lottie.LottieAnimationView
+                android:id="@+id/fav_empty_anim"
+                android:layout_width="250dp"
+                android:layout_height="250dp"
+                android:layout_centerInParent="true"
+                app:lottie_autoPlay="true"
+                app:lottie_loop="false"
+                app:lottie_rawRes="@raw/empty_status"
+                android:visibility="gone"/>
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/fav_empty_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/fav_empty_anim"
+                android:gravity="center_horizontal"
+                android:visibility="gone"
+                android:padding="8dp"
+                android:textSize="18sp"
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
+                android:text="@string/your_favourite_is_empty_add_news_to_your_favourite_list"/>
+
             <com.facebook.shimmer.ShimmerFrameLayout
                 android:id="@+id/shimmer_layout"
                 android:layout_width="wrap_content"

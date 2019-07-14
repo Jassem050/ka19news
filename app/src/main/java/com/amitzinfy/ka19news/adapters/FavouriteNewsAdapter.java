@@ -4,6 +4,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ToggleButton;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.AppCompatImageView;
@@ -63,6 +64,7 @@ public class FavouriteNewsAdapter extends RecyclerView.Adapter<FavouriteNewsAdap
 
         holder.newsTitle.setText(favouriteNews.getTitle());
         GlideApp.with(context).load(NetworkUtils.IMAGE_URL + favouriteNews.getImage()).into(holder.newsImage);
+        favNewsItemClickListener.setItemToggleButton(holder.favToggleButton, holder.getAdapterPosition());
 
     }
 
@@ -73,5 +75,6 @@ public class FavouriteNewsAdapter extends RecyclerView.Adapter<FavouriteNewsAdap
 
     public interface FavNewsItemClickListener{
         void onItemToggleButtonUnChecked(int position);
+        void setItemToggleButton(ToggleButton toggleButton, int position);
     }
 }

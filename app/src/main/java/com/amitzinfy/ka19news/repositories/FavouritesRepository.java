@@ -31,6 +31,10 @@ public class FavouritesRepository {
         new DeleteFavNewsAsyncTask(favouriteNewsDao).execute(favouriteNews);
     }
 
+    public LiveData<FavouriteNews[]> getFavouriteNews(int id){
+        return favouriteNewsDao.getFavouriteNews(id);
+    }
+
 
     private static class DeleteFavNewsAsyncTask extends AsyncTask<FavouriteNews, Void, Void>{
 

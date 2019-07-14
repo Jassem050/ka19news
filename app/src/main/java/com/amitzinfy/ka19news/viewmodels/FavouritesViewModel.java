@@ -27,4 +27,8 @@ public class FavouritesViewModel extends AndroidViewModel {
     public void deleteFavNews(FavouriteNews favouriteNews){
         favouritesRepository.deleteFavNews(favouriteNews);
     }
+
+    public LiveData<FavouriteNews[]> getFavouriteNews(int id){
+        return favouritesRepository.getFavouriteNews(id);
+    }
 }

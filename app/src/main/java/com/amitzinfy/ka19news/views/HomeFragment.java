@@ -107,6 +107,7 @@ public class HomeFragment extends Fragment implements MyFeedNewsListAdapter.News
         return rootView;
     }
 
+
     private void subscribe(){
         newsObserver = news -> {
             if (news != null) {

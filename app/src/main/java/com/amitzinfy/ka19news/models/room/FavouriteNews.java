@@ -21,6 +21,9 @@ public class FavouriteNews {
     @ColumnInfo(name = "news_image")
     private String image;
 
+    @ColumnInfo(name = "news_category")
+    private String category;
+
     public FavouriteNews(int id, @NonNull String title, @NonNull String description, String image){
         this.id = id;
         this.title = title;
@@ -42,5 +45,13 @@ public class FavouriteNews {
 
     public String getImage() {
         return image;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
     }
 }
