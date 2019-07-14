@@ -23,6 +23,7 @@ public abstract class NewsRoomDatabase extends RoomDatabase {
             synchronized (NewsRoomDatabase.class){
                 if (INSTANCE == null){
                     INSTANCE = Room.databaseBuilder(context, NewsRoomDatabase.class, "ka19news_database")
+                            .fallbackToDestructiveMigration()
                             .build();
                 }
             }
