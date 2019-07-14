@@ -28,5 +28,5 @@ public interface FavouriteNewsDao {
     LiveData<List<FavouriteNews>> getAllFavNews();
 
     @Query("SELECT * FROM favourite_table WHERE id = :id")
-    FavouriteNews[] getFavouriteNews(int id);
+    LiveData<FavouriteNews[]> getFavouriteNews(int id);
 }

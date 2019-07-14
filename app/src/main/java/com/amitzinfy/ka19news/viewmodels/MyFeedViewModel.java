@@ -38,7 +38,7 @@ public class MyFeedViewModel extends AndroidViewModel {
         myFeedRepository.deleteFavNews(favouriteNews);
     }
 
-    public int getFavouriteNews(int id){
+    public LiveData<FavouriteNews[]> getFavouriteNews(int id){
         return myFeedRepository.getFavouriteNews(id);
     }
 }

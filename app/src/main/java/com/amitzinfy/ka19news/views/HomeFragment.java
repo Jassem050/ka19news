@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -41,6 +42,8 @@ import java.util.List;
  * create an instance of this fragment.
  */
 public class HomeFragment extends Fragment implements MyFeedNewsListAdapter.NewsItemClickListener {
+
+    private static final String TAG = "HomeFragment";
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
@@ -187,12 +190,14 @@ public class HomeFragment extends Fragment implements MyFeedNewsListAdapter.News
     @Override
     public void onItemToggleButtonChecked(int position) {
         News news = newsList.get(position);
+        Log.d(TAG, "onItemToggleButtonChecked: id: " + news.getId());
         myFeedViewModel.insertFavNews(new FavouriteNews(news.getId(),news.getTitle(), news.getDescription(), news.getImage()));
     }
 
     @Override
     public void onItemToggleButtonUnChecked(int position) {
         News news = newsList.get(position);
+        Log.d(TAG, "onItemToggleButtonUnChecked: id: " + news.getId());
         myFeedViewModel.deleteFavNews(new FavouriteNews(news.getId(),news.getTitle(), news.getDescription(), news.getImage()));
     }
 
@@ -206,6 +211,21 @@ public class HomeFragment extends Fragment implements MyFeedNewsListAdapter.News
 //                toggleButton.setChecked(false);
 //            }
 //        }
+        News news = newsList.get(position);
+        myFeedViewModel.getFavouriteNews(news.getId()).observe(getViewLifecycleOwner(), new Observer<FavouriteNews[]>() {
+            @Override
+            public void onChanged(FavouriteNews[] favouriteNews) {
+                if (favouriteNews.length > 0){
+                    if (!toggleButton.isChecked()) {
+                        toggleButton.setChecked(true);
+                    }
+                }
+//                else {
+//                    if (toggleButton.isChecked())
+//                    toggleButton.setChecked(false);
+//                }
+            }
+        });
     }
 
 
