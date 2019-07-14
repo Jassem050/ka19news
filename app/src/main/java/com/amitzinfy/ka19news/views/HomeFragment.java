@@ -61,6 +61,7 @@ public class HomeFragment extends Fragment implements MyFeedNewsListAdapter.News
     private SwipeRefreshLayout swipeRefreshLayout;
     private Observer<List<News>> newsObserver;
     private List<News> newsList;
+    private ToggleButton toggleButton;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -98,28 +99,22 @@ public class HomeFragment extends Fragment implements MyFeedNewsListAdapter.News
         subscribe();
 
 
-        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                subscribe();
-                swipeRefreshLayout.setRefreshing(false);
-            }
+        swipeRefreshLayout.setOnRefreshListener(() -> {
+            subscribe();
+            swipeRefreshLayout.setRefreshing(false);
         });
 
         return rootView;
     }
 
     private void subscribe(){
-        newsObserver = new Observer<List<News>>() {
-            @Override
-            public void onChanged(List<News> news) {
-                if (news != null) {
-                    newsList = news;
-                    myFeedNewsListAdapter.setNewsList(news);
-                    myFeedNewsListAdapter.notifyDataSetChanged();
-                    shimmerFrameLayout.stopShimmer();
-                    shimmerFrameLayout.setVisibility(View.GONE);
-                }
+        newsObserver = news -> {
+            if (news != null) {
+                newsList = news;
+                myFeedNewsListAdapter.setNewsList(newsList);
+                myFeedNewsListAdapter.notifyDataSetChanged();
+                shimmerFrameLayout.stopShimmer();
+                shimmerFrameLayout.setVisibility(View.GONE);
             }
         };
         myFeedViewModel.getNewsList().observe(getViewLifecycleOwner(), newsObserver);
@@ -227,5 +222,10 @@ public class HomeFragment extends Fragment implements MyFeedNewsListAdapter.News
     public interface OnFragmentInteractionListener {
 
         void onFragmentInteraction(Uri uri);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
     }
 }
