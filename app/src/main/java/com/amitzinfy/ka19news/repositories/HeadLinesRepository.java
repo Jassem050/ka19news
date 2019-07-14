@@ -7,10 +7,12 @@ import android.util.Log;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import com.amitzinfy.ka19news.dao.FavouriteNewsDao;
 import com.amitzinfy.ka19news.dao.NewsCategoryDao;
 import com.amitzinfy.ka19news.db.NewsRoomDatabase;
 import com.amitzinfy.ka19news.models.retrofit.Category;
 import com.amitzinfy.ka19news.models.retrofit.News;
+import com.amitzinfy.ka19news.models.room.FavouriteNews;
 import com.amitzinfy.ka19news.models.room.NewsCategory;
 import com.amitzinfy.ka19news.utils.ApiInterface;
 import com.amitzinfy.ka19news.utils.RetrofitClient;
@@ -29,11 +31,13 @@ public class HeadLinesRepository {
     private LiveData<List<NewsCategory>> categoryList;
     private MutableLiveData<List<News>> newsList = new MutableLiveData<>();
     private NewsCategoryDao categoryDao;
+    private FavouriteNewsDao favouriteNewsDao;
 
     public HeadLinesRepository(Application application){
         NewsRoomDatabase newsRoomDatabase = NewsRoomDatabase.getDatabase(application);
         categoryDao = newsRoomDatabase.newsCategoryDao();
         categoryList = categoryDao.getAllCategories();
+        favouriteNewsDao = newsRoomDatabase.favouriteNewsDao();
 
     }
 
@@ -115,5 +119,46 @@ public class HeadLinesRepository {
     public LiveData<List<News>> getNewsList(int categoryId){
         loadNewsList(categoryId);
         return newsList;
+    }
+
+    public void insertFavNews(FavouriteNews favouriteNews){
+        new InsertFavouriteAsyncTask(favouriteNewsDao).execute(favouriteNews);
+    }
+
+    private static class InsertFavouriteAsyncTask extends AsyncTask<FavouriteNews, Void, Void>{
+
+        private FavouriteNewsDao asyncTaskDao;
+
+        InsertFavouriteAsyncTask(FavouriteNewsDao dao){
+            this.asyncTaskDao = dao;
+        }
+
+
+        @Override
+        protected Void doInBackground(FavouriteNews... favouriteNews) {
+            asyncTaskDao.insert(favouriteNews[0]);
+            return null;
+        }
+    }
+
+    public void deleteFavNews(FavouriteNews favouriteNews){
+        new DeleteFavNewsAsyncTask(favouriteNewsDao).execute(favouriteNews);
+    }
+
+    private static class DeleteFavNewsAsyncTask extends AsyncTask<FavouriteNews, Void, Void>{
+        private FavouriteNewsDao asyncTaskDao;
+
+        DeleteFavNewsAsyncTask(FavouriteNewsDao dao){
+            this.asyncTaskDao = dao;
+        }
+        @Override
+        protected Void doInBackground(FavouriteNews... favouriteNews) {
+            asyncTaskDao.delete(favouriteNews[0]);
+            return null;
+        }
+    }
+
+    public LiveData<FavouriteNews[]> getFavouriteNews(int id){
+        return favouriteNewsDao.getFavouriteNews(id);
     }
 }

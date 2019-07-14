@@ -203,27 +203,12 @@ public class HomeFragment extends Fragment implements MyFeedNewsListAdapter.News
 
     @Override
     public void setItemToggleButton(ToggleButton toggleButton, int position) {
-//        if (newsList != null && newsList.size() > 0) {
-//            News news = newsList.get(position);
-//            if (myFeedViewModel.getFavouriteNews(news.getId()) > 0) {
-//                toggleButton.setChecked(true);
-//            } else {
-//                toggleButton.setChecked(false);
-//            }
-//        }
         News news = newsList.get(position);
-        myFeedViewModel.getFavouriteNews(news.getId()).observe(getViewLifecycleOwner(), new Observer<FavouriteNews[]>() {
-            @Override
-            public void onChanged(FavouriteNews[] favouriteNews) {
-                if (favouriteNews.length > 0){
-                    if (!toggleButton.isChecked()) {
-                        toggleButton.setChecked(true);
-                    }
+        myFeedViewModel.getFavouriteNews(news.getId()).observe(getViewLifecycleOwner(), favouriteNews -> {
+            if (favouriteNews.length > 0){
+                if (!toggleButton.isChecked()) {
+                    toggleButton.setChecked(true);
                 }
-//                else {
-//                    if (toggleButton.isChecked())
-//                    toggleButton.setChecked(false);
-//                }
             }
         });
     }

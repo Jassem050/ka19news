@@ -135,23 +135,7 @@ public class MyFeedRepository {
     }
 
     public LiveData<FavouriteNews[]> getFavouriteNews(int id){
-//        new FavouriteNewsAsyncTask(favouriteNewsDao).execute(id);
         return favouriteNewsDao.getFavouriteNews(id);
     }
 
-    private class FavouriteNewsAsyncTask extends AsyncTask<Integer, Void, Void>{
-
-        private FavouriteNewsDao asyncTaskDao;
-
-        FavouriteNewsAsyncTask(FavouriteNewsDao dao){
-            this.asyncTaskDao = dao;
-        }
-
-        @Override
-        protected Void doInBackground(Integer... integers) {
-//            favNewsLength = asyncTaskDao.getFavouriteNews(integers[0]).length;
-            Log.d(TAG, "doInBackground: length: " + favNewsLength);
-            return null;
-        }
-    }
 }
