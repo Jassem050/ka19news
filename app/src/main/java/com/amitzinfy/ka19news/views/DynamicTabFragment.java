@@ -3,9 +3,11 @@ package com.amitzinfy.ka19news.views;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ToggleButton;
 
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
@@ -17,6 +19,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import com.amitzinfy.ka19news.R;
 import com.amitzinfy.ka19news.adapters.CategoryNewsAdapter;
 import com.amitzinfy.ka19news.models.retrofit.News;
+import com.amitzinfy.ka19news.models.room.FavouriteNews;
 import com.amitzinfy.ka19news.viewmodels.HeadLinesViewModel;
 import com.facebook.shimmer.ShimmerFrameLayout;
 
@@ -30,7 +33,9 @@ import java.util.List;
  * Use the {@link DynamicTabFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class DynamicTabFragment extends Fragment {
+public class DynamicTabFragment extends Fragment implements CategoryNewsAdapter.NewsItemClickListener {
+    private static final String TAG = "DynamicTabFragment";
+
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String TAB_POSITION = "param1";
     private static final String CATEGORY_ID = "param2";
@@ -45,6 +50,7 @@ public class DynamicTabFragment extends Fragment {
     private HeadLinesViewModel headLinesViewModel;
     private Observer<List<News>> newsObserver;
     private SwipeRefreshLayout swipeRefreshLayout;
+    private List<News> newsList;
 
     public DynamicTabFragment() {
         // Required empty public constructor
@@ -96,7 +102,7 @@ public class DynamicTabFragment extends Fragment {
     // initializing or binding views
     private void init(View view){
         recyclerView = (RecyclerView) view.findViewById(R.id.headline_recycler_view);
-        categoryNewsAdapter = new CategoryNewsAdapter(getActivity());
+        categoryNewsAdapter = new CategoryNewsAdapter(getActivity(), this);
         recyclerView.setAdapter(categoryNewsAdapter);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
@@ -109,6 +115,7 @@ public class DynamicTabFragment extends Fragment {
 
     private void subscribe(){
         newsObserver = news -> {
+            newsList = news;
             categoryNewsAdapter.setNewsList(news);
             categoryNewsAdapter.notifyDataSetChanged();
             shimmerFrameLayout.stopShimmer();
@@ -139,6 +146,34 @@ public class DynamicTabFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
+    }
+
+    @Override
+    public void onItemToggleButtonChecked(int position) {
+        News news = newsList.get(position);
+        Log.d(TAG, "onItemToggleButtonChecked: id: " + news.getId());
+        headLinesViewModel.insertFavNews(new FavouriteNews(news.getId(),news.getTitle(), news.getDescription(),
+                news.getImage(), news.getCategoryName()));
+    }
+
+    @Override
+    public void onItemToggleButtonUnChecked(int position) {
+        News news = newsList.get(position);
+        Log.d(TAG, "onItemToggleButtonUnChecked: id: " + news.getId());
+        headLinesViewModel.deleteFavNews(new FavouriteNews(news.getId(),news.getTitle(), news.getDescription(),
+                news.getImage(), news.getCategoryName()));
+    }
+
+    @Override
+    public void setItemToggleButton(ToggleButton toggleButton, int position) {
+        News news = newsList.get(position);
+        headLinesViewModel.getFavouriteNews(news.getId()).observe(getViewLifecycleOwner(), favouriteNews -> {
+            if (favouriteNews.length > 0){
+                if (!toggleButton.isChecked()) {
+                    toggleButton.setChecked(true);
+                }
+            }
+        });
     }
 
     /**

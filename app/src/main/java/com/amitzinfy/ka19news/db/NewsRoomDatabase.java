@@ -11,7 +11,7 @@ import com.amitzinfy.ka19news.dao.NewsCategoryDao;
 import com.amitzinfy.ka19news.models.room.FavouriteNews;
 import com.amitzinfy.ka19news.models.room.NewsCategory;
 
-@Database(entities = {FavouriteNews.class, NewsCategory.class}, version = 2, exportSchema = false)
+@Database(entities = {FavouriteNews.class, NewsCategory.class}, version = 4, exportSchema = false)
 public abstract class NewsRoomDatabase extends RoomDatabase {
 
     public abstract FavouriteNewsDao favouriteNewsDao();
@@ -23,6 +23,7 @@ public abstract class NewsRoomDatabase extends RoomDatabase {
             synchronized (NewsRoomDatabase.class){
                 if (INSTANCE == null){
                     INSTANCE = Room.databaseBuilder(context, NewsRoomDatabase.class, "ka19news_database")
+                            .fallbackToDestructiveMigration()
                             .build();
                 }
             }

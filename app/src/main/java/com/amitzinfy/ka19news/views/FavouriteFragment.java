@@ -6,13 +6,26 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ToggleButton;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.AppCompatTextView;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import com.airbnb.lottie.LottieAnimationView;
 import com.amitzinfy.ka19news.R;
+import com.amitzinfy.ka19news.adapters.FavouriteNewsAdapter;
+import com.amitzinfy.ka19news.models.room.FavouriteNews;
+import com.amitzinfy.ka19news.viewmodels.FavouritesViewModel;
+import com.facebook.shimmer.ShimmerFrameLayout;
 import com.google.android.material.appbar.MaterialToolbar;
+
+import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -22,19 +35,24 @@ import com.google.android.material.appbar.MaterialToolbar;
  * Use the {@link FavouriteFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class FavouriteFragment extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
+public class FavouriteFragment extends Fragment implements FavouriteNewsAdapter.FavNewsItemClickListener {
+
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
-    // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
 
     private OnFragmentInteractionListener mListener;
     private MaterialToolbar materialToolbar;
     private ActionBar actionBar;
+    private FavouritesViewModel favouritesViewModel;
+    private RecyclerView recyclerView;
+    private FavouriteNewsAdapter favouriteNewsAdapter;
+    private ShimmerFrameLayout shimmerFrameLayout;
+    private List<FavouriteNews> favouriteNewsList;
+    private LottieAnimationView lottieAnimationView;
+    private AppCompatTextView favEmtyText;
 
     public FavouriteFragment() {
         // Required empty public constructor
@@ -48,7 +66,6 @@ public class FavouriteFragment extends Fragment {
      * @param param2 Parameter 2.
      * @return A new instance of fragment FavouriteFragment.
      */
-    // TODO: Rename and change types and number of parameters
     public static FavouriteFragment newInstance(String param1, String param2) {
         FavouriteFragment fragment = new FavouriteFragment();
         Bundle args = new Bundle();
@@ -74,14 +91,53 @@ public class FavouriteFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_favourite, container, false);
 
         setToolbar(rootView);
+        init(rootView);
+        subscribe();
+
         return rootView;
     }
 
     private void setToolbar(View view){
         materialToolbar = (MaterialToolbar) view.findViewById(R.id.favourite_toolbar);
-        ((AppCompatActivity) getActivity()).setSupportActionBar(materialToolbar);
-        actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
-        actionBar.setTitle(getResources().getString(R.string.app_name));
+        if (getActivity() != null) {
+            ((AppCompatActivity) getActivity()).setSupportActionBar(materialToolbar);
+            actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+            actionBar.setTitle(getResources().getString(R.string.app_name));
+        }
+    }
+
+    private void init(View view){
+        favouritesViewModel = ViewModelProviders.of(this).get(FavouritesViewModel.class);
+        favouriteNewsAdapter = new FavouriteNewsAdapter(getActivity(), this);
+        recyclerView = view.findViewById(R.id.favnews_recyclerview);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setAdapter(favouriteNewsAdapter);
+        shimmerFrameLayout = view.findViewById(R.id.shimmer_layout);
+        lottieAnimationView = view.findViewById(R.id.fav_empty_anim);
+        favEmtyText = view.findViewById(R.id.fav_empty_text);
+    }
+
+    // checking fav news LiveData
+    private void subscribe(){
+        favouritesViewModel.getAllFavNews().observe(getViewLifecycleOwner(), new Observer<List<FavouriteNews>>() {
+            @Override
+            public void onChanged(List<FavouriteNews> favouriteNews) {
+                if (favouriteNews != null && favouriteNews.size() > 0){
+                    lottieAnimationView.setVisibility(View.GONE);
+                    favEmtyText.setVisibility(View.GONE);
+                    favouriteNewsList = favouriteNews;
+                    shimmerFrameLayout.setVisibility(View.GONE);
+                    favouriteNewsAdapter.setFavouriteNewsList(favouriteNews);
+                    favouriteNewsAdapter.notifyDataSetChanged();
+                } else {
+                    recyclerView.setVisibility(View.GONE);
+                    shimmerFrameLayout.setVisibility(View.GONE);
+                    lottieAnimationView.setVisibility(View.VISIBLE);
+                    favEmtyText.setVisibility(View.VISIBLE);
+                }
+            }
+        });
     }
 
 
@@ -108,6 +164,27 @@ public class FavouriteFragment extends Fragment {
         mListener = null;
     }
 
+    @Override
+    public void onItemToggleButtonUnChecked(int position) {
+        FavouriteNews favouriteNews = favouriteNewsList.get(position);
+        favouritesViewModel.deleteFavNews(favouriteNews);
+    }
+
+    @Override
+    public void setItemToggleButton(ToggleButton toggleButton, int position) {
+        FavouriteNews favouriteNews = favouriteNewsList.get(position);
+        favouritesViewModel.getFavouriteNews(favouriteNews.getId()).observe(this, new Observer<FavouriteNews[]>() {
+            @Override
+            public void onChanged(FavouriteNews[] favouriteNews) {
+                if (favouriteNews.length > 0){
+                    if (!toggleButton.isChecked()){
+                        toggleButton.setChecked(true);
+                    }
+                }
+            }
+        });
+    }
+
     /**
      * This interface must be implemented by activities that contain this
      * fragment to allow an interaction in this fragment to be communicated
@@ -119,7 +196,6 @@ public class FavouriteFragment extends Fragment {
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
     }
 }

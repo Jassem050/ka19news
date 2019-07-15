@@ -4,12 +4,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ToggleButton;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
@@ -24,6 +26,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import com.amitzinfy.ka19news.R;
 import com.amitzinfy.ka19news.adapters.MyFeedNewsListAdapter;
 import com.amitzinfy.ka19news.models.retrofit.News;
+import com.amitzinfy.ka19news.models.room.FavouriteNews;
 import com.amitzinfy.ka19news.viewmodels.MyFeedViewModel;
 import com.facebook.shimmer.ShimmerFrameLayout;
 import com.google.android.material.appbar.MaterialToolbar;
@@ -38,7 +41,9 @@ import java.util.List;
  * Use the {@link HomeFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class HomeFragment extends Fragment {
+public class HomeFragment extends Fragment implements MyFeedNewsListAdapter.NewsItemClickListener {
+
+    private static final String TAG = "HomeFragment";
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
@@ -55,6 +60,8 @@ public class HomeFragment extends Fragment {
     private ShimmerFrameLayout shimmerFrameLayout;
     private SwipeRefreshLayout swipeRefreshLayout;
     private Observer<List<News>> newsObserver;
+    private List<News> newsList;
+    private ToggleButton toggleButton;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -92,27 +99,23 @@ public class HomeFragment extends Fragment {
         subscribe();
 
 
-        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                subscribe();
-                swipeRefreshLayout.setRefreshing(false);
-            }
+        swipeRefreshLayout.setOnRefreshListener(() -> {
+            subscribe();
+            swipeRefreshLayout.setRefreshing(false);
         });
 
         return rootView;
     }
 
+
     private void subscribe(){
-        newsObserver = new Observer<List<News>>() {
-            @Override
-            public void onChanged(List<News> news) {
-                if (news != null) {
-                    myFeedNewsListAdapter.setNewsList(news);
-                    myFeedNewsListAdapter.notifyDataSetChanged();
-                    shimmerFrameLayout.stopShimmer();
-                    shimmerFrameLayout.setVisibility(View.GONE);
-                }
+        newsObserver = news -> {
+            if (news != null) {
+                newsList = news;
+                myFeedNewsListAdapter.setNewsList(newsList);
+                myFeedNewsListAdapter.notifyDataSetChanged();
+                shimmerFrameLayout.stopShimmer();
+                shimmerFrameLayout.setVisibility(View.GONE);
             }
         };
         myFeedViewModel.getNewsList().observe(getViewLifecycleOwner(), newsObserver);
@@ -120,7 +123,7 @@ public class HomeFragment extends Fragment {
 
     private void init(View view){
         recyclerView = view.findViewById(R.id.mynews_recyclerview);
-        myFeedNewsListAdapter = new MyFeedNewsListAdapter(getActivity());
+        myFeedNewsListAdapter = new MyFeedNewsListAdapter(getActivity(), this);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setHasFixedSize(true);
         recyclerView.setAdapter(myFeedNewsListAdapter);
@@ -180,6 +183,35 @@ public class HomeFragment extends Fragment {
         mListener = null;
     }
 
+    @Override
+    public void onItemToggleButtonChecked(int position) {
+        News news = newsList.get(position);
+        Log.d(TAG, "onItemToggleButtonChecked: id: " + news.getId());
+        myFeedViewModel.insertFavNews(new FavouriteNews(news.getId(),news.getTitle(), news.getDescription(),
+                news.getImage(), news.getCategoryName()));
+    }
+
+    @Override
+    public void onItemToggleButtonUnChecked(int position) {
+        News news = newsList.get(position);
+        Log.d(TAG, "onItemToggleButtonUnChecked: id: " + news.getId());
+        myFeedViewModel.deleteFavNews(new FavouriteNews(news.getId(),news.getTitle(), news.getDescription(),
+                news.getImage(), news.getCategoryName()));
+    }
+
+    @Override
+    public void setItemToggleButton(ToggleButton toggleButton, int position) {
+        News news = newsList.get(position);
+        myFeedViewModel.getFavouriteNews(news.getId()).observe(getViewLifecycleOwner(), favouriteNews -> {
+            if (favouriteNews.length > 0){
+                if (!toggleButton.isChecked()) {
+                    toggleButton.setChecked(true);
+                }
+            }
+        });
+    }
+
+
     /**
      * This interface must be implemented by activities that contain this
      * fragment to allow an interaction in this fragment to be communicated
@@ -193,5 +225,10 @@ public class HomeFragment extends Fragment {
     public interface OnFragmentInteractionListener {
 
         void onFragmentInteraction(Uri uri);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
     }
 }

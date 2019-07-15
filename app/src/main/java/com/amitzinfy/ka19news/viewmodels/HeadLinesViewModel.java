@@ -7,6 +7,7 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 
 import com.amitzinfy.ka19news.models.retrofit.News;
+import com.amitzinfy.ka19news.models.room.FavouriteNews;
 import com.amitzinfy.ka19news.models.room.NewsCategory;
 import com.amitzinfy.ka19news.repositories.HeadLinesRepository;
 
@@ -26,5 +27,17 @@ public class HeadLinesViewModel extends AndroidViewModel {
 
     public LiveData<List<News>> getNewsList(int categoryId){
         return headLinesRepository.getNewsList(categoryId);
+    }
+
+    public void insertFavNews(FavouriteNews favouriteNews){
+        headLinesRepository.insertFavNews(favouriteNews);
+    }
+
+    public void deleteFavNews(FavouriteNews favouriteNews){
+        headLinesRepository.deleteFavNews(favouriteNews);
+    }
+
+    public LiveData<FavouriteNews[]> getFavouriteNews(int id){
+        return headLinesRepository.getFavouriteNews(id);
     }
 }

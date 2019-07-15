@@ -4,10 +4,12 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ToggleButton;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.AppCompatImageView;
 import androidx.appcompat.widget.AppCompatTextView;
+import androidx.appcompat.widget.AppCompatToggleButton;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.amitzinfy.ka19news.R;
@@ -21,20 +23,34 @@ public class CategoryNewsAdapter extends RecyclerView.Adapter<CategoryNewsAdapte
 
     private Context context;
     private List<News> newsList;
+    private NewsItemClickListener newsItemClickListener;
 
     public class NewsViewHolder extends RecyclerView.ViewHolder {
         private AppCompatTextView newsTitle;
         private AppCompatImageView newsImage;
+        private AppCompatToggleButton favToggleButton;
+        private AppCompatTextView newsCategory;
 
-        public NewsViewHolder(@NonNull View itemView) {
+        public NewsViewHolder(@NonNull View itemView, NewsItemClickListener newsItemClickListener) {
             super(itemView);
             newsTitle = itemView.findViewById(R.id.news_title);
             newsImage = itemView.findViewById(R.id.news_image);
+            favToggleButton = itemView.findViewById(R.id.news_toggle_btn);
+            newsCategory = itemView.findViewById(R.id.news_category);
+
+            favToggleButton.setOnCheckedChangeListener((compoundButton, b) -> {
+                if (b){
+                    newsItemClickListener.onItemToggleButtonChecked(getAdapterPosition());
+                } else {
+                    newsItemClickListener.onItemToggleButtonUnChecked(getAdapterPosition());
+                }
+            });
         }
     }
 
-    public CategoryNewsAdapter(Context context){
+    public CategoryNewsAdapter(Context context, NewsItemClickListener newsItemClickListener){
         this.context = context;
+        this.newsItemClickListener = newsItemClickListener;
     }
 
     public void setNewsList(List<News> newsList){
@@ -46,7 +62,7 @@ public class CategoryNewsAdapter extends RecyclerView.Adapter<CategoryNewsAdapte
     @Override
     public NewsViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.news_item_row_1, parent, false);
-        return new NewsViewHolder(view);
+        return new NewsViewHolder(view, newsItemClickListener);
     }
 
     @Override
@@ -54,7 +70,8 @@ public class CategoryNewsAdapter extends RecyclerView.Adapter<CategoryNewsAdapte
         News news = newsList.get(position);
         holder.newsTitle.setText(news.getTitle());
         GlideApp.with(context).load(NetworkUtils.IMAGE_URL + news.getImage()).into(holder.newsImage);
-
+        newsItemClickListener.setItemToggleButton(holder.favToggleButton, holder.getAdapterPosition());
+        holder.newsCategory.setText(news.getCategoryName());
     }
 
     @Override
@@ -66,5 +83,9 @@ public class CategoryNewsAdapter extends RecyclerView.Adapter<CategoryNewsAdapte
         }
     }
 
-
+    public interface NewsItemClickListener{
+        void onItemToggleButtonChecked(int position);
+        void onItemToggleButtonUnChecked(int position);
+        void setItemToggleButton(ToggleButton toggleButton, int position);
+    }
 }

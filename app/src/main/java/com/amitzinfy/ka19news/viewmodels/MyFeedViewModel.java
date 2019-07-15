@@ -8,6 +8,7 @@ import androidx.lifecycle.LiveData;
 
 import com.amitzinfy.ka19news.models.retrofit.Category;
 import com.amitzinfy.ka19news.models.retrofit.News;
+import com.amitzinfy.ka19news.models.room.FavouriteNews;
 import com.amitzinfy.ka19news.repositories.MyFeedRepository;
 
 import java.util.List;
@@ -18,7 +19,7 @@ public class MyFeedViewModel extends AndroidViewModel {
 
     public MyFeedViewModel(@NonNull Application application) {
         super(application);
-        myFeedRepository = MyFeedRepository.getInstance();
+        myFeedRepository = new MyFeedRepository(application);
     }
 
     public LiveData<List<News>> getNewsList(){
@@ -27,5 +28,17 @@ public class MyFeedViewModel extends AndroidViewModel {
 
     public LiveData<List<Category>> getCategories(){
         return myFeedRepository.getCategories();
+    }
+
+    public void insertFavNews(FavouriteNews favouriteNews){
+        myFeedRepository.insertFavNews(favouriteNews);
+    }
+
+    public void deleteFavNews(FavouriteNews favouriteNews){
+        myFeedRepository.deleteFavNews(favouriteNews);
+    }
+
+    public LiveData<FavouriteNews[]> getFavouriteNews(int id){
+        return myFeedRepository.getFavouriteNews(id);
     }
 }

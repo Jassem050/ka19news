@@ -12,6 +12,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
+import android.widget.ToggleButton;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
@@ -26,12 +27,13 @@ import com.airbnb.lottie.LottieAnimationView;
 import com.amitzinfy.ka19news.R;
 import com.amitzinfy.ka19news.adapters.SearchNewsAdapter;
 import com.amitzinfy.ka19news.models.retrofit.News;
+import com.amitzinfy.ka19news.models.room.FavouriteNews;
 import com.amitzinfy.ka19news.viewmodels.SearchNewsViewModel;
 import com.google.android.material.appbar.MaterialToolbar;
 
 import java.util.List;
 
-public class SearchResultsActivity extends AppCompatActivity {
+public class SearchResultsActivity extends AppCompatActivity implements SearchNewsAdapter.NewsItemClickListener {
 
     private static final String TAG = "SearchResultsActivity";
 
@@ -45,6 +47,7 @@ public class SearchResultsActivity extends AppCompatActivity {
     private Handler handler;
     private Runnable mRunnable;
     private AppCompatTextView searchQueryText, noResultsText;
+    private List<News> newsList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,7 +64,7 @@ public class SearchResultsActivity extends AppCompatActivity {
         if (actionBar != null) {
             actionBar.setDisplayShowTitleEnabled(false);
         }
-        searchNewsAdapter = new SearchNewsAdapter(this);
+        searchNewsAdapter = new SearchNewsAdapter(this, this);
         recyclerView = (RecyclerView) findViewById(R.id.search_recyclerview);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setHasFixedSize(true);
@@ -77,17 +80,14 @@ public class SearchResultsActivity extends AppCompatActivity {
     private void subscribe(String searchQuery){
         newsObserver = news -> {
             if (news != null && news.size() > 0) {
+                noResultsText.setVisibility(View.GONE);
                 Log.d(TAG, "onChanged: searchresultsactivity: " + news.get(0).getTitle());
+                newsList = news;
                 searchNewsAdapter.setNewsList(news);
                 searchNewsAdapter.notifyDataSetChanged();
             } else {
                 recyclerView.setVisibility(View.GONE);
-                handler.postDelayed(mRunnable = new Runnable() {
-                    @Override
-                    public void run() {
-                        noResultsText.setVisibility(View.VISIBLE);
-                    }
-                }, 1500);
+                handler.postDelayed(mRunnable = () -> noResultsText.setVisibility(View.VISIBLE), 1500);
             }
         };
         searchNewsViewModel.setSearchQueryText(searchQuery);
@@ -194,4 +194,34 @@ public class SearchResultsActivity extends AppCompatActivity {
         handler.removeCallbacks(mRunnable);
         super.onDestroy();
     }
+
+    @Override
+    public void onItemToggleButtonChecked(int position) {
+        News news = newsList.get(position);
+        Log.d(TAG, "onItemToggleButtonChecked: id: " + news.getId());
+        searchNewsViewModel.insertFavNews(new FavouriteNews(news.getId(),news.getTitle(), news.getDescription(),
+                news.getImage(), news.getCategoryName()));
+    }
+
+    @Override
+    public void onItemToggleButtonUnChecked(int position) {
+        News news = newsList.get(position);
+        Log.d(TAG, "onItemToggleButtonUnChecked: id: " + news.getId());
+        searchNewsViewModel.deleteFavNews(new FavouriteNews(news.getId(),news.getTitle(), news.getDescription(),
+                news.getImage(), news.getCategoryName()));
+    }
+
+    @Override
+    public void setItemToggleButton(ToggleButton toggleButton, int position) {
+        News news = newsList.get(position);
+        searchNewsViewModel.getFavouriteNews(news.getId()).observe(this, favouriteNews -> {
+            if (favouriteNews.length > 0){
+                if (!toggleButton.isChecked()) {
+                    toggleButton.setChecked(true);
+                }
+            }
+        });
+    }
+
+
 }
