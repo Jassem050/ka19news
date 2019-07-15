@@ -20,6 +20,9 @@ public class News {
     @Expose
     @SerializedName("news_time")
     private String time;
+    @Expose
+    @SerializedName("category_name")
+    private String categoryName;
 
     public News(String title) {
         this.title = title;
@@ -63,5 +66,13 @@ public class News {
 
     public void setTime(String time) {
         this.time = time;
+    }
+
+    public String getCategoryName() {
+        return categoryName;
+    }
+
+    public void setCategoryName(String categoryName) {
+        this.categoryName = categoryName;
     }
 }
