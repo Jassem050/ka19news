@@ -29,11 +29,15 @@ public class FavouriteNewsAdapter extends RecyclerView.Adapter<FavouriteNewsAdap
         private AppCompatTextView newsTitle;
         private AppCompatImageView newsImage;
         private AppCompatToggleButton favToggleButton;
+        private AppCompatTextView newsCategory;
+
         public FavNewsViewHolder(@NonNull View itemView, FavNewsItemClickListener favNewsItemClickListener) {
             super(itemView);
             newsTitle = itemView.findViewById(R.id.news_title);
             newsImage = itemView.findViewById(R.id.news_image);
             favToggleButton = itemView.findViewById(R.id.news_toggle_btn);
+            newsCategory = itemView.findViewById(R.id.news_category);
+
             favToggleButton.setOnCheckedChangeListener((compoundButton, b) -> {
                 if (!b){
                     favNewsItemClickListener.onItemToggleButtonUnChecked(getAdapterPosition());
@@ -65,6 +69,7 @@ public class FavouriteNewsAdapter extends RecyclerView.Adapter<FavouriteNewsAdap
         holder.newsTitle.setText(favouriteNews.getTitle());
         GlideApp.with(context).load(NetworkUtils.IMAGE_URL + favouriteNews.getImage()).into(holder.newsImage);
         favNewsItemClickListener.setItemToggleButton(holder.favToggleButton, holder.getAdapterPosition());
+        holder.newsCategory.setText(favouriteNews.getCategory());
 
     }
 

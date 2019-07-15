@@ -187,14 +187,16 @@ public class HomeFragment extends Fragment implements MyFeedNewsListAdapter.News
     public void onItemToggleButtonChecked(int position) {
         News news = newsList.get(position);
         Log.d(TAG, "onItemToggleButtonChecked: id: " + news.getId());
-        myFeedViewModel.insertFavNews(new FavouriteNews(news.getId(),news.getTitle(), news.getDescription(), news.getImage()));
+        myFeedViewModel.insertFavNews(new FavouriteNews(news.getId(),news.getTitle(), news.getDescription(),
+                news.getImage(), news.getCategoryName()));
     }
 
     @Override
     public void onItemToggleButtonUnChecked(int position) {
         News news = newsList.get(position);
         Log.d(TAG, "onItemToggleButtonUnChecked: id: " + news.getId());
-        myFeedViewModel.deleteFavNews(new FavouriteNews(news.getId(),news.getTitle(), news.getDescription(), news.getImage()));
+        myFeedViewModel.deleteFavNews(new FavouriteNews(news.getId(),news.getTitle(), news.getDescription(),
+                news.getImage(), news.getCategoryName()));
     }
 
     @Override

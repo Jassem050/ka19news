@@ -152,14 +152,16 @@ public class DynamicTabFragment extends Fragment implements CategoryNewsAdapter.
     public void onItemToggleButtonChecked(int position) {
         News news = newsList.get(position);
         Log.d(TAG, "onItemToggleButtonChecked: id: " + news.getId());
-        headLinesViewModel.insertFavNews(new FavouriteNews(news.getId(),news.getTitle(), news.getDescription(), news.getImage()));
+        headLinesViewModel.insertFavNews(new FavouriteNews(news.getId(),news.getTitle(), news.getDescription(),
+                news.getImage(), news.getCategoryName()));
     }
 
     @Override
     public void onItemToggleButtonUnChecked(int position) {
         News news = newsList.get(position);
         Log.d(TAG, "onItemToggleButtonUnChecked: id: " + news.getId());
-        headLinesViewModel.deleteFavNews(new FavouriteNews(news.getId(),news.getTitle(), news.getDescription(), news.getImage()));
+        headLinesViewModel.deleteFavNews(new FavouriteNews(news.getId(),news.getTitle(), news.getDescription(),
+                news.getImage(), news.getCategoryName()));
     }
 
     @Override

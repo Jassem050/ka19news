@@ -199,14 +199,16 @@ public class SearchResultsActivity extends AppCompatActivity implements SearchNe
     public void onItemToggleButtonChecked(int position) {
         News news = newsList.get(position);
         Log.d(TAG, "onItemToggleButtonChecked: id: " + news.getId());
-        searchNewsViewModel.insertFavNews(new FavouriteNews(news.getId(),news.getTitle(), news.getDescription(), news.getImage()));
+        searchNewsViewModel.insertFavNews(new FavouriteNews(news.getId(),news.getTitle(), news.getDescription(),
+                news.getImage(), news.getCategoryName()));
     }
 
     @Override
     public void onItemToggleButtonUnChecked(int position) {
         News news = newsList.get(position);
         Log.d(TAG, "onItemToggleButtonUnChecked: id: " + news.getId());
-        searchNewsViewModel.deleteFavNews(new FavouriteNews(news.getId(),news.getTitle(), news.getDescription(), news.getImage()));
+        searchNewsViewModel.deleteFavNews(new FavouriteNews(news.getId(),news.getTitle(), news.getDescription(),
+                news.getImage(), news.getCategoryName()));
     }
 
     @Override
