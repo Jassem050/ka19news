@@ -29,12 +29,14 @@ public class SearchNewsAdapter extends RecyclerView.Adapter<SearchNewsAdapter.Se
         private AppCompatTextView newsTitle;
         private AppCompatImageView newsImage;
         private AppCompatToggleButton favToggleButton;
+        private AppCompatTextView newsCategory;
 
         public SearchNewsViewHolder(@NonNull View itemView, NewsItemClickListener newsItemClickListener) {
             super(itemView);
             newsTitle = itemView.findViewById(R.id.news_title);
             newsImage = itemView.findViewById(R.id.news_image);
             favToggleButton = itemView.findViewById(R.id.news_toggle_btn);
+            newsCategory = itemView.findViewById(R.id.news_category);
 
             favToggleButton.setOnCheckedChangeListener((compoundButton, b) -> {
                 if (b){
@@ -75,6 +77,7 @@ public class SearchNewsAdapter extends RecyclerView.Adapter<SearchNewsAdapter.Se
         holder.newsTitle.setText(news.getTitle());
         GlideApp.with(context).load(NetworkUtils.IMAGE_URL + news.getImage()).into(holder.newsImage);
         newsItemClickListener.setItemToggleButton(holder.favToggleButton, holder.getAdapterPosition());
+        holder.newsCategory.setText(news.getCategoryName());
     }
 
     @Override

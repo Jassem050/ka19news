@@ -29,12 +29,14 @@ public class MyFeedNewsListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
         private AppCompatTextView newsTitle;
         private AppCompatImageView newsImage;
         private AppCompatToggleButton favToggleButton;
+        private AppCompatTextView newsCategory;
 
         public TopNewsViewHolder(@NonNull View itemView, NewsItemClickListener newsItemClickListener) {
             super(itemView);
             newsTitle = itemView.findViewById(R.id.news_title);
             newsImage = itemView.findViewById(R.id.news_image);
             favToggleButton = itemView.findViewById(R.id.news_toggle_btn);
+//            newsCategory = itemView.findViewById(R.id.news_category);
 
             favToggleButton.setOnCheckedChangeListener((compoundButton, b) -> {
                 if (b){
@@ -51,12 +53,15 @@ public class MyFeedNewsListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
         private AppCompatTextView newsTitle;
         private AppCompatImageView newsImage;
         private AppCompatToggleButton favToggleButton;
+        private AppCompatTextView newsCategory;
 
         public BottomNewsViewHolder(@NonNull View itemView, NewsItemClickListener newsItemClickListener) {
             super(itemView);
             newsTitle = itemView.findViewById(R.id.news_title);
             newsImage = itemView.findViewById(R.id.news_image);
             favToggleButton = itemView.findViewById(R.id.news_toggle_btn);
+            newsCategory = itemView.findViewById(R.id.news_category);
+
             favToggleButton.setOnCheckedChangeListener((compoundButton, b) -> {
                 if (b){
                     newsItemClickListener.onItemToggleButtonChecked(getAdapterPosition());
@@ -110,13 +115,14 @@ public class MyFeedNewsListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
             GlideApp.with(context).load(NetworkUtils.IMAGE_URL +  news.getImage()).
                     into(((TopNewsViewHolder) holder).newsImage);
             newsItemClickListener.setItemToggleButton(((TopNewsViewHolder) holder).favToggleButton, holder.getAdapterPosition());
+//            ((TopNewsViewHolder) holder).newsCategory.setText(news.getCategoryName());
 
         } else {
             ((BottomNewsViewHolder) holder).newsTitle.setText(news.getTitle());
             GlideApp.with(context).load(NetworkUtils.IMAGE_URL +  news.getImage()).
                     into(((BottomNewsViewHolder) holder).newsImage);
             newsItemClickListener.setItemToggleButton(((BottomNewsViewHolder) holder).favToggleButton, holder.getAdapterPosition());
-
+            ((BottomNewsViewHolder) holder).newsCategory.setText(news.getCategoryName());
         }
     }
 
