@@ -211,6 +211,19 @@ public class HomeFragment extends Fragment implements MyFeedNewsListAdapter.News
         });
     }
 
+    @Override
+    public void onItemClicked(int position) {
+        News news = newsList.get(position);
+        Intent intent = new Intent(getActivity(), NewsDetailsActivity.class);
+        intent.putExtra("news_id", news.getId());
+        intent.putExtra("news_title", news.getTitle());
+        intent.putExtra("news_description", news.getDescription());
+        intent.putExtra("news_image", news.getImage());
+        intent.putExtra("news_category", news.getCategoryName());
+        intent.putExtra("news_time", news.getTime());
+        startActivity(intent);
+    }
+
 
     /**
      * This interface must be implemented by activities that contain this

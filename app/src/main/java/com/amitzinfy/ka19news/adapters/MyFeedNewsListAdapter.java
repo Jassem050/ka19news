@@ -116,6 +116,9 @@ public class MyFeedNewsListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
                     into(((TopNewsViewHolder) holder).newsImage);
             newsItemClickListener.setItemToggleButton(((TopNewsViewHolder) holder).favToggleButton, holder.getAdapterPosition());
 //            ((TopNewsViewHolder) holder).newsCategory.setText(news.getCategoryName());
+            ((TopNewsViewHolder) holder).itemView.setOnClickListener(view -> {
+                newsItemClickListener.onItemClicked(holder.getAdapterPosition());
+            });
 
         } else {
             ((BottomNewsViewHolder) holder).newsTitle.setText(news.getTitle());
@@ -123,6 +126,9 @@ public class MyFeedNewsListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
                     into(((BottomNewsViewHolder) holder).newsImage);
             newsItemClickListener.setItemToggleButton(((BottomNewsViewHolder) holder).favToggleButton, holder.getAdapterPosition());
             ((BottomNewsViewHolder) holder).newsCategory.setText(news.getCategoryName());
+            ((BottomNewsViewHolder) holder).itemView.setOnClickListener(view -> {
+                newsItemClickListener.onItemClicked(holder.getAdapterPosition());
+            });
         }
     }
 
@@ -141,6 +147,7 @@ public class MyFeedNewsListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
         void onItemToggleButtonChecked(int position);
         void onItemToggleButtonUnChecked(int position);
         void setItemToggleButton(ToggleButton toggleButton, int position);
+        void onItemClicked(int position);
     }
 
 
