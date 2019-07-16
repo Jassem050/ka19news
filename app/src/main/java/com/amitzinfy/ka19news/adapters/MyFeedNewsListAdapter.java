@@ -143,4 +143,5 @@ public class MyFeedNewsListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
         void setItemToggleButton(ToggleButton toggleButton, int position);
     }
 
+
 }

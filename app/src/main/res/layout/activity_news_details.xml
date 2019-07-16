@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".views.NewsDetailsActivity">
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/news_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="8dp"
+        android:fontFamily="@font/lato_bold"
+        android:textAppearance="@style/TextAppearance.MaterialComponents.Headline5"
+        android:text="World Cup final shows how sport reconfirms the power of self-belief"/>
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/news_editedby"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/news_title"
+        android:paddingLeft="8dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:text="Edited by "/>
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/news_author"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/news_title"
+        android:padding="8dp"
+        android:layout_toRightOf="@+id/news_editedby"
+        android:textColor="@color/colorPrimary"
+        android:textStyle="bold"
+        android:text="KA19NEWS"/>
+    <View
+        android:id="@+id/line_divider"
+        android:layout_width="2dp"
+        android:layout_height="40dp"
+        android:layout_below="@+id/news_title"
+        android:layout_toRightOf="@+id/news_author"
+        android:background="@color/DividerColor"/>
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/news_updated_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/news_title"
+        android:padding="8dp"
+        android:layout_toRightOf="@+id/line_divider"
+        android:text="Updated: July 16, 2019 15:09 IST"/>
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/news_image"
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        android:layout_below="@id/news_editedby"
+        android:scaleType="fitXY"
+        android:layout_marginTop="8dp"
+        android:src="@drawable/four"/>
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/news_sub"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/news_image"
+        android:padding="8dp"
+        android:text="World cup final show how sport reconfirms power of self belief"/>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_below="@+id/news_sub"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:background="@color/DividerColor"/>
+
+</RelativeLayout>
