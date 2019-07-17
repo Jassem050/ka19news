@@ -72,12 +72,7 @@ public class CategoryNewsAdapter extends RecyclerView.Adapter<CategoryNewsAdapte
         GlideApp.with(context).load(NetworkUtils.IMAGE_URL + news.getImage()).into(holder.newsImage);
         newsItemClickListener.setItemToggleButton(holder.favToggleButton, holder.getAdapterPosition());
         holder.newsCategory.setText(news.getCategoryName());
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                newsItemClickListener.onItemClicked(holder.getAdapterPosition());
-            }
-        });
+        holder.itemView.setOnClickListener(view -> newsItemClickListener.onItemClicked(holder.getAdapterPosition()));
     }
 
     @Override

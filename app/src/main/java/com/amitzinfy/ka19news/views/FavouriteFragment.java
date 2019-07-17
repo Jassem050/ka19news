@@ -1,6 +1,7 @@
 package com.amitzinfy.ka19news.views;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -53,6 +54,7 @@ public class FavouriteFragment extends Fragment implements FavouriteNewsAdapter.
     private List<FavouriteNews> favouriteNewsList;
     private LottieAnimationView lottieAnimationView;
     private AppCompatTextView favEmtyText;
+    private List<FavouriteNews> newsList;
 
     public FavouriteFragment() {
         // Required empty public constructor
@@ -124,6 +126,7 @@ public class FavouriteFragment extends Fragment implements FavouriteNewsAdapter.
             @Override
             public void onChanged(List<FavouriteNews> favouriteNews) {
                 if (favouriteNews != null && favouriteNews.size() > 0){
+                    newsList = favouriteNews;
                     lottieAnimationView.setVisibility(View.GONE);
                     favEmtyText.setVisibility(View.GONE);
                     favouriteNewsList = favouriteNews;
@@ -183,6 +186,19 @@ public class FavouriteFragment extends Fragment implements FavouriteNewsAdapter.
                 }
             }
         });
+    }
+
+    @Override
+    public void onItemClicked(int position) {
+        FavouriteNews news = newsList.get(position);
+        Intent intent = new Intent(getActivity(), NewsDetailsActivity.class);
+        intent.putExtra("news_id", news.getId());
+        intent.putExtra("news_title", news.getTitle());
+        intent.putExtra("news_description", news.getDescription());
+        intent.putExtra("news_image", news.getImage());
+        intent.putExtra("news_category", news.getCategory());
+//        intent.putExtra("news_time", news.());
+        startActivity(intent);
     }
 
     /**
