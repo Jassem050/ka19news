@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatImageView;
 import androidx.appcompat.widget.AppCompatTextView;
@@ -14,10 +15,13 @@ import com.amitzinfy.ka19news.utils.NetworkUtils;
 
 public class NewsDetailsActivity extends AppCompatActivity {
 
+    private static final String TAG = "NewsDetailsActivity";
+
     private AppCompatTextView newsTitle, newsTime;
     private AppCompatImageView newsImage;
     private WebView newsDescription;
     private String newsTitleString, newsDescriptionString, newsImageString;
+    private ActionBar actionBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,6 +30,14 @@ public class NewsDetailsActivity extends AppCompatActivity {
 
         init();
         setViews();
+        actionBar.setDefaultDisplayHomeAsUpEnabled(true);
+        actionBar.setDisplayHomeAsUpEnabled(true);
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return super.onSupportNavigateUp();
     }
 
     private void init(){
@@ -35,6 +47,7 @@ public class NewsDetailsActivity extends AppCompatActivity {
         newsTitleString = getIntent().getExtras().getString("news_title");
         newsDescriptionString = getIntent().getExtras().getString("news_description");
         newsImageString = getIntent().getExtras().getString("news_image");
+        actionBar = getSupportActionBar();
     }
 
     private void setViews(){
