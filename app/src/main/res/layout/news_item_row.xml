@@ -64,6 +64,9 @@
             android:paddingTop="2dp"
             android:paddingLeft="8dp"
             android:paddingRight="8dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:contextClickable="true"
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true" />
     </RelativeLayout>
