@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ToggleButton;
 
+import androidx.core.app.ShareCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
@@ -188,6 +189,18 @@ public class DynamicTabFragment extends Fragment implements CategoryNewsAdapter.
         intent.putExtra("news_category", news.getCategoryName());
         intent.putExtra("news_time", news.getTime());
         startActivity(intent);
+    }
+
+    @Override
+    public void onShareButtonClicked(int position) {
+        News news = newsList.get(position);
+        if (getActivity() != null)
+            ShareCompat.IntentBuilder
+                    .from(getActivity())
+                    .setType("text/plain")
+                    .setChooserTitle("Share News with: ")
+                    .setText("https://sports.ndtv.com/west-indies-vs-india-2019/ms-dhoni-doubtful-for-west-indies-tour-will-participate-in-transitioning-phase-for-team-india-report-2070897?News_Trending")
+                    .startChooser();
     }
 
     /**
