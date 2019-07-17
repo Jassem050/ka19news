@@ -30,6 +30,7 @@ public class SearchNewsAdapter extends RecyclerView.Adapter<SearchNewsAdapter.Se
         private AppCompatImageView newsImage;
         private AppCompatToggleButton favToggleButton;
         private AppCompatTextView newsCategory;
+        private AppCompatTextView newsShareBtn;
 
         public SearchNewsViewHolder(@NonNull View itemView, NewsItemClickListener newsItemClickListener) {
             super(itemView);
@@ -37,6 +38,7 @@ public class SearchNewsAdapter extends RecyclerView.Adapter<SearchNewsAdapter.Se
             newsImage = itemView.findViewById(R.id.news_image);
             favToggleButton = itemView.findViewById(R.id.news_toggle_btn);
             newsCategory = itemView.findViewById(R.id.news_category);
+            newsShareBtn = itemView.findViewById(R.id.news_share_btn);
 
             favToggleButton.setOnCheckedChangeListener((compoundButton, b) -> {
                 if (b){
@@ -78,6 +80,8 @@ public class SearchNewsAdapter extends RecyclerView.Adapter<SearchNewsAdapter.Se
         GlideApp.with(context).load(NetworkUtils.IMAGE_URL + news.getImage()).into(holder.newsImage);
         newsItemClickListener.setItemToggleButton(holder.favToggleButton, holder.getAdapterPosition());
         holder.newsCategory.setText(news.getCategoryName());
+        holder.itemView.setOnClickListener(view -> newsItemClickListener.onItemClicked(holder.getAdapterPosition()));
+        holder.newsShareBtn.setOnClickListener(view -> newsItemClickListener.onShareButtonClicked(holder.getAdapterPosition()));
     }
 
     @Override
@@ -90,6 +94,8 @@ public class SearchNewsAdapter extends RecyclerView.Adapter<SearchNewsAdapter.Se
         void onItemToggleButtonChecked(int position);
         void onItemToggleButtonUnChecked(int position);
         void setItemToggleButton(ToggleButton toggleButton, int position);
+        void onItemClicked(int position);
+        void onShareButtonClicked(int position);
     }
 
 }
