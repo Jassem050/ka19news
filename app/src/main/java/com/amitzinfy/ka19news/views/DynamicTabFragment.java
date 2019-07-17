@@ -1,6 +1,7 @@
 package com.amitzinfy.ka19news.views;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -174,6 +175,19 @@ public class DynamicTabFragment extends Fragment implements CategoryNewsAdapter.
                 }
             }
         });
+    }
+
+    @Override
+    public void onItemClicked(int position) {
+        News news = newsList.get(position);
+        Intent intent = new Intent(getActivity(), NewsDetailsActivity.class);
+        intent.putExtra("news_id", news.getId());
+        intent.putExtra("news_title", news.getTitle());
+        intent.putExtra("news_description", news.getDescription());
+        intent.putExtra("news_image", news.getImage());
+        intent.putExtra("news_category", news.getCategoryName());
+        intent.putExtra("news_time", news.getTime());
+        startActivity(intent);
     }
 
     /**
