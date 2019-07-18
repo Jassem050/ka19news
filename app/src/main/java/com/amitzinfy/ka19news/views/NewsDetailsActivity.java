@@ -2,6 +2,7 @@ package com.amitzinfy.ka19news.views;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 
@@ -9,6 +10,7 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatImageView;
 import androidx.appcompat.widget.AppCompatTextView;
+import androidx.appcompat.widget.AppCompatToggleButton;
 
 import com.amitzinfy.ka19news.R;
 import com.amitzinfy.ka19news.utils.GlideApp;
@@ -23,6 +25,7 @@ public class NewsDetailsActivity extends AppCompatActivity {
     private WebView newsDescription;
     private String newsTitleString, newsDescriptionString, newsImageString;
     private ActionBar actionBar;
+    private AppCompatToggleButton toggleButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,5 +61,14 @@ public class NewsDetailsActivity extends AppCompatActivity {
         newsDescription.getSettings().setAppCacheEnabled(true);
         newsDescription.getSettings().setCacheMode(WebSettings.LOAD_DEFAULT);
         GlideApp.with(this).load(NetworkUtils.IMAGE_URL + newsImageString).into(newsImage);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.news_details_menu, menu);
+        menu.findItem(R.id.favourite_item).setActionView(R.layout.toggle_layout);
+        toggleButton = (AppCompatToggleButton) menu.findItem(R.id.favourite_item).getActionView().findViewById(R.id.toolbar_toggle_favourite);
+
+        return super.onCreateOptionsMenu(menu);
     }
 }
