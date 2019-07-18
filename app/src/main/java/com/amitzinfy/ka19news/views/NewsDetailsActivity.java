@@ -1,6 +1,7 @@
 package com.amitzinfy.ka19news.views;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 
@@ -48,11 +49,12 @@ public class NewsDetailsActivity extends AppCompatActivity {
         newsDescriptionString = getIntent().getExtras().getString("news_description");
         newsImageString = getIntent().getExtras().getString("news_image");
         actionBar = getSupportActionBar();
+        Log.d(TAG, "init: desc: " + newsDescriptionString);
     }
 
     private void setViews(){
         newsTitle.setText(newsTitleString);
-        newsDescription.loadDataWithBaseURL(null, newsDescriptionString, "html/css","UTF-8", null);
+        newsDescription.loadDataWithBaseURL(null, newsDescriptionString, "text/html","UTF-8", null);
         newsDescription.getSettings().setAppCacheEnabled(true);
         newsDescription.getSettings().setCacheMode(WebSettings.LOAD_DEFAULT);
         GlideApp.with(this).load(NetworkUtils.IMAGE_URL + newsImageString).into(newsImage);
