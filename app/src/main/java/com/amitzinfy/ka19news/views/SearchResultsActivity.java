@@ -134,7 +134,7 @@ public class SearchResultsActivity extends AppCompatActivity implements SearchNe
                 recyclerView.setVisibility(View.GONE);
                 searchAnimation.setVisibility(View.VISIBLE);
                 searchQueryText.setText(String.format("%s%s", getString(R.string.search_results_text) + ": ", query));
-                if (!TextUtils.isEmpty(query) && query.length() > 3) {
+                if (!TextUtils.isEmpty(query) && query.length() > 1) {
                     handler.postDelayed(mRunnable = () -> {
                         Toast.makeText(SearchResultsActivity.this, query, Toast.LENGTH_SHORT).show();
                         subscribe(query);
@@ -220,6 +220,9 @@ public class SearchResultsActivity extends AppCompatActivity implements SearchNe
                 if (!toggleButton.isChecked()) {
                     toggleButton.setChecked(true);
                 }
+            } else {
+                if (toggleButton.isChecked())
+                    toggleButton.setChecked(false);
             }
         });
     }
