@@ -14,4 +14,5 @@
     <string name="no_results_found">No Results Found</string>
     <string name="your_favourite_is_empty_add_news_to_your_favourite_list">Your Favourite is empty. Add news to your favourite list.</string>
     <string name="share">share</string>
+    <string name="favourite">favourite</string>
 </resources>

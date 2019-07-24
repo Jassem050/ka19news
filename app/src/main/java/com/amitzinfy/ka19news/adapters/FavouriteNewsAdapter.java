@@ -70,6 +70,7 @@ public class FavouriteNewsAdapter extends RecyclerView.Adapter<FavouriteNewsAdap
         GlideApp.with(context).load(NetworkUtils.IMAGE_URL + favouriteNews.getImage()).into(holder.newsImage);
         favNewsItemClickListener.setItemToggleButton(holder.favToggleButton, holder.getAdapterPosition());
         holder.newsCategory.setText(favouriteNews.getCategory());
+        holder.itemView.setOnClickListener(view -> favNewsItemClickListener.onItemClicked(holder.getAdapterPosition()));
 
     }
 
@@ -81,5 +82,6 @@ public class FavouriteNewsAdapter extends RecyclerView.Adapter<FavouriteNewsAdap
     public interface FavNewsItemClickListener{
         void onItemToggleButtonUnChecked(int position);
         void setItemToggleButton(ToggleButton toggleButton, int position);
+        void onItemClicked(int position);
     }
 }

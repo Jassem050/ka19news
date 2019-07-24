@@ -35,6 +35,9 @@ public class FavouritesRepository {
         return favouriteNewsDao.getFavouriteNews(id);
     }
 
+    public void insertFavNews(FavouriteNews favouriteNews){
+        new InsertFavouriteAsyncTask(favouriteNewsDao).execute(favouriteNews);
+    }
 
     private static class DeleteFavNewsAsyncTask extends AsyncTask<FavouriteNews, Void, Void>{
 
@@ -47,6 +50,22 @@ public class FavouritesRepository {
         @Override
         protected Void doInBackground(FavouriteNews... favouriteNews) {
             asyncTaskDao.delete(favouriteNews[0]);
+            return null;
+        }
+    }
+
+    private static class InsertFavouriteAsyncTask extends AsyncTask<FavouriteNews, Void, Void>{
+
+        private FavouriteNewsDao asyncTaskDao;
+
+        InsertFavouriteAsyncTask(FavouriteNewsDao dao){
+            this.asyncTaskDao = dao;
+        }
+
+
+        @Override
+        protected Void doInBackground(FavouriteNews... favouriteNews) {
+            asyncTaskDao.insert(favouriteNews[0]);
             return null;
         }
     }

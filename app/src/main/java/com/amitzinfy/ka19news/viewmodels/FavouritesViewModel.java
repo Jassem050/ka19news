@@ -31,4 +31,8 @@ public class FavouritesViewModel extends AndroidViewModel {
     public LiveData<FavouriteNews[]> getFavouriteNews(int id){
         return favouritesRepository.getFavouriteNews(id);
     }
+
+    public void insertFavNews(FavouriteNews favouriteNews){
+        favouritesRepository.insertFavNews(favouriteNews);
+    }
 }

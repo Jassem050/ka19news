@@ -30,6 +30,7 @@ public class MyFeedNewsListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
         private AppCompatImageView newsImage;
         private AppCompatToggleButton favToggleButton;
         private AppCompatTextView newsCategory;
+        private AppCompatTextView newsShareBtn;
 
         public TopNewsViewHolder(@NonNull View itemView, NewsItemClickListener newsItemClickListener) {
             super(itemView);
@@ -37,14 +38,7 @@ public class MyFeedNewsListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
             newsImage = itemView.findViewById(R.id.news_image);
             favToggleButton = itemView.findViewById(R.id.news_toggle_btn);
 //            newsCategory = itemView.findViewById(R.id.news_category);
-
-            favToggleButton.setOnCheckedChangeListener((compoundButton, b) -> {
-                if (b){
-                    newsItemClickListener.onItemToggleButtonChecked(getAdapterPosition());
-                } else {
-                    newsItemClickListener.onItemToggleButtonUnChecked(getAdapterPosition());
-                }
-            });
+            newsShareBtn = itemView.findViewById(R.id.news_share_btn);
         }
     }
 
@@ -54,6 +48,7 @@ public class MyFeedNewsListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
         private AppCompatImageView newsImage;
         private AppCompatToggleButton favToggleButton;
         private AppCompatTextView newsCategory;
+        private AppCompatTextView newsShareBtn;
 
         public BottomNewsViewHolder(@NonNull View itemView, NewsItemClickListener newsItemClickListener) {
             super(itemView);
@@ -61,14 +56,9 @@ public class MyFeedNewsListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
             newsImage = itemView.findViewById(R.id.news_image);
             favToggleButton = itemView.findViewById(R.id.news_toggle_btn);
             newsCategory = itemView.findViewById(R.id.news_category);
+            newsShareBtn = itemView.findViewById(R.id.news_share_btn);
 
-            favToggleButton.setOnCheckedChangeListener((compoundButton, b) -> {
-                if (b){
-                    newsItemClickListener.onItemToggleButtonChecked(getAdapterPosition());
-                } else {
-                    newsItemClickListener.onItemToggleButtonUnChecked(getAdapterPosition());
-                }
-            });
+
         }
     }
 
@@ -116,6 +106,17 @@ public class MyFeedNewsListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
                     into(((TopNewsViewHolder) holder).newsImage);
             newsItemClickListener.setItemToggleButton(((TopNewsViewHolder) holder).favToggleButton, holder.getAdapterPosition());
 //            ((TopNewsViewHolder) holder).newsCategory.setText(news.getCategoryName());
+            ((TopNewsViewHolder) holder).itemView.setOnClickListener(view -> newsItemClickListener.onItemClicked(holder.getAdapterPosition()));
+
+            ((TopNewsViewHolder) holder).newsShareBtn.setOnClickListener(view -> newsItemClickListener.onShareButtonClicked(holder.getAdapterPosition()));
+
+            ((TopNewsViewHolder) holder).favToggleButton.setOnCheckedChangeListener((compoundButton, b) -> {
+                if (b){
+                    newsItemClickListener.onItemToggleButtonChecked(holder.getAdapterPosition());
+                } else {
+                    newsItemClickListener.onItemToggleButtonUnChecked(holder.getAdapterPosition());
+                }
+            });
 
         } else {
             ((BottomNewsViewHolder) holder).newsTitle.setText(news.getTitle());
@@ -123,6 +124,19 @@ public class MyFeedNewsListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
                     into(((BottomNewsViewHolder) holder).newsImage);
             newsItemClickListener.setItemToggleButton(((BottomNewsViewHolder) holder).favToggleButton, holder.getAdapterPosition());
             ((BottomNewsViewHolder) holder).newsCategory.setText(news.getCategoryName());
+            ((BottomNewsViewHolder) holder).itemView.setOnClickListener(view ->
+                    newsItemClickListener.onItemClicked(holder.getAdapterPosition()));
+
+            ((BottomNewsViewHolder) holder).newsShareBtn.setOnClickListener(view ->
+                    newsItemClickListener.onShareButtonClicked(holder.getAdapterPosition()));
+
+            ((BottomNewsViewHolder) holder).favToggleButton.setOnCheckedChangeListener((compoundButton, b) -> {
+                if (b){
+                    newsItemClickListener.onItemToggleButtonChecked(holder.getAdapterPosition());
+                } else {
+                    newsItemClickListener.onItemToggleButtonUnChecked(holder.getAdapterPosition());
+                }
+            });
         }
     }
 
@@ -141,6 +155,9 @@ public class MyFeedNewsListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
         void onItemToggleButtonChecked(int position);
         void onItemToggleButtonUnChecked(int position);
         void setItemToggleButton(ToggleButton toggleButton, int position);
+        void onItemClicked(int position);
+        void onShareButtonClicked(int position);
     }
+
 
 }

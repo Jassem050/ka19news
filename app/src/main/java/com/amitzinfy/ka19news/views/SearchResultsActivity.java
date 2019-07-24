@@ -18,6 +18,7 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatTextView;
 import androidx.appcompat.widget.SearchView;
+import androidx.core.app.ShareCompat;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -133,7 +134,7 @@ public class SearchResultsActivity extends AppCompatActivity implements SearchNe
                 recyclerView.setVisibility(View.GONE);
                 searchAnimation.setVisibility(View.VISIBLE);
                 searchQueryText.setText(String.format("%s%s", getString(R.string.search_results_text) + ": ", query));
-                if (!TextUtils.isEmpty(query) && query.length() > 3) {
+                if (!TextUtils.isEmpty(query) && query.length() > 1) {
                     handler.postDelayed(mRunnable = () -> {
                         Toast.makeText(SearchResultsActivity.this, query, Toast.LENGTH_SHORT).show();
                         subscribe(query);
@@ -219,8 +220,35 @@ public class SearchResultsActivity extends AppCompatActivity implements SearchNe
                 if (!toggleButton.isChecked()) {
                     toggleButton.setChecked(true);
                 }
+            } else {
+                if (toggleButton.isChecked())
+                    toggleButton.setChecked(false);
             }
         });
+    }
+
+    @Override
+    public void onItemClicked(int position) {
+        News news = newsList.get(position);
+        Intent intent = new Intent(this, NewsDetailsActivity.class);
+        intent.putExtra("news_id", news.getId());
+        intent.putExtra("news_title", news.getTitle());
+        intent.putExtra("news_description", news.getDescription());
+        intent.putExtra("news_image", news.getImage());
+        intent.putExtra("news_category", news.getCategoryName());
+        intent.putExtra("news_time", news.getTime());
+        startActivity(intent);
+    }
+
+    @Override
+    public void onShareButtonClicked(int position) {
+        News news = newsList.get(position);
+            ShareCompat.IntentBuilder
+                    .from(this)
+                    .setType("text/plain")
+                    .setChooserTitle("Share News with: ")
+                    .setText("https://sports.ndtv.com/west-indies-vs-india-2019/ms-dhoni-doubtful-for-west-indies-tour-will-participate-in-transitioning-phase-for-team-india-report-2070897?News_Trending")
+                    .startChooser();
     }
 
 

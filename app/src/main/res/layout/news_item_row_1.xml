@@ -4,8 +4,6 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginLeft="16dp"
-    android:layout_marginRight="16dp"
     android:padding="8dp">
 
     <androidx.appcompat.widget.AppCompatTextView
@@ -27,10 +25,8 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="62"
-            android:fontFamily="@font/lato_bold"
-            android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
+            android:fontFamily="@font/lato"
             android:text="Trial of the Day"
-            android:textStyle="bold"
             android:textSize="17sp"
             app:fontFamily="@font/lato_bold" />
 
@@ -86,6 +82,9 @@
             android:paddingTop="2dp"
             android:paddingLeft="8dp"
             android:paddingRight="8dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:contextClickable="true"
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true" />
     </RelativeLayout>

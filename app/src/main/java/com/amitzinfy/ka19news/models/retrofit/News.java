@@ -12,7 +12,7 @@ public class News {
     @SerializedName("news_title")
     private String title;
     @Expose
-    @SerializedName("news_description")
+    @SerializedName("news_content")
     private String description;
     @Expose
     @SerializedName("news_image")
