@@ -20,4 +20,7 @@ public interface ApiInterface {
 
     @GET("searchnews")
     Call<List<News>> getSearchNewsList(@Query("data") String searchQuery);
+
+    @GET("feednews")
+    Call<List<News>> getFeedNews(@Query("category_ids") String categoryIds);
 }

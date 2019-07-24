@@ -3,6 +3,8 @@ package com.amitzinfy.ka19news.repositories;
 import android.app.Application;
 import android.os.AsyncTask;
 
+import androidx.lifecycle.LiveData;
+
 import com.amitzinfy.ka19news.dao.FeedCategoryDao;
 import com.amitzinfy.ka19news.db.NewsRoomDatabase;
 import com.amitzinfy.ka19news.models.room.FeedCategory;
@@ -62,5 +64,9 @@ public class FeedCategoryRepository {
             asyncTaskDao.delete(feedCategories[0]);
             return null;
         }
+    }
+
+    public LiveData<FeedCategory[]> getFeedCategory(int id){
+        return feedCategoryDao.getFeedCategory(id);
     }
 }

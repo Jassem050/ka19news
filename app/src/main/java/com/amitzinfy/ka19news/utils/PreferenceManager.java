@@ -17,6 +17,9 @@ public class PreferenceManager {
     private static final String PREF_NAME =  "com.amitzinfy.ka19news_pref";
 
     private static final String IS_FIRST_TIME_LAUNCH = "isFirstTimeLaunch";
+    private static final String CATEGORY_ID = "id";
+    private static final String ID = "c_id";
+
 
     public static PreferenceManager getInstance(Context context){
         if (preferenceManager == null){
@@ -39,4 +42,23 @@ public class PreferenceManager {
     public boolean isFirstTimeLauncg(){
         return pref.getBoolean(IS_FIRST_TIME_LAUNCH, true);
     }
+
+    public void setCategory(String categoryIds){
+        editor.putString(CATEGORY_ID, categoryIds);
+        editor.apply();
+    }
+
+    public String getCategory(){
+        return pref.getString(CATEGORY_ID, "id");
+    }
+
+    public void setIds(String id){
+        editor.putString(ID, id);
+        editor.apply();
+    }
+
+    public String getIds(){
+        return pref.getString(ID, "id");
+    }
+
 }

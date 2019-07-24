@@ -22,8 +22,8 @@ public class MyFeedViewModel extends AndroidViewModel {
         myFeedRepository = new MyFeedRepository(application);
     }
 
-    public LiveData<List<News>> getNewsList(){
-       return myFeedRepository.getNewsList();
+    public LiveData<List<News>> getNewsList(String ids){
+       return myFeedRepository.getNewsList(ids);
     }
 
     public LiveData<List<Category>> getCategories(){

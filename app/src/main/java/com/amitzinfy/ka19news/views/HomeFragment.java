@@ -28,6 +28,7 @@ import com.amitzinfy.ka19news.R;
 import com.amitzinfy.ka19news.adapters.MyFeedNewsListAdapter;
 import com.amitzinfy.ka19news.models.retrofit.News;
 import com.amitzinfy.ka19news.models.room.FavouriteNews;
+import com.amitzinfy.ka19news.utils.PreferenceManager;
 import com.amitzinfy.ka19news.viewmodels.MyFeedViewModel;
 import com.facebook.shimmer.ShimmerFrameLayout;
 import com.google.android.material.appbar.MaterialToolbar;
@@ -63,6 +64,7 @@ public class HomeFragment extends Fragment implements MyFeedNewsListAdapter.News
     private Observer<List<News>> newsObserver;
     private List<News> newsList;
     private ToggleButton toggleButton;
+    private PreferenceManager preferenceManager;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -119,7 +121,7 @@ public class HomeFragment extends Fragment implements MyFeedNewsListAdapter.News
                 shimmerFrameLayout.setVisibility(View.GONE);
             }
         };
-        myFeedViewModel.getNewsList().observe(getViewLifecycleOwner(), newsObserver);
+        myFeedViewModel.getNewsList(preferenceManager.getCategory()).observe(getViewLifecycleOwner(), newsObserver);
     }
 
     private void init(View view){
@@ -132,6 +134,7 @@ public class HomeFragment extends Fragment implements MyFeedNewsListAdapter.News
         swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_refresh_layout);
         shimmerFrameLayout = (ShimmerFrameLayout) view.findViewById(R.id.shimmer_layout);
         shimmerFrameLayout.startShimmer();
+        preferenceManager = PreferenceManager.getInstance(getActivity());
     }
 
 

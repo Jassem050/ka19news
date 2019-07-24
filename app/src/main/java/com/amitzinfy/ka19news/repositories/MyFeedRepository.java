@@ -38,9 +38,9 @@ public class MyFeedRepository {
         favouriteNewsDao = newsRoomDatabase.favouriteNewsDao();
     }
 
-    private void loadNewsList(){
+    private void loadNewsList(String ids){
         ApiInterface apiInterface = RetrofitClient.getRetrofitClient().create(ApiInterface.class);
-        Call<List<News>> call = apiInterface.getCategoryNewsList(1,1);
+        Call<List<News>> call = apiInterface.getFeedNews(ids);
         call.enqueue(new Callback<List<News>>() {
             @Override
             public void onResponse(Call<List<News>> call, Response<List<News>> response) {
@@ -92,8 +92,8 @@ public class MyFeedRepository {
         return categoryList;
     }
 
-    public LiveData<List<News>> getNewsList(){
-        loadNewsList();
+    public LiveData<List<News>> getNewsList(String ids){
+        loadNewsList(ids);
         return newsList;
     }
 
