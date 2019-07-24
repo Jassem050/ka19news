@@ -1,12 +1,15 @@
 package com.amitzinfy.ka19news.views;
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.util.TypedValue;
+import android.view.View;
+import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.amitzinfy.ka19news.R;
@@ -24,25 +27,39 @@ public class MyFeedPersonalizationActivity extends AppCompatActivity {
     private MyFeedViewModel myFeedViewModel;
     private ChipGroup feedChipGroup;
     private Chip[] chip;
+    private RelativeLayout bgLayout;
+    private ProgressBar progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my_feed_personalization);
+        init();
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                bgLayout.setVisibility(View.GONE);
+                progressBar.setVisibility(View.GONE);
+            }
+        }, 1500);
 
         myFeedViewModel = ViewModelProviders.of(this).get(MyFeedViewModel.class);
 
         feedChipGroup = findViewById(R.id.feed_chip_group);
         feedChipGroup.setChipSpacingVertical(20);
 
-        myFeedViewModel.getCategories().observe(this, new Observer<List<Category>>() {
-            @Override
-            public void onChanged(List<Category> categories) {
-                Log.d(TAG, "onChanged: categories: " + categories.get(0).getName());
-                loadChips(categories);
-            }
+        myFeedViewModel.getCategories().observe(this, categories -> {
+            Log.d(TAG, "onChanged: categories: " + categories.get(0).getName());
+            loadChips(categories);
         });
 
+    }
+
+    public void init(){
+        bgLayout = findViewById(R.id.bg_layout);
+        progressBar = findViewById(R.id.progress_bar);
+        bgLayout.setVisibility(View.VISIBLE);
+        progressBar.setVisibility(View.VISIBLE);
     }
 
     public void loadChips(List<Category> categoryList){

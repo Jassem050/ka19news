@@ -6,9 +6,10 @@ import android.content.SharedPreferences;
 
 public class PreferenceManager {
 
+    private static PreferenceManager preferenceManager;
     private SharedPreferences pref;
     private SharedPreferences.Editor editor;
-    private Context _context;
+//    private Context _context;
 
     // shared preference mode
     private static final int PRIVATE_MODE = 0;
@@ -17,10 +18,16 @@ public class PreferenceManager {
 
     private static final String IS_FIRST_TIME_LAUNCH = "isFirstTimeLaunch";
 
+    public static PreferenceManager getInstance(Context context){
+        if (preferenceManager == null){
+            preferenceManager = new PreferenceManager(context);
+        }
+        return preferenceManager;
+    }
+
     @SuppressLint("CommitPrefEdits")
     public PreferenceManager(Context context){
-        this._context = context;
-        pref = _context.getSharedPreferences(PREF_NAME, PRIVATE_MODE);
+        pref = context.getSharedPreferences(PREF_NAME, PRIVATE_MODE);
         editor = pref.edit();
     }
 
