@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -27,7 +26,6 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import com.amitzinfy.ka19news.R;
 import com.amitzinfy.ka19news.adapters.MyFeedNewsListAdapter;
 import com.amitzinfy.ka19news.models.retrofit.News;
-import com.amitzinfy.ka19news.models.room.FavouriteNews;
 import com.amitzinfy.ka19news.utils.PreferenceManager;
 import com.amitzinfy.ka19news.viewmodels.MyFeedViewModel;
 import com.facebook.shimmer.ShimmerFrameLayout;
@@ -189,30 +187,30 @@ public class HomeFragment extends Fragment implements MyFeedNewsListAdapter.News
 
     @Override
     public void onItemToggleButtonChecked(int position) {
-        News news = newsList.get(position);
-        Log.d(TAG, "onItemToggleButtonChecked: id: " + news.getId());
-        myFeedViewModel.insertFavNews(new FavouriteNews(news.getId(),news.getTitle(), news.getDescription(),
-                news.getImage(), news.getCategoryName()));
+//        News news = newsList.get(position);
+//        Log.d(TAG, "onItemToggleButtonChecked: id: " + news.getId());
+//        myFeedViewModel.insertFavNews(new FavouriteNews(news.getId(),news.getTitle(), news.getDescription(),
+//                news.getImage(), news.getCategoryName()));
     }
 
     @Override
     public void onItemToggleButtonUnChecked(int position) {
-        News news = newsList.get(position);
-        Log.d(TAG, "onItemToggleButtonUnChecked: id: " + news.getId());
-        myFeedViewModel.deleteFavNews(new FavouriteNews(news.getId(),news.getTitle(), news.getDescription(),
-                news.getImage(), news.getCategoryName()));
+//        News news = newsList.get(position);
+//        Log.d(TAG, "onItemToggleButtonUnChecked: id: " + news.getId());
+//        myFeedViewModel.deleteFavNews(new FavouriteNews(news.getId(),news.getTitle(), news.getDescription(),
+//                news.getImage(), news.getCategoryName()));
     }
 
     @Override
     public void setItemToggleButton(ToggleButton toggleButton, int position) {
-        News news = newsList.get(position);
-        myFeedViewModel.getFavouriteNews(news.getId()).observe(getViewLifecycleOwner(), favouriteNews -> {
-            if (favouriteNews.length > 0){
-                if (!toggleButton.isChecked()) {
-                    toggleButton.setChecked(true);
-                }
-            }
-        });
+//        News news = newsList.get(position);
+//        myFeedViewModel.getFavouriteNews(news.getId()).observe(getViewLifecycleOwner(), favouriteNews -> {
+//            if (favouriteNews.length > 0){
+//                if (!toggleButton.isChecked()) {
+//                    toggleButton.setChecked(true);
+//                }
+//            }
+//        });
     }
 
     @Override

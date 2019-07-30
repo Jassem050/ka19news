@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.TextUtils;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
 import android.widget.ProgressBar;
@@ -49,8 +48,7 @@ public class MyFeedPersonalizationActivity extends AppCompatActivity {
         setContentView(R.layout.activity_my_feed_personalization);
         init();
         handler.postDelayed(runnable = () -> {
-            bgLayout.setVisibility(View.GONE);
-            progressBar.setVisibility(View.GONE);
+
         }, 1500);
 
         myFeedViewModel = ViewModelProviders.of(this).get(MyFeedViewModel.class);
@@ -59,8 +57,11 @@ public class MyFeedPersonalizationActivity extends AppCompatActivity {
         feedChipGroup.setChipSpacingVertical(20);
 
         myFeedViewModel.getCategories().observe(this, categories -> {
-            Log.d(TAG, "onChanged: categories: " + categories.get(0).getName());
-            loadChips(categories);
+            if (categories !=  null && categories.size() > 0) {
+                loadChips(categories);
+                bgLayout.setVisibility(View.GONE);
+                progressBar.setVisibility(View.GONE);
+            }
         });
 
         saveButton.setOnClickListener(view -> startActivity(new Intent(MyFeedPersonalizationActivity.this, MainActivity.class)));

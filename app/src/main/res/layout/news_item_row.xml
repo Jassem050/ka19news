@@ -53,6 +53,7 @@
             android:checked="false"
             android:layout_marginLeft="8dp"
             android:layout_marginRight="8dp"
+            android:visibility="gone"
             android:layout_toLeftOf="@+id/news_share_btn"
             android:layout_toStartOf="@+id/news_share_btn" />
 
