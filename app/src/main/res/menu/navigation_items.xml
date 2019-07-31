@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:title="@string/languages">
+        <menu>
+            <item
+                android:id="@+id/english"
+                android:title="@string/english" />
+            <item
+                android:id="@+id/kannada"
+                android:title="@string/kannada" />
+        </menu>
+    </item>
+
+    <group
+        android:id="@+id/all"
+        android:checkableBehavior="single">
+        <item
+            android:id="@+id/feedback"
+            android:title="@string/feedback"/>
+    </group>
+</menu>
