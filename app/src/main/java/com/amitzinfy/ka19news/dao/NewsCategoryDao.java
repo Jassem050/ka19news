@@ -14,8 +14,11 @@ import java.util.List;
 public interface NewsCategoryDao {
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    public void insert(NewsCategory newsCategory);
+    void insert(NewsCategory newsCategory);
 
-    @Query("SELECT * FROM news_categories")
-    public LiveData<List<NewsCategory>> getAllCategories();
+    @Query("SELECT * FROM news_categories WHERE language_id = :languageId")
+    LiveData<List<NewsCategory>> getAllCategories(int languageId);
+
+    @Query("DELETE from news_categories")
+    void deleteAll();
 }

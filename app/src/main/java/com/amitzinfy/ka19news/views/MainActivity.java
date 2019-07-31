@@ -2,26 +2,31 @@ package com.amitzinfy.ka19news.views;
 
 import android.net.Uri;
 import android.os.Bundle;
-import android.view.MenuItem;
+import android.util.Log;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.ViewModelProviders;
 
 import com.amitzinfy.ka19news.R;
+import com.amitzinfy.ka19news.utils.PreferenceManager;
+import com.amitzinfy.ka19news.viewmodels.MyFeedViewModel;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
 
 public class MainActivity extends AppCompatActivity implements HomeFragment.OnFragmentInteractionListener,
         HeadLineFragment.OnFragmentInteractionListener, FavouriteFragment.OnFragmentInteractionListener,
         DynamicTabFragment.OnFragmentInteractionListener{
+    private static final String TAG = "MainActivity";
 
     private BottomNavigationView bottomNavigationView;
     private DrawerLayout drawerLayout;
     private NavigationView navigationView;
+    private PreferenceManager preferenceManager;
+    private MyFeedViewModel myFeedViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,48 +42,52 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnFr
         bottomNavigationView = findViewById(R.id.bottom_navigation);
         drawerLayout = findViewById(R.id.drawer_layout);
         navigationView = findViewById(R.id.navigation);
+        preferenceManager = PreferenceManager.getInstance(this);
+        myFeedViewModel = ViewModelProviders.of(this).get(MyFeedViewModel.class);
     }
 
     private void setUpNavigationView(){
-        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                drawerLayout.closeDrawers();
-                item.setChecked(true);
-                switch (item.getItemId()){
-                    case R.id.english:
-                        Toast.makeText(MainActivity.this, "english", Toast.LENGTH_SHORT).show();
-                        break;
-                    case R.id.kannada:
-                        Toast.makeText(MainActivity.this, "Kannada", Toast.LENGTH_SHORT).show();
-                        break;
-                }
-                return false;
+        navigationView.setNavigationItemSelectedListener(item -> {
+            drawerLayout.closeDrawers();
+//                item.setChecked(true);
+            switch (item.getItemId()){
+                case R.id.english:
+                    Toast.makeText(MainActivity.this, "english", Toast.LENGTH_SHORT).show();
+                    preferenceManager.setLanguageId(1);
+                    Log.d(TAG, "onNavigationItemSelected: language_id: " +  preferenceManager.getLanguageId());
+                    myFeedViewModel.setLanguageId(preferenceManager.getLanguageId());
+                    bottomNavigationView.setSelectedItemId(R.id.navigation_home);
+                    break;
+                case R.id.kannada:
+                    Toast.makeText(MainActivity.this, "Kannada", Toast.LENGTH_SHORT).show();
+                    preferenceManager.setLanguageId(2);
+                    Log.d(TAG, "onNavigationItemSelected: language_id: " +  preferenceManager.getLanguageId());
+                    myFeedViewModel.setLanguageId(preferenceManager.getLanguageId());
+                    bottomNavigationView.setSelectedItemId(R.id.navigation_home);
+                    break;
             }
+            return false;
         });
     }
 
     private void setUpBottomNavView(){
-        bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                Fragment fragment;
-                switch (item.getItemId()){
-                    case R.id.navigation_home:
-                        fragment = HomeFragment.newInstance("home", "home");
-                        loadFragment(fragment);
-                        return true;
-                    case R.id.navigation_headlines:
-                        fragment = HeadLineFragment.newInstance("headlines", "headlines");
-                        loadFragment(fragment);
-                        return true;
-                    case R.id.navigation_favourites:
-                        fragment = FavouriteFragment.newInstance("favourites", "favourites");
-                        loadFragment(fragment);
-                        return true;
-                }
-                return false;
+        bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
+            Fragment fragment;
+            switch (item.getItemId()){
+                case R.id.navigation_home:
+                    fragment = HomeFragment.newInstance("home", "home");
+                    loadFragment(fragment);
+                    return true;
+                case R.id.navigation_headlines:
+                    fragment = HeadLineFragment.newInstance("headlines", "headlines");
+                    loadFragment(fragment);
+                    return true;
+                case R.id.navigation_favourites:
+                    fragment = FavouriteFragment.newInstance("favourites", "favourites");
+                    loadFragment(fragment);
+                    return true;
             }
+            return false;
         });
     }
 

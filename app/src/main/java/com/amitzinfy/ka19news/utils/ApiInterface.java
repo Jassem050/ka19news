@@ -21,6 +21,9 @@ public interface ApiInterface {
     @GET("searchnews")
     Call<List<News>> getSearchNewsList(@Query("data") String searchQuery);
 
-    @GET("feednews")
-    Call<List<News>> getFeedNews(@Query("category_ids") String categoryIds);
+    @GET("feednews/{language_id}")
+    Call<List<News>> getFeedNews(@Path("language_id") int languageId, @Query("category_ids") String categoryIds);
+
+    @GET("language_news/{language_id}")
+    Call<List<News>> getLanguageNews(@Path("language_id") int language_id);
 }

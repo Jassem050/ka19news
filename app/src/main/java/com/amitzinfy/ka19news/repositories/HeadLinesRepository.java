@@ -15,6 +15,7 @@ import com.amitzinfy.ka19news.models.retrofit.News;
 import com.amitzinfy.ka19news.models.room.FavouriteNews;
 import com.amitzinfy.ka19news.models.room.NewsCategory;
 import com.amitzinfy.ka19news.utils.ApiInterface;
+import com.amitzinfy.ka19news.utils.PreferenceManager;
 import com.amitzinfy.ka19news.utils.RetrofitClient;
 
 import java.util.Collections;
@@ -32,19 +33,21 @@ public class HeadLinesRepository {
     private MutableLiveData<List<News>> newsList = new MutableLiveData<>();
     private NewsCategoryDao categoryDao;
     private FavouriteNewsDao favouriteNewsDao;
+    private PreferenceManager preferenceManager;
 
     public HeadLinesRepository(Application application){
+        preferenceManager = PreferenceManager.getInstance(application);
         NewsRoomDatabase newsRoomDatabase = NewsRoomDatabase.getDatabase(application);
         categoryDao = newsRoomDatabase.newsCategoryDao();
-        categoryList = categoryDao.getAllCategories();
+        categoryList = categoryDao.getAllCategories(preferenceManager.getLanguageId());
         favouriteNewsDao = newsRoomDatabase.favouriteNewsDao();
 
     }
 
     // load categories from server
-    private void loadCategories(){
+    private void loadCategories(int languageId){
         ApiInterface apiInterface = RetrofitClient.getRetrofitClient().create(ApiInterface.class);
-        Call<List<Category>> call = apiInterface.getCategoryList(1);
+        Call<List<Category>> call = apiInterface.getCategoryList(languageId);
         call.enqueue(new Callback<List<Category>>() {
             @Override
             public void onResponse(Call<List<Category>> call, Response<List<Category>> response) {
@@ -53,7 +56,7 @@ public class HeadLinesRepository {
                     List<Category> categoryList = response.body();
                     if (categoryList != null) {
                         for (Category category : categoryList) {
-                            NewsCategory newsCategory = new NewsCategory(category.getId(), category.getName());
+                            NewsCategory newsCategory = new NewsCategory(category.getId(), category.getName(), category.getLanguageId());
                             insert(newsCategory);
                         }
                     }
@@ -69,15 +72,17 @@ public class HeadLinesRepository {
     }
 
     // load news from server
-    private void loadNewsList(int categoryId){
+    private void loadNewsList(int languageId, int categoryId){
         ApiInterface apiInterface = RetrofitClient.getRetrofitClient().create(ApiInterface.class);
-        Call<List<News>> call = apiInterface.getCategoryNewsList(1, categoryId);
+        Call<List<News>> call = apiInterface.getCategoryNewsList(languageId, categoryId);
         call.enqueue(new Callback<List<News>>() {
             @Override
             public void onResponse(Call<List<News>> call, Response<List<News>> response) {
                 if (response.isSuccessful()){
-                    Collections.reverse(response.body());
-                    newsList.postValue(response.body());
+                    if (response.body() != null) {
+                        Collections.reverse(response.body());
+                        newsList.postValue(response.body());
+                    }
                 }
             }
 
@@ -106,8 +111,8 @@ public class HeadLinesRepository {
     }
 
     // load categories from network and return categorylist from room
-    public LiveData<List<NewsCategory>> getNewsCategories(){
-        loadCategories();
+    public LiveData<List<NewsCategory>> getNewsCategories(int languageId){
+        loadCategories(languageId);
         return categoryList;
     }
 
@@ -116,8 +121,8 @@ public class HeadLinesRepository {
         new InsertAsyncTask(categoryDao).execute(newsCategory);
     }
 
-    public LiveData<List<News>> getNewsList(int categoryId){
-        loadNewsList(categoryId);
+    public LiveData<List<News>> getNewsList(int languageId, int categoryId){
+        loadNewsList(languageId, categoryId);
         return newsList;
     }
 
@@ -160,5 +165,22 @@ public class HeadLinesRepository {
 
     public LiveData<FavouriteNews[]> getFavouriteNews(int id){
         return favouriteNewsDao.getFavouriteNews(id);
+    }
+
+    public void deleteAllCategories(){
+        new DeleteAllCategories(categoryDao).execute();
+    }
+
+    private static class DeleteAllCategories extends AsyncTask<Void, Void, Void>{
+        private NewsCategoryDao asyncTaskDao;
+
+        DeleteAllCategories(NewsCategoryDao dao){
+            this.asyncTaskDao = dao;
+        }
+        @Override
+        protected Void doInBackground(Void... voids) {
+            asyncTaskDao.deleteAll();
+            return null;
+        }
     }
 }

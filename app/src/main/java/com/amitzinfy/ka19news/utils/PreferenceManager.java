@@ -19,6 +19,7 @@ public class PreferenceManager {
     private static final String IS_FIRST_TIME_LAUNCH = "isFirstTimeLaunch";
     private static final String CATEGORY_ID = "id";
     private static final String ID = "c_id";
+    private static final String LANGUAGE_ID = "languageid";
 
 
     public static PreferenceManager getInstance(Context context){
@@ -59,6 +60,17 @@ public class PreferenceManager {
 
     public String getIds(){
         return pref.getString(ID, "id");
+    }
+
+    // set language id for news
+
+    public void setLanguageId(int id){
+        editor.putInt(LANGUAGE_ID, id);
+        editor.apply();
+    }
+
+    public int getLanguageId() {
+        return pref.getInt(LANGUAGE_ID, 1);
     }
 
 }

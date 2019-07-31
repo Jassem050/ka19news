@@ -11,10 +11,14 @@ public class Category {
     @SerializedName("category_name")
     @Expose
     private String name;
+    @Expose
+    @SerializedName("language_id")
+    private int languageId;
 
-    public Category(int id, String name) {
+    public Category(int id, String name, int languageId) {
         this.id = id;
         this.name = name;
+        this.languageId = languageId;
     }
 
     public int getId() {
@@ -31,5 +35,13 @@ public class Category {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public int getLanguageId() {
+        return languageId;
+    }
+
+    public void setLanguageId(int languageId) {
+        this.languageId = languageId;
     }
 }

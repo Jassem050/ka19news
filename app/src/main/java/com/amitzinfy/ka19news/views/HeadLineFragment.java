@@ -11,18 +11,15 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentStatePagerAdapter;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.viewpager.widget.ViewPager;
 
 import com.amitzinfy.ka19news.R;
 import com.amitzinfy.ka19news.adapters.CategoryAdapter;
-import com.amitzinfy.ka19news.models.room.NewsCategory;
+import com.amitzinfy.ka19news.utils.PreferenceManager;
 import com.amitzinfy.ka19news.viewmodels.HeadLinesViewModel;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.tabs.TabLayout;
-
-import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -47,6 +44,7 @@ public class HeadLineFragment extends Fragment {
     private HeadLinesViewModel headLinesViewModel;
     private MaterialToolbar materialToolbar;
     private ActionBar actionBar;
+    private PreferenceManager preferenceManager;
 
     public HeadLineFragment() {
         // Required empty public constructor
@@ -89,12 +87,9 @@ public class HeadLineFragment extends Fragment {
         viewPager.setAdapter(categoryAdapter);
         tabLayout.setupWithViewPager(viewPager, true);
 
-        headLinesViewModel.getNewsCategories().observe(this, new Observer<List<NewsCategory>>() {
-            @Override
-            public void onChanged(List<NewsCategory> newsCategories) {
-                categoryAdapter.setCategoryList(newsCategories);
-                categoryAdapter.notifyDataSetChanged();
-            }
+        headLinesViewModel.getNewsCategories(preferenceManager.getLanguageId()).observe(this, newsCategories -> {
+            categoryAdapter.setCategoryList(newsCategories);
+            categoryAdapter.notifyDataSetChanged();
         });
 
         return rootView;
@@ -109,6 +104,7 @@ public class HeadLineFragment extends Fragment {
                     FragmentStatePagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
         }
         headLinesViewModel = ViewModelProviders.of(this).get(HeadLinesViewModel.class);
+        preferenceManager = PreferenceManager.getInstance(getActivity());
 
     }
 

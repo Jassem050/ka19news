@@ -97,11 +97,19 @@ public class HomeFragment extends Fragment implements MyFeedNewsListAdapter.News
         setToolbar(rootView);
         init(rootView);
 
-        subscribe();
+        if (preferenceManager.getLanguageId() == 1) {
+            subscribe();
+        } else {
+            getLanguageNews();
+        }
 
 
         swipeRefreshLayout.setOnRefreshListener(() -> {
-            subscribe();
+            if (preferenceManager.getLanguageId() == 1) {
+                subscribe();
+            } else {
+                getLanguageNews();
+            }
             swipeRefreshLayout.setRefreshing(false);
         });
 
@@ -119,7 +127,21 @@ public class HomeFragment extends Fragment implements MyFeedNewsListAdapter.News
                 shimmerFrameLayout.setVisibility(View.GONE);
             }
         };
+        myFeedViewModel.setLanguageId(1);
         myFeedViewModel.getNewsList(preferenceManager.getCategory()).observe(getViewLifecycleOwner(), newsObserver);
+    }
+
+    private void getLanguageNews(){
+        newsObserver = news -> {
+            if (news != null) {
+                newsList = news;
+                myFeedNewsListAdapter.setNewsList(newsList);
+                myFeedNewsListAdapter.notifyDataSetChanged();
+                shimmerFrameLayout.stopShimmer();
+                shimmerFrameLayout.setVisibility(View.GONE);
+            }
+        };
+        myFeedViewModel.getLanguageNews(preferenceManager.getLanguageId()).observe(getViewLifecycleOwner(), newsObserver);
     }
 
     private void init(View view){

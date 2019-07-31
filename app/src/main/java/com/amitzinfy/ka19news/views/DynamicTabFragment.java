@@ -22,6 +22,7 @@ import com.amitzinfy.ka19news.R;
 import com.amitzinfy.ka19news.adapters.CategoryNewsAdapter;
 import com.amitzinfy.ka19news.models.retrofit.News;
 import com.amitzinfy.ka19news.models.room.FavouriteNews;
+import com.amitzinfy.ka19news.utils.PreferenceManager;
 import com.amitzinfy.ka19news.viewmodels.HeadLinesViewModel;
 import com.facebook.shimmer.ShimmerFrameLayout;
 
@@ -53,6 +54,7 @@ public class DynamicTabFragment extends Fragment implements CategoryNewsAdapter.
     private Observer<List<News>> newsObserver;
     private SwipeRefreshLayout swipeRefreshLayout;
     private List<News> newsList;
+    private PreferenceManager preferenceManager;
 
     public DynamicTabFragment() {
         // Required empty public constructor
@@ -113,6 +115,7 @@ public class DynamicTabFragment extends Fragment implements CategoryNewsAdapter.
         shimmerFrameLayout = (ShimmerFrameLayout) view.findViewById(R.id.shimmer_layout);
         shimmerFrameLayout.startShimmer();
         headLinesViewModel = ViewModelProviders.of(this).get(HeadLinesViewModel.class);
+        preferenceManager = PreferenceManager.getInstance(getActivity());
     }
 
     private void subscribe(){
@@ -123,7 +126,7 @@ public class DynamicTabFragment extends Fragment implements CategoryNewsAdapter.
             shimmerFrameLayout.stopShimmer();
             shimmerFrameLayout.setVisibility(View.GONE);
         };
-        headLinesViewModel.getNewsList(mCategoryId).observe(getViewLifecycleOwner(), newsObserver);
+        headLinesViewModel.getNewsList(preferenceManager.getLanguageId(), mCategoryId).observe(getViewLifecycleOwner(), newsObserver);
     }
 
 

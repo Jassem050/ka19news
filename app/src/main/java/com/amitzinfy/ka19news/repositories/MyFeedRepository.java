@@ -38,9 +38,9 @@ public class MyFeedRepository {
         favouriteNewsDao = newsRoomDatabase.favouriteNewsDao();
     }
 
-    private void loadNewsList(String ids){
+    private void loadNewsList(int languageId, String ids){
         ApiInterface apiInterface = RetrofitClient.getRetrofitClient().create(ApiInterface.class);
-        Call<List<News>> call = apiInterface.getFeedNews(ids);
+        Call<List<News>> call = apiInterface.getFeedNews(languageId, ids);
         call.enqueue(new Callback<List<News>>() {
             @Override
             public void onResponse(Call<List<News>> call, Response<List<News>> response) {
@@ -86,14 +86,38 @@ public class MyFeedRepository {
     }
 
 
+    private void loadLanguageNews(int languageId){
+        ApiInterface apiInterface = RetrofitClient.getRetrofitClient().create(ApiInterface.class);
+        Call<List<News>> call = apiInterface.getLanguageNews(languageId);
+        call.enqueue(new Callback<List<News>>() {
+            @Override
+            public void onResponse(Call<List<News>> call, Response<List<News>> response) {
+                if (response.isSuccessful()){
+                    if (response.body() != null){
+                        newsList.postValue(response.body());
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<News>> call, Throwable t) {
+                Log.d(TAG, "onFailure: languageNews: " + t);
+            }
+        });
+    }
+
+    public LiveData<List<News>> getLanguageNews(int languageId){
+        loadLanguageNews(languageId);
+        return newsList;
+    }
 
     public LiveData<List<Category>> getCategories(){
         loadCategories();
         return categoryList;
     }
 
-    public LiveData<List<News>> getNewsList(String ids){
-        loadNewsList(ids);
+    public LiveData<List<News>> getNewsList(int languageId, String ids){
+        loadNewsList(languageId, ids);
         return newsList;
     }
 
