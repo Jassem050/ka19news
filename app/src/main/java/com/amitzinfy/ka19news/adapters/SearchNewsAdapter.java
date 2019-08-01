@@ -77,7 +77,8 @@ public class SearchNewsAdapter extends RecyclerView.Adapter<SearchNewsAdapter.Se
     public void onBindViewHolder(@NonNull SearchNewsViewHolder holder, int position) {
         News news = newsList.get(position);
         holder.newsTitle.setText(news.getTitle());
-        GlideApp.with(context).load(NetworkUtils.IMAGE_URL + news.getImage()).into(holder.newsImage);
+        GlideApp.with(context).load(NetworkUtils.IMAGE_URL + news.getImage())
+                .placeholder(R.drawable.placeholder_image).into(holder.newsImage);
         newsItemClickListener.setItemToggleButton(holder.favToggleButton, holder.getAdapterPosition());
         holder.newsCategory.setText(news.getCategoryName());
         holder.itemView.setOnClickListener(view -> newsItemClickListener.onItemClicked(holder.getAdapterPosition()));

@@ -22,5 +22,10 @@
     <string name="feedback">Feedback</string>
     <string name="drawer_open">Open navigation drawer</string>
     <string name="drawer_close">Close navigation drawer</string>
+    <string name="my_feed">My Feed</string>
+    <string name="follow_us">Follow Us</string>
+    <string name="instagram">Instagram</string>
+    <string name="facebook">Facebook</string>
+    <string name="twitter">Twitter</string>
 
 </resources>

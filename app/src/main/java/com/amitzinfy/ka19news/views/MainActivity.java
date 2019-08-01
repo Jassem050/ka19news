@@ -45,7 +45,7 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnFr
         navigationView = findViewById(R.id.navigation);
         preferenceManager = PreferenceManager.getInstance(this);
         myFeedViewModel = ViewModelProviders.of(this).get(MyFeedViewModel.class);
-
+        navigationView.setItemIconTintList(null);
     }
 
     private void setUpNavigationView(){

@@ -12,6 +12,9 @@ android {
         android.defaultConfig.vectorDrawables.useSupportLibrary = true
         resValue("string", "PORT_NUMBER", "8081")
     }
+    applicationVariants.all { variant ->
+        variant.resValue "string", "versionName", "App Version " + variant.versionName
+    }
     buildTypes {
         release {
             minifyEnabled false

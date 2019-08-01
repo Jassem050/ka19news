@@ -108,7 +108,7 @@ public class MyFeedNewsListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
         News news = newsList.get(position);
         if (position == 0) {
             ((TopNewsViewHolder) holder).newsTitle.setText(news.getTitle());
-            GlideApp.with(context).load(NetworkUtils.IMAGE_URL +  news.getImage()).
+            GlideApp.with(context).load(NetworkUtils.IMAGE_URL +  news.getImage()).placeholder(R.drawable.placeholder_image).
                     into(((TopNewsViewHolder) holder).newsImage);
             newsItemClickListener.setItemToggleButton(((TopNewsViewHolder) holder).favToggleButton, holder.getAdapterPosition());
 //            ((TopNewsViewHolder) holder).newsCategory.setText(news.getCategoryName());
@@ -126,7 +126,7 @@ public class MyFeedNewsListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
 
         } else {
             ((BottomNewsViewHolder) holder).newsTitle.setText(news.getTitle());
-            GlideApp.with(context).load(NetworkUtils.IMAGE_URL +  news.getImage()).
+            GlideApp.with(context).load(NetworkUtils.IMAGE_URL +  news.getImage()).placeholder(R.drawable.placeholder_image).
                     into(((BottomNewsViewHolder) holder).newsImage);
             newsItemClickListener.setItemToggleButton(((BottomNewsViewHolder) holder).favToggleButton, holder.getAdapterPosition());
             ((BottomNewsViewHolder) holder).newsCategory.setText(news.getCategoryName());
