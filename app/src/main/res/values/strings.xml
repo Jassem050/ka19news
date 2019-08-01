@@ -15,9 +15,12 @@
     <string name="your_favourite_is_empty_add_news_to_your_favourite_list">Your Favourite is empty. Add news to your favourite list.</string>
     <string name="share">share</string>
     <string name="favourite">favourite</string>
-    <string name="select_language">Select language...</string>
+    <string name="select_language">Select language&#8230;</string>
     <string name="languages">Languages</string>
     <string name="english">English</string>
-    <string name="kannada">Kannada</string>
+    <string name="kannada">ಕನ್ನಡ</string>
     <string name="feedback">Feedback</string>
+    <string name="drawer_open">Open navigation drawer</string>
+    <string name="drawer_close">Close navigation drawer</string>
+
 </resources>

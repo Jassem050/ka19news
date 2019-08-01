@@ -6,6 +6,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
@@ -23,7 +24,7 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnFr
     private static final String TAG = "MainActivity";
 
     private BottomNavigationView bottomNavigationView;
-    private DrawerLayout drawerLayout;
+    public DrawerLayout drawerLayout;
     private NavigationView navigationView;
     private PreferenceManager preferenceManager;
     private MyFeedViewModel myFeedViewModel;
@@ -44,6 +45,7 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnFr
         navigationView = findViewById(R.id.navigation);
         preferenceManager = PreferenceManager.getInstance(this);
         myFeedViewModel = ViewModelProviders.of(this).get(MyFeedViewModel.class);
+
     }
 
     private void setUpNavigationView(){
@@ -101,5 +103,10 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnFr
     @Override
     public void onFragmentInteraction(Uri uri) {
 
+    }
+
+    @Override
+    public void onDrawerButtonClicked() {
+        drawerLayout.openDrawer(GravityCompat.START);
     }
 }

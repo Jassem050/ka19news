@@ -1,14 +1,21 @@
 package com.amitzinfy.ka19news.views;
 
 import android.content.Context;
+import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentStatePagerAdapter;
 import androidx.lifecycle.ViewModelProviders;
@@ -33,6 +40,7 @@ public class HeadLineFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
+    private static final String TAG = "HeadLineFragment";
 
     private String mParam1;
     private String mParam2;
@@ -45,6 +53,8 @@ public class HeadLineFragment extends Fragment {
     private MaterialToolbar materialToolbar;
     private ActionBar actionBar;
     private PreferenceManager preferenceManager;
+    private DrawerLayout drawerLayout;
+    private ActionBarDrawerToggle actionBarDrawerToggle;
 
     public HeadLineFragment() {
         // Required empty public constructor
@@ -80,6 +90,7 @@ public class HeadLineFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+        setHasOptionsMenu(true);
         View rootView = inflater.inflate(R.layout.fragment_head_line, container, false);
 
         setToolbar(rootView);
@@ -105,14 +116,51 @@ public class HeadLineFragment extends Fragment {
         }
         headLinesViewModel = ViewModelProviders.of(this).get(HeadLinesViewModel.class);
         preferenceManager = PreferenceManager.getInstance(getActivity());
+        // for drawer hamburger animation
+        if (getActivity() != null)
+            drawerLayout = ((MainActivity) getActivity()).drawerLayout;
+        actionBarDrawerToggle = new ActionBarDrawerToggle(getActivity(), drawerLayout,
+                materialToolbar, R.string.drawer_open, R.string.drawer_close);
 
+        actionBarDrawerToggle.getDrawerArrowDrawable().setColor(ContextCompat.getColor(getActivity(), R.color.white));
+        actionBarDrawerToggle.setDrawerSlideAnimationEnabled(true);
+        drawerLayout.addDrawerListener(actionBarDrawerToggle);
+
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        actionBarDrawerToggle.syncState();
+    }
+
+    @Override
+    public void onConfigurationChanged(@NonNull Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        actionBarDrawerToggle.onConfigurationChanged(newConfig);
     }
 
     private void setToolbar(View view){
         materialToolbar = (MaterialToolbar) view.findViewById(R.id.headline_toolbar);
-        ((AppCompatActivity) getActivity()).setSupportActionBar(materialToolbar);
-        actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
-        actionBar.setTitle(getResources().getString(R.string.app_name));
+        if (getActivity() != null) {
+            ((AppCompatActivity) getActivity()).setSupportActionBar(materialToolbar);
+            actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+            actionBar.setTitle(getResources().getString(R.string.app_name));
+            actionBar.setHomeAsUpIndicator(R.drawable.ic_menu_black_24dp);
+            actionBar.setDisplayHomeAsUpEnabled(true);
+
+        }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if (item.getItemId() == android.R.id.home){
+            if (actionBarDrawerToggle.onOptionsItemSelected(item)) {
+                mListener.onDrawerButtonClicked();
+                return true;
+            }
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     public void onButtonPressed(Uri uri) {
@@ -149,7 +197,7 @@ public class HeadLineFragment extends Fragment {
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
+        void onDrawerButtonClicked();
     }
 }
