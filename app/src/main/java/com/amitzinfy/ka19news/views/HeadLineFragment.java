@@ -145,7 +145,7 @@ public class HeadLineFragment extends Fragment {
         if (getActivity() != null) {
             ((AppCompatActivity) getActivity()).setSupportActionBar(materialToolbar);
             actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
-            actionBar.setTitle(getResources().getString(R.string.app_name));
+            actionBar.setTitle(getResources().getString(R.string.headlines));
             actionBar.setHomeAsUpIndicator(R.drawable.ic_menu_black_24dp);
             actionBar.setDisplayHomeAsUpEnabled(true);
 
