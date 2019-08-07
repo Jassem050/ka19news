@@ -53,6 +53,11 @@ public class PreferenceManager {
         return pref.getString(CATEGORY_ID, "id");
     }
 
+    public void clearCategory(){
+        editor.remove(CATEGORY_ID);
+        editor.apply();
+    }
+
     public void setIds(String id){
         editor.putString(ID, id);
         editor.apply();

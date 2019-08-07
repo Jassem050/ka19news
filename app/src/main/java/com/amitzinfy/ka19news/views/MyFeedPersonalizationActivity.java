@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.TextUtils;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
 import android.widget.ProgressBar;
@@ -100,7 +101,7 @@ public class MyFeedPersonalizationActivity extends AppCompatActivity {
 
                     int id = categoryList.get(i).getId();
                     int finalI = i;
-                    feedCategoryViewModel.getFeedCategory(categoryList.get(i).getId()).observe(this, feedCategories -> {
+                    feedCategoryViewModel.getFeedCategory(id).observe(this, feedCategories -> {
                         if (feedCategories.length > 0){
                             chip[finalI].setChecked(true);
                         } else {
@@ -114,7 +115,7 @@ public class MyFeedPersonalizationActivity extends AppCompatActivity {
                             feedCategoryViewModel.insertFeedCategory(feedCategory);
                             if (preferenceManager.getIds().equals("id")){
                                 preferenceManager.setIds(String.valueOf(id));
-                            } else {
+                            } else if (!preferenceManager.getIds().contains(String.valueOf(id))){
                                 String text = "," + id;
                                 String appnd = preferenceManager.getCategory();
                                 String txt = appnd.concat(text);
@@ -122,6 +123,7 @@ public class MyFeedPersonalizationActivity extends AppCompatActivity {
                             }
 
                             preferenceManager.setCategory(preferenceManager.getIds());
+                            Log.d(TAG, "loadChips: check: feed_categories: " + preferenceManager.getCategory());
                         } else {
                             feedCategoryViewModel.deleteFeedCategory(feedCategory);
                             if (preferenceManager.getIds() != null) {
@@ -129,7 +131,10 @@ public class MyFeedPersonalizationActivity extends AppCompatActivity {
                                 c_list.remove(String.valueOf(id));
                                 List<String> cat_list = c_list;
                                 preferenceManager.setIds(TextUtils.join(",", cat_list));
+                                Log.d(TAG, "loadChips: ids: " + preferenceManager.getIds());
+                                preferenceManager.clearCategory();
                                 preferenceManager.setCategory(preferenceManager.getIds());
+                                Log.d(TAG, "loadChips: uncheck: feed_categories: " + preferenceManager.getCategory());
                             }
                         }
                     });
