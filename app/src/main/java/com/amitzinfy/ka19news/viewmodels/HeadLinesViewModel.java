@@ -21,12 +21,12 @@ public class HeadLinesViewModel extends AndroidViewModel {
         headLinesRepository = new HeadLinesRepository(application);
     }
 
-    public LiveData<List<NewsCategory>> getNewsCategories(int languageId){
-        return headLinesRepository.getNewsCategories(languageId);
+    public LiveData<List<NewsCategory>> getNewsCategories(String languageName){
+        return headLinesRepository.getNewsCategories(languageName);
     }
 
-    public LiveData<List<News>> getNewsList(int languageId, int categoryId){
-        return headLinesRepository.getNewsList(languageId, categoryId);
+    public LiveData<List<News>> getNewsList(String languageName, int categoryId){
+        return headLinesRepository.getNewsList(languageName, categoryId);
     }
 
     public void insertFavNews(FavouriteNews favouriteNews){

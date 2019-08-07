@@ -16,8 +16,8 @@ public interface NewsCategoryDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     void insert(NewsCategory newsCategory);
 
-    @Query("SELECT * FROM news_categories WHERE language_id = :languageId")
-    LiveData<List<NewsCategory>> getAllCategories(int languageId);
+    @Query("SELECT * FROM news_categories WHERE language_name = :languageName")
+    LiveData<List<NewsCategory>> getAllCategories(String languageName);
 
     @Query("DELETE from news_categories")
     void deleteAll();

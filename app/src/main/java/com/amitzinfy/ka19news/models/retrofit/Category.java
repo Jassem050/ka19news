@@ -14,6 +14,9 @@ public class Category {
     @Expose
     @SerializedName("language_id")
     private int languageId;
+    @Expose
+    @SerializedName("language_name")
+    private String languageName;
 
     public Category(int id, String name, int languageId) {
         this.id = id;
@@ -43,5 +46,13 @@ public class Category {
 
     public void setLanguageId(int languageId) {
         this.languageId = languageId;
+    }
+
+    public String getLanguageName() {
+        return languageName;
+    }
+
+    public void setLanguageName(String languageName) {
+        this.languageName = languageName;
     }
 }

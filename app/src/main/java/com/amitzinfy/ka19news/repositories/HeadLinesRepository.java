@@ -39,15 +39,15 @@ public class HeadLinesRepository {
         preferenceManager = PreferenceManager.getInstance(application);
         NewsRoomDatabase newsRoomDatabase = NewsRoomDatabase.getDatabase(application);
         categoryDao = newsRoomDatabase.newsCategoryDao();
-        categoryList = categoryDao.getAllCategories(preferenceManager.getLanguageId());
+        categoryList = categoryDao.getAllCategories(preferenceManager.getLanguageName());
         favouriteNewsDao = newsRoomDatabase.favouriteNewsDao();
 
     }
 
     // load categories from server
-    private void loadCategories(int languageId){
+    private void loadCategories(String languageName){
         ApiInterface apiInterface = RetrofitClient.getRetrofitClient().create(ApiInterface.class);
-        Call<List<Category>> call = apiInterface.getCategoryList(languageId);
+        Call<List<Category>> call = apiInterface.getCategoryList(languageName);
         call.enqueue(new Callback<List<Category>>() {
             @Override
             public void onResponse(Call<List<Category>> call, Response<List<Category>> response) {
@@ -56,7 +56,7 @@ public class HeadLinesRepository {
                     List<Category> categoryList = response.body();
                     if (categoryList != null) {
                         for (Category category : categoryList) {
-                            NewsCategory newsCategory = new NewsCategory(category.getId(), category.getName(), category.getLanguageId());
+                            NewsCategory newsCategory = new NewsCategory(category.getId(), category.getName(), category.getLanguageName());
                             insert(newsCategory);
                         }
                     }
@@ -72,9 +72,9 @@ public class HeadLinesRepository {
     }
 
     // load news from server
-    private void loadNewsList(int languageId, int categoryId){
+    private void loadNewsList(String languageName, int categoryId){
         ApiInterface apiInterface = RetrofitClient.getRetrofitClient().create(ApiInterface.class);
-        Call<List<News>> call = apiInterface.getCategoryNewsList(languageId, categoryId);
+        Call<List<News>> call = apiInterface.getCategoryNewsList(languageName, categoryId);
         call.enqueue(new Callback<List<News>>() {
             @Override
             public void onResponse(Call<List<News>> call, Response<List<News>> response) {
@@ -111,8 +111,8 @@ public class HeadLinesRepository {
     }
 
     // load categories from network and return categorylist from room
-    public LiveData<List<NewsCategory>> getNewsCategories(int languageId){
-        loadCategories(languageId);
+    public LiveData<List<NewsCategory>> getNewsCategories(String languageName){
+        loadCategories(languageName);
         return categoryList;
     }
 
@@ -121,8 +121,8 @@ public class HeadLinesRepository {
         new InsertAsyncTask(categoryDao).execute(newsCategory);
     }
 
-    public LiveData<List<News>> getNewsList(int languageId, int categoryId){
-        loadNewsList(languageId, categoryId);
+    public LiveData<List<News>> getNewsList(String languageName, int categoryId){
+        loadNewsList(languageName, categoryId);
         return newsList;
     }
 

@@ -38,9 +38,9 @@ public class MyFeedRepository {
         favouriteNewsDao = newsRoomDatabase.favouriteNewsDao();
     }
 
-    private void loadNewsList(int languageId, String ids){
+    private void loadNewsList(String languageName, String ids){
         ApiInterface apiInterface = RetrofitClient.getRetrofitClient().create(ApiInterface.class);
-        Call<List<News>> call = apiInterface.getFeedNews(languageId, ids);
+        Call<List<News>> call = apiInterface.getFeedNews(languageName, ids);
         call.enqueue(new Callback<List<News>>() {
             @Override
             public void onResponse(Call<List<News>> call, Response<List<News>> response) {
@@ -64,7 +64,7 @@ public class MyFeedRepository {
 
     private void loadCategories(){
         ApiInterface apiInterface = RetrofitClient.getRetrofitClient().create(ApiInterface.class);
-        Call<List<Category>> call = apiInterface.getCategoryList(1);
+        Call<List<Category>> call = apiInterface.getCategoryList("English");
         call.enqueue(new Callback<List<Category>>() {
             @Override
             public void onResponse(Call<List<Category>> call, Response<List<Category>> response) {
@@ -86,9 +86,9 @@ public class MyFeedRepository {
     }
 
 
-    private void loadLanguageNews(int languageId){
+    private void loadLanguageNews(String languageName){
         ApiInterface apiInterface = RetrofitClient.getRetrofitClient().create(ApiInterface.class);
-        Call<List<News>> call = apiInterface.getLanguageNews(languageId);
+        Call<List<News>> call = apiInterface.getLanguageNews(languageName);
         call.enqueue(new Callback<List<News>>() {
             @Override
             public void onResponse(Call<List<News>> call, Response<List<News>> response) {
@@ -106,8 +106,8 @@ public class MyFeedRepository {
         });
     }
 
-    public LiveData<List<News>> getLanguageNews(int languageId){
-        loadLanguageNews(languageId);
+    public LiveData<List<News>> getLanguageNews(String languageName){
+        loadLanguageNews(languageName);
         return newsList;
     }
 
@@ -116,8 +116,8 @@ public class MyFeedRepository {
         return categoryList;
     }
 
-    public LiveData<List<News>> getNewsList(int languageId, String ids){
-        loadNewsList(languageId, ids);
+    public LiveData<List<News>> getNewsList(String languageName, String ids){
+        loadNewsList(languageName, ids);
         return newsList;
     }
 

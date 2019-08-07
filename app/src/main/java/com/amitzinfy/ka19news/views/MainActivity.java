@@ -55,16 +55,16 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnFr
             switch (item.getItemId()){
                 case R.id.english:
                     Toast.makeText(MainActivity.this, "english", Toast.LENGTH_SHORT).show();
-                    preferenceManager.setLanguageId(1);
-                    Log.d(TAG, "onNavigationItemSelected: language_id: " +  preferenceManager.getLanguageId());
-                    myFeedViewModel.setLanguageId(preferenceManager.getLanguageId());
+                    preferenceManager.setLanguageName("English");
+                    Log.d(TAG, "onNavigationItemSelected: language_id: " +  preferenceManager.getLanguageName());
+                    myFeedViewModel.setLanguageId(preferenceManager.getLanguageName());
                     bottomNavigationView.setSelectedItemId(R.id.navigation_home);
                     break;
                 case R.id.kannada:
                     Toast.makeText(MainActivity.this, "Kannada", Toast.LENGTH_SHORT).show();
-                    preferenceManager.setLanguageId(2);
-                    Log.d(TAG, "onNavigationItemSelected: language_id: " +  preferenceManager.getLanguageId());
-                    myFeedViewModel.setLanguageId(preferenceManager.getLanguageId());
+                    preferenceManager.setLanguageName("Kannada");
+                    Log.d(TAG, "onNavigationItemSelected: language_id: " +  preferenceManager.getLanguageName());
+                    myFeedViewModel.setLanguageId(preferenceManager.getLanguageName());
                     bottomNavigationView.setSelectedItemId(R.id.navigation_home);
                     break;
             }

@@ -18,7 +18,7 @@ import java.util.List;
 public class MyFeedViewModel extends AndroidViewModel {
 
     private MyFeedRepository myFeedRepository;
-    private MutableLiveData<Integer> languageId = new MutableLiveData<>();
+    private MutableLiveData<String> languageName = new MutableLiveData<>();
 
     public MyFeedViewModel(@NonNull Application application) {
         super(application);
@@ -27,11 +27,11 @@ public class MyFeedViewModel extends AndroidViewModel {
 
     public LiveData<List<News>> getNewsList(String category_id){
 
-        return Transformations.switchMap(languageId, input -> myFeedRepository.getNewsList(input, category_id));
+        return Transformations.switchMap(languageName, input -> myFeedRepository.getNewsList(input, category_id));
     }
 
-    public LiveData<List<News>> getLanguageNews(int languageId){
-        return myFeedRepository.getLanguageNews(languageId);
+    public LiveData<List<News>> getLanguageNews(String languageName){
+        return myFeedRepository.getLanguageNews(languageName);
     }
 
     public LiveData<List<Category>> getCategories(){
@@ -50,7 +50,7 @@ public class MyFeedViewModel extends AndroidViewModel {
         return myFeedRepository.getFavouriteNews(id);
     }
 
-    public void setLanguageId(int languageId) {
-        this.languageId.setValue(languageId);
+    public void setLanguageId(String languageName) {
+        this.languageName.setValue(languageName);
     }
 }

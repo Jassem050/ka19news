@@ -126,7 +126,7 @@ public class DynamicTabFragment extends Fragment implements CategoryNewsAdapter.
             shimmerFrameLayout.stopShimmer();
             shimmerFrameLayout.setVisibility(View.GONE);
         };
-        headLinesViewModel.getNewsList(preferenceManager.getLanguageId(), mCategoryId).observe(getViewLifecycleOwner(), newsObserver);
+        headLinesViewModel.getNewsList(preferenceManager.getLanguageName(), mCategoryId).observe(getViewLifecycleOwner(), newsObserver);
     }
 
 

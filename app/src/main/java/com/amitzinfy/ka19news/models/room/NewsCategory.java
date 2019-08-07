@@ -14,13 +14,13 @@ public class NewsCategory {
     @ColumnInfo(name = "category_name")
     private String name;
 
-    @ColumnInfo(name = "language_id")
-    private int language_id;
+    @ColumnInfo(name = "language_name")
+    private String language_name;
 
-    public NewsCategory(int id, String name, int language_id) {
+    public NewsCategory(int id, String name, String language_name) {
         this.id = id;
         this.name = name;
-        this.language_id = language_id;
+        this.language_name = language_name;
     }
 
     public int getId() {
@@ -39,11 +39,11 @@ public class NewsCategory {
         this.name = name;
     }
 
-    public int getLanguage_id() {
-        return language_id;
+    public String getLanguage_name() {
+        return language_name;
     }
 
-    public void setLanguage_id(int language_id) {
-        this.language_id = language_id;
+    public void setLanguage_name(String language_name) {
+        this.language_name = language_name;
     }
 }

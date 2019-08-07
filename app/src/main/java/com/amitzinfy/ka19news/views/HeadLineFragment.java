@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -97,9 +98,10 @@ public class HeadLineFragment extends Fragment {
         init(rootView);
         viewPager.setAdapter(categoryAdapter);
         tabLayout.setupWithViewPager(viewPager, true);
-
-        headLinesViewModel.getNewsCategories(preferenceManager.getLanguageId()).observe(this, newsCategories -> {
+        headLinesViewModel.getNewsCategories(preferenceManager.getLanguageName()).observe(this, newsCategories -> {
             categoryAdapter.setCategoryList(newsCategories);
+            if (newsCategories != null && newsCategories.size() > 0)
+            Log.d(TAG, "onCreateView: categoryKannda: " + newsCategories.get(0).getName());
             categoryAdapter.notifyDataSetChanged();
         });
 
