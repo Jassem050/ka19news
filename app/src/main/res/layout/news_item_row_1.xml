@@ -4,13 +4,14 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="?attr/selectableItemBackground"
     android:padding="8dp">
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/news_category"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="sports"
+        android:text="@string/category_placeholder_text"
         android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"/>
 
     <LinearLayout
@@ -26,7 +27,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="62"
             android:fontFamily="@font/lato"
-            android:text="Trial of the Day"
+            android:text="@string/title_placeholder_text"
             android:textSize="17sp"
             app:fontFamily="@font/lato_bold" />
 
@@ -59,7 +60,7 @@
             android:id="@+id/news_date"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="9 hours ago"/>
+            android:text="@string/time_placeholder_text"/>
 
         <androidx.appcompat.widget.AppCompatToggleButton
             android:id="@+id/news_toggle_btn"
@@ -72,7 +73,6 @@
             android:layout_marginLeft="8dp"
             android:layout_marginRight="8dp"
             android:visibility="gone"
-            android:layout_toLeftOf="@+id/news_share_btn"
             android:layout_toStartOf="@+id/news_share_btn" />
 
         <androidx.appcompat.widget.AppCompatTextView
@@ -80,7 +80,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
+            android:background="?attr/selectableItemBackground"
             android:clickable="true"
             android:contextClickable="true"
             android:focusable="true"

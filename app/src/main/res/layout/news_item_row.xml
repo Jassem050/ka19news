@@ -4,6 +4,7 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="?attr/selectableItemBackground"
     android:paddingTop="8dp"
     android:paddingLeft="8dp"
     android:paddingRight="8dp">
@@ -30,7 +31,7 @@
         android:paddingBottom="8dp"
         android:fontFamily="@font/lato_bold"
         android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
-        android:text="Mangalore News"/>
+        android:text="@string/title_placeholder_text"/>
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -41,7 +42,7 @@
             android:id="@+id/news_date"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="9 hours ago"/>
+            android:text="@string/time_placeholder_text"/>
 
         <androidx.appcompat.widget.AppCompatToggleButton
             android:id="@+id/news_toggle_btn"
@@ -54,7 +55,6 @@
             android:layout_marginLeft="8dp"
             android:layout_marginRight="8dp"
             android:visibility="gone"
-            android:layout_toLeftOf="@+id/news_share_btn"
             android:layout_toStartOf="@+id/news_share_btn" />
 
         <androidx.appcompat.widget.AppCompatTextView
@@ -68,8 +68,7 @@
             android:clickable="true"
             android:focusable="true"
             android:contextClickable="true"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true" />
+            android:layout_alignParentEnd="true" />
     </RelativeLayout>
 
     <View

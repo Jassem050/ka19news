@@ -65,7 +65,11 @@ public class MyFeedPersonalizationActivity extends AppCompatActivity {
             }
         });
 
-        saveButton.setOnClickListener(view -> startActivity(new Intent(MyFeedPersonalizationActivity.this, MainActivity.class)));
+        saveButton.setOnClickListener(view -> {
+            preferenceManager.setIsFeedFirstTimeLaunch(2);
+            startActivity(new Intent(MyFeedPersonalizationActivity.this, MainActivity.class));
+            finish();
+        });
     }
 
     public void init(){
