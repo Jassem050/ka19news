@@ -2,16 +2,23 @@ package com.amitzinfy.ka19news.views;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ToggleButton;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatTextView;
+import androidx.core.content.ContextCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -39,6 +46,7 @@ public class FavouriteFragment extends Fragment implements FavouriteNewsAdapter.
 
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
+    private static final String TAG = "FavouriteFragment";
 
     private String mParam1;
     private String mParam2;
@@ -54,6 +62,8 @@ public class FavouriteFragment extends Fragment implements FavouriteNewsAdapter.
     private LottieAnimationView lottieAnimationView;
     private AppCompatTextView favEmtyText;
     private List<FavouriteNews> newsList;
+    private ActionBarDrawerToggle actionBarDrawerToggle;
+    private DrawerLayout drawerLayout;
 
     public FavouriteFragment() {
         // Required empty public constructor
@@ -88,6 +98,7 @@ public class FavouriteFragment extends Fragment implements FavouriteNewsAdapter.
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        setHasOptionsMenu(true);
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_favourite, container, false);
 
@@ -103,7 +114,9 @@ public class FavouriteFragment extends Fragment implements FavouriteNewsAdapter.
         if (getActivity() != null) {
             ((AppCompatActivity) getActivity()).setSupportActionBar(materialToolbar);
             actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
-            actionBar.setTitle(getResources().getString(R.string.app_name));
+            actionBar.setTitle(getResources().getString(R.string.favourites));
+            actionBar.setHomeAsUpIndicator(R.drawable.ic_menu_black_24dp);
+            actionBar.setDisplayHomeAsUpEnabled(true);
         }
     }
 
@@ -117,6 +130,28 @@ public class FavouriteFragment extends Fragment implements FavouriteNewsAdapter.
         shimmerFrameLayout = view.findViewById(R.id.shimmer_layout);
         lottieAnimationView = view.findViewById(R.id.fav_empty_anim);
         favEmtyText = view.findViewById(R.id.fav_empty_text);
+        // for drawer hamburger animation
+        if (getActivity() != null)
+            drawerLayout = ((MainActivity) getActivity()).drawerLayout;
+        actionBarDrawerToggle = new ActionBarDrawerToggle(getActivity(), drawerLayout,
+                materialToolbar, R.string.drawer_open, R.string.drawer_close);
+
+        actionBarDrawerToggle.getDrawerArrowDrawable().setColor(ContextCompat.getColor(getActivity(), R.color.white));
+        actionBarDrawerToggle.setDrawerSlideAnimationEnabled(true);
+        drawerLayout.addDrawerListener(actionBarDrawerToggle);
+
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        actionBarDrawerToggle.syncState();
+    }
+
+    @Override
+    public void onConfigurationChanged(@NonNull Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        actionBarDrawerToggle.onConfigurationChanged(newConfig);
     }
 
     // checking fav news LiveData
@@ -139,6 +174,16 @@ public class FavouriteFragment extends Fragment implements FavouriteNewsAdapter.
         });
     }
 
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if (item.getItemId() == android.R.id.home){
+            if (actionBarDrawerToggle.onOptionsItemSelected(item)) {
+                mListener.onDrawerButtonClicked();
+                return true;
+            }
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {
@@ -206,5 +251,6 @@ public class FavouriteFragment extends Fragment implements FavouriteNewsAdapter.
      */
     public interface OnFragmentInteractionListener {
         void onFragmentInteraction(Uri uri);
+        void onDrawerButtonClicked();
     }
 }

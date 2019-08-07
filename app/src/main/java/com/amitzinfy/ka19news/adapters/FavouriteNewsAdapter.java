@@ -67,7 +67,8 @@ public class FavouriteNewsAdapter extends RecyclerView.Adapter<FavouriteNewsAdap
         FavouriteNews favouriteNews = favouriteNewsList.get(position);
 
         holder.newsTitle.setText(favouriteNews.getTitle());
-        GlideApp.with(context).load(NetworkUtils.IMAGE_URL + favouriteNews.getImage()).into(holder.newsImage);
+        GlideApp.with(context).load(NetworkUtils.IMAGE_URL + favouriteNews.getImage())
+                .placeholder(R.drawable.placeholder_image).into(holder.newsImage);
         favNewsItemClickListener.setItemToggleButton(holder.favToggleButton, holder.getAdapterPosition());
         holder.newsCategory.setText(favouriteNews.getCategory());
         holder.itemView.setOnClickListener(view -> favNewsItemClickListener.onItemClicked(holder.getAdapterPosition()));

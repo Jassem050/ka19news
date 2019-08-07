@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group
+        android:id="@+id/languages"
+        android:checkableBehavior="single">
+        <item android:title="@string/languages">
+            <menu>
+                <item
+                    android:id="@+id/english"
+                    android:title="@string/english" />
+                <item
+                    android:id="@+id/kannada"
+                    android:title="@string/kannada" />
+            </menu>
+        </item>
+    </group>
+
+    <group
+        android:id="@+id/all"
+        android:checkableBehavior="single">
+        <item
+            android:id="@+id/myfeed"
+            android:icon="@drawable/ic_view_list_black_24dp"
+            android:title="@string/my_feed" />
+
+        <item
+            android:id="@+id/feedback"
+            android:icon="@drawable/ic_feedback_black_24dp"
+            android:title="@string/feedback" />
+
+        <item
+            android:id="@+id/app_version"
+            android:icon="@drawable/ic_perm_device_information_black_24dp"
+            android:title="@string/versionName" />
+    </group>
+
+    <group
+        android:id="@+id/social_media"
+        android:checkableBehavior="single">
+        <item android:title="@string/follow_us">
+            <menu>
+                <item
+                    android:id="@+id/instagram"
+                    android:title="@string/instagram"
+                    android:icon="@drawable/ic_instagram"/>
+                <item
+                    android:id="@+id/facebook"
+                    android:title="@string/facebook"
+                    android:icon="@drawable/ic_facebook"/>
+                <item
+                    android:id="@+id/twitter"
+                    android:title="@string/twitter"
+                    android:icon="@drawable/ic_twitter"/>
+            </menu>
+        </item>
+    </group>
+</menu>

@@ -71,6 +71,7 @@
             android:checked="false"
             android:layout_marginLeft="8dp"
             android:layout_marginRight="8dp"
+            android:visibility="gone"
             android:layout_toLeftOf="@+id/news_share_btn"
             android:layout_toStartOf="@+id/news_share_btn" />
 
@@ -78,15 +79,15 @@
             android:id="@+id/news_share_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/share"
-            android:paddingTop="2dp"
-            android:paddingLeft="8dp"
-            android:paddingRight="8dp"
-            android:clickable="true"
-            android:focusable="true"
-            android:contextClickable="true"
             android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true" />
+            android:layout_alignParentRight="true"
+            android:clickable="true"
+            android:contextClickable="true"
+            android:focusable="true"
+            android:paddingLeft="8dp"
+            android:paddingTop="2dp"
+            android:paddingRight="8dp"
+            android:text="@string/share" />
     </RelativeLayout>
 
     <View

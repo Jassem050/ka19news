@@ -14,9 +14,13 @@ public class NewsCategory {
     @ColumnInfo(name = "category_name")
     private String name;
 
-    public NewsCategory(int id, String name) {
+    @ColumnInfo(name = "language_name")
+    private String language_name;
+
+    public NewsCategory(int id, String name, String language_name) {
         this.id = id;
         this.name = name;
+        this.language_name = language_name;
     }
 
     public int getId() {
@@ -33,5 +37,13 @@ public class NewsCategory {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getLanguage_name() {
+        return language_name;
+    }
+
+    public void setLanguage_name(String language_name) {
+        this.language_name = language_name;
     }
 }

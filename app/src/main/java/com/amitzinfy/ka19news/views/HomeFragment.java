@@ -2,9 +2,9 @@ package com.amitzinfy.ka19news.views;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -14,9 +14,13 @@ import android.view.ViewGroup;
 import android.widget.ToggleButton;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ShareCompat;
+import androidx.core.content.ContextCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
@@ -27,7 +31,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import com.amitzinfy.ka19news.R;
 import com.amitzinfy.ka19news.adapters.MyFeedNewsListAdapter;
 import com.amitzinfy.ka19news.models.retrofit.News;
-import com.amitzinfy.ka19news.models.room.FavouriteNews;
+import com.amitzinfy.ka19news.utils.PreferenceManager;
 import com.amitzinfy.ka19news.viewmodels.MyFeedViewModel;
 import com.facebook.shimmer.ShimmerFrameLayout;
 import com.google.android.material.appbar.MaterialToolbar;
@@ -63,6 +67,9 @@ public class HomeFragment extends Fragment implements MyFeedNewsListAdapter.News
     private Observer<List<News>> newsObserver;
     private List<News> newsList;
     private ToggleButton toggleButton;
+    private PreferenceManager preferenceManager;
+    private ActionBarDrawerToggle actionBarDrawerToggle;
+    private DrawerLayout drawerLayout;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -97,11 +104,19 @@ public class HomeFragment extends Fragment implements MyFeedNewsListAdapter.News
         setToolbar(rootView);
         init(rootView);
 
-        subscribe();
+        if (preferenceManager.getLanguageName().equals("English")) {
+            subscribe();
+        } else {
+            getLanguageNews();
+        }
 
 
         swipeRefreshLayout.setOnRefreshListener(() -> {
-            subscribe();
+            if (preferenceManager.getLanguageName().equals("English")) {
+                subscribe();
+            } else {
+                getLanguageNews();
+            }
             swipeRefreshLayout.setRefreshing(false);
         });
 
@@ -119,7 +134,21 @@ public class HomeFragment extends Fragment implements MyFeedNewsListAdapter.News
                 shimmerFrameLayout.setVisibility(View.GONE);
             }
         };
-        myFeedViewModel.getNewsList().observe(getViewLifecycleOwner(), newsObserver);
+        myFeedViewModel.setLanguageId("English");
+        myFeedViewModel.getNewsList(preferenceManager.getCategory()).observe(getViewLifecycleOwner(), newsObserver);
+    }
+
+    private void getLanguageNews(){
+        newsObserver = news -> {
+            if (news != null) {
+                newsList = news;
+                myFeedNewsListAdapter.setNewsList(newsList);
+                myFeedNewsListAdapter.notifyDataSetChanged();
+                shimmerFrameLayout.stopShimmer();
+                shimmerFrameLayout.setVisibility(View.GONE);
+            }
+        };
+        myFeedViewModel.getLanguageNews(preferenceManager.getLanguageName()).observe(getViewLifecycleOwner(), newsObserver);
     }
 
     private void init(View view){
@@ -132,8 +161,29 @@ public class HomeFragment extends Fragment implements MyFeedNewsListAdapter.News
         swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_refresh_layout);
         shimmerFrameLayout = (ShimmerFrameLayout) view.findViewById(R.id.shimmer_layout);
         shimmerFrameLayout.startShimmer();
+        preferenceManager = PreferenceManager.getInstance(getActivity());
+        // for drawer hamburger animation
+        if (getActivity() != null)
+        drawerLayout = ((MainActivity) getActivity()).drawerLayout;
+        actionBarDrawerToggle = new ActionBarDrawerToggle(getActivity(), drawerLayout,
+                materialToolbar, R.string.drawer_open, R.string.drawer_close);
+
+        actionBarDrawerToggle.getDrawerArrowDrawable().setColor(ContextCompat.getColor(getActivity(), R.color.white));
+        actionBarDrawerToggle.setDrawerSlideAnimationEnabled(true);
+        drawerLayout.addDrawerListener(actionBarDrawerToggle);
     }
 
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        actionBarDrawerToggle.syncState();
+    }
+
+    @Override
+    public void onConfigurationChanged(@NonNull Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        actionBarDrawerToggle.onConfigurationChanged(newConfig);
+    }
 
     private void setToolbar(View view){
         materialToolbar = (MaterialToolbar) view.findViewById(R.id.myfeed_toolbar);
@@ -141,8 +191,12 @@ public class HomeFragment extends Fragment implements MyFeedNewsListAdapter.News
             ((AppCompatActivity) getActivity()).setSupportActionBar(materialToolbar);
             actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
             actionBar.setTitle(getResources().getString(R.string.app_name));
+//            actionBar.setHomeAsUpIndicator(R.drawable.ic_menu_black_24dp);
+            actionBar.setDisplayHomeAsUpEnabled(true);
         }
     }
+
+
 
 
     @Override
@@ -157,6 +211,12 @@ public class HomeFragment extends Fragment implements MyFeedNewsListAdapter.News
         if (item.getItemId() == R.id.action_search){
             startActivity(new Intent(getActivity(), SearchResultsActivity.class));
             return true;
+        }
+        if (item.getItemId() == android.R.id.home){
+            if (actionBarDrawerToggle.onOptionsItemSelected(item)) {
+                mListener.onDrawerButtonClicked();
+                return true;
+            }
         }
         return super.onOptionsItemSelected(item);
     }
@@ -186,30 +246,30 @@ public class HomeFragment extends Fragment implements MyFeedNewsListAdapter.News
 
     @Override
     public void onItemToggleButtonChecked(int position) {
-        News news = newsList.get(position);
-        Log.d(TAG, "onItemToggleButtonChecked: id: " + news.getId());
-        myFeedViewModel.insertFavNews(new FavouriteNews(news.getId(),news.getTitle(), news.getDescription(),
-                news.getImage(), news.getCategoryName()));
+//        News news = newsList.get(position);
+//        Log.d(TAG, "onItemToggleButtonChecked: id: " + news.getId());
+//        myFeedViewModel.insertFavNews(new FavouriteNews(news.getId(),news.getTitle(), news.getDescription(),
+//                news.getImage(), news.getCategoryName()));
     }
 
     @Override
     public void onItemToggleButtonUnChecked(int position) {
-        News news = newsList.get(position);
-        Log.d(TAG, "onItemToggleButtonUnChecked: id: " + news.getId());
-        myFeedViewModel.deleteFavNews(new FavouriteNews(news.getId(),news.getTitle(), news.getDescription(),
-                news.getImage(), news.getCategoryName()));
+//        News news = newsList.get(position);
+//        Log.d(TAG, "onItemToggleButtonUnChecked: id: " + news.getId());
+//        myFeedViewModel.deleteFavNews(new FavouriteNews(news.getId(),news.getTitle(), news.getDescription(),
+//                news.getImage(), news.getCategoryName()));
     }
 
     @Override
     public void setItemToggleButton(ToggleButton toggleButton, int position) {
-        News news = newsList.get(position);
-        myFeedViewModel.getFavouriteNews(news.getId()).observe(getViewLifecycleOwner(), favouriteNews -> {
-            if (favouriteNews.length > 0){
-                if (!toggleButton.isChecked()) {
-                    toggleButton.setChecked(true);
-                }
-            }
-        });
+//        News news = newsList.get(position);
+//        myFeedViewModel.getFavouriteNews(news.getId()).observe(getViewLifecycleOwner(), favouriteNews -> {
+//            if (favouriteNews.length > 0){
+//                if (!toggleButton.isChecked()) {
+//                    toggleButton.setChecked(true);
+//                }
+//            }
+//        });
     }
 
     @Override
@@ -251,6 +311,7 @@ public class HomeFragment extends Fragment implements MyFeedNewsListAdapter.News
     public interface OnFragmentInteractionListener {
 
         void onFragmentInteraction(Uri uri);
+        void onDrawerButtonClicked();
     }
 
     @Override

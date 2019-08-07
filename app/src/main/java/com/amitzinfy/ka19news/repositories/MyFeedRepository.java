@@ -38,9 +38,9 @@ public class MyFeedRepository {
         favouriteNewsDao = newsRoomDatabase.favouriteNewsDao();
     }
 
-    private void loadNewsList(){
+    private void loadNewsList(String languageName, String ids){
         ApiInterface apiInterface = RetrofitClient.getRetrofitClient().create(ApiInterface.class);
-        Call<List<News>> call = apiInterface.getCategoryNewsList(1,1);
+        Call<List<News>> call = apiInterface.getFeedNews(languageName, ids);
         call.enqueue(new Callback<List<News>>() {
             @Override
             public void onResponse(Call<List<News>> call, Response<List<News>> response) {
@@ -64,7 +64,7 @@ public class MyFeedRepository {
 
     private void loadCategories(){
         ApiInterface apiInterface = RetrofitClient.getRetrofitClient().create(ApiInterface.class);
-        Call<List<Category>> call = apiInterface.getCategoryList(1);
+        Call<List<Category>> call = apiInterface.getCategoryList("English");
         call.enqueue(new Callback<List<Category>>() {
             @Override
             public void onResponse(Call<List<Category>> call, Response<List<Category>> response) {
@@ -86,14 +86,38 @@ public class MyFeedRepository {
     }
 
 
+    private void loadLanguageNews(String languageName){
+        ApiInterface apiInterface = RetrofitClient.getRetrofitClient().create(ApiInterface.class);
+        Call<List<News>> call = apiInterface.getLanguageNews(languageName);
+        call.enqueue(new Callback<List<News>>() {
+            @Override
+            public void onResponse(Call<List<News>> call, Response<List<News>> response) {
+                if (response.isSuccessful()){
+                    if (response.body() != null){
+                        newsList.postValue(response.body());
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<News>> call, Throwable t) {
+                Log.d(TAG, "onFailure: languageNews: " + t);
+            }
+        });
+    }
+
+    public LiveData<List<News>> getLanguageNews(String languageName){
+        loadLanguageNews(languageName);
+        return newsList;
+    }
 
     public LiveData<List<Category>> getCategories(){
         loadCategories();
         return categoryList;
     }
 
-    public LiveData<List<News>> getNewsList(){
-        loadNewsList();
+    public LiveData<List<News>> getNewsList(String languageName, String ids){
+        loadNewsList(languageName, ids);
         return newsList;
     }
 
