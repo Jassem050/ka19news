@@ -1,6 +1,8 @@
 package com.amitzinfy.ka19news.views;
 
+import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
@@ -66,6 +68,10 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnFr
                     Log.d(TAG, "onNavigationItemSelected: language_id: " +  preferenceManager.getLanguageName());
                     myFeedViewModel.setLanguageId(preferenceManager.getLanguageName());
                     bottomNavigationView.setSelectedItemId(R.id.navigation_home);
+                    break;
+                case R.id.myfeed:
+                    startActivity(new Intent(this, MyFeedPersonalizationActivity.class));
+                    Log.d(TAG, "setUpNavigationView: manufctrr: " + Build.MANUFACTURER + Build.MODEL);
                     break;
             }
             return false;

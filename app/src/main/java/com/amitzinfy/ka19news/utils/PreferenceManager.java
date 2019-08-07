@@ -20,6 +20,7 @@ public class PreferenceManager {
     private static final String CATEGORY_ID = "id";
     private static final String ID = "c_id";
     private static final String LANGUAGE_NAME = "languagename";
+    private static final String IS_FEED_FIRST_TIME_LAUNCH = "isFeedFirstTimeLaunch";
 
 
     public static PreferenceManager getInstance(Context context){
@@ -76,6 +77,15 @@ public class PreferenceManager {
 
     public String getLanguageName() {
         return pref.getString(LANGUAGE_NAME, "English");
+    }
+
+    public void setIsFeedFirstTimeLaunch(int number){
+        editor.putInt(IS_FEED_FIRST_TIME_LAUNCH, number);
+        editor.apply();
+    }
+
+    public int getIsFeedFirstTimeLaunch(){
+        return pref.getInt(IS_FEED_FIRST_TIME_LAUNCH, 1);
     }
 
 }
