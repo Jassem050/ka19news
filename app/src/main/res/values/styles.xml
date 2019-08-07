@@ -31,6 +31,7 @@
     <!--Style for Splash Screen-->
     <style name="SplashScreenTheme" parent="Theme.MaterialComponents.Light.NoActionBar">
         <item name ="android:windowBackground">@drawable/splash_screen_background</item>
+        <item name="colorPrimaryDark">@color/white</item>
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
     </style>

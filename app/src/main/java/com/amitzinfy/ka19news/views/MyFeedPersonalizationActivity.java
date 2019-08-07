@@ -2,7 +2,6 @@ package com.amitzinfy.ka19news.views;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.TypedValue;
@@ -10,6 +9,7 @@ import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.lifecycle.ViewModelProviders;
@@ -40,17 +40,13 @@ public class MyFeedPersonalizationActivity extends AppCompatActivity {
     private MaterialButton saveButton;
     private FeedCategoryViewModel feedCategoryViewModel;
     private PreferenceManager preferenceManager;
-    private Runnable runnable;
-    private Handler handler;
+    private ActionBar actionBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my_feed_personalization);
         init();
-        handler.postDelayed(runnable = () -> {
-
-        }, 1500);
 
         myFeedViewModel = ViewModelProviders.of(this).get(MyFeedViewModel.class);
 
@@ -65,11 +61,23 @@ public class MyFeedPersonalizationActivity extends AppCompatActivity {
             }
         });
 
+        if (preferenceManager.getIsFeedFirstTimeLaunch() == 2){
+            saveButton.setVisibility(View.GONE);
+            actionBar.setDefaultDisplayHomeAsUpEnabled(true);
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
+
         saveButton.setOnClickListener(view -> {
             preferenceManager.setIsFeedFirstTimeLaunch(2);
             startActivity(new Intent(MyFeedPersonalizationActivity.this, MainActivity.class));
             finish();
         });
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return super.onSupportNavigateUp();
     }
 
     public void init(){
@@ -80,7 +88,7 @@ public class MyFeedPersonalizationActivity extends AppCompatActivity {
         progressBar.setVisibility(View.VISIBLE);
         feedCategoryViewModel = ViewModelProviders.of(this).get(FeedCategoryViewModel.class);
         preferenceManager =  PreferenceManager.getInstance(this);
-        handler = new Handler();
+        actionBar = getSupportActionBar();
     }
 
     public void loadChips(List<Category> categoryList){
@@ -148,9 +156,4 @@ public class MyFeedPersonalizationActivity extends AppCompatActivity {
         }
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        handler.removeCallbacks(runnable);
-    }
 }
