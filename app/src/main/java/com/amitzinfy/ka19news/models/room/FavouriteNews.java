@@ -21,15 +21,20 @@ public class FavouriteNews {
     @ColumnInfo(name = "news_image")
     private String image;
 
+    @ColumnInfo(name = "news_image_caption")
+    private String imageCaption;
+
     @ColumnInfo(name = "news_category")
     private String category;
 
-    public FavouriteNews(int id, @NonNull String title, @NonNull String description, String image, String category){
+    public FavouriteNews(int id, @NonNull String title, @NonNull String description, String image,
+                         String category, String imageCaption){
         this.id = id;
         this.title = title;
         this.description = description;
         this.image = image;
         this.category = category;
+        this.imageCaption = imageCaption;
     }
 
     public int getId() {
@@ -54,5 +59,13 @@ public class FavouriteNews {
 
     public void setCategory(String category) {
         this.category = category;
+    }
+
+    public String getImageCaption() {
+        return imageCaption;
+    }
+
+    public void setImageCaption(String imageCaption) {
+        this.imageCaption = imageCaption;
     }
 }

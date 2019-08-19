@@ -163,7 +163,7 @@ public class DynamicTabFragment extends Fragment implements CategoryNewsAdapter.
         News news = newsList.get(position);
         Log.d(TAG, "onItemToggleButtonChecked: id: " + news.getId());
         headLinesViewModel.insertFavNews(new FavouriteNews(news.getId(),news.getTitle(), news.getDescription(),
-                news.getImage(), news.getCategoryName()));
+                news.getImage(), news.getCategoryName(), news.getImageCaption()));
     }
 
     @Override
@@ -171,7 +171,7 @@ public class DynamicTabFragment extends Fragment implements CategoryNewsAdapter.
         News news = newsList.get(position);
         Log.d(TAG, "onItemToggleButtonUnChecked: id: " + news.getId());
         headLinesViewModel.deleteFavNews(new FavouriteNews(news.getId(),news.getTitle(), news.getDescription(),
-                news.getImage(), news.getCategoryName()));
+                news.getImage(), news.getCategoryName(), news.getImageCaption()));
     }
 
     @Override
@@ -194,6 +194,7 @@ public class DynamicTabFragment extends Fragment implements CategoryNewsAdapter.
         intent.putExtra("news_title", news.getTitle());
         intent.putExtra("news_description", news.getDescription());
         intent.putExtra("news_image", news.getImage());
+        intent.putExtra("news_image_caption", news.getImageCaption());
         intent.putExtra("news_category", news.getCategoryName());
         intent.putExtra("news_time", news.getTime());
         startActivity(intent);

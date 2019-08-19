@@ -26,10 +26,10 @@ public class NewsDetailsActivity extends AppCompatActivity {
 
     private static final String TAG = "NewsDetailsActivity";
 
-    private AppCompatTextView newsTitle, newsTime;
+    private AppCompatTextView newsTitle, newsTime, newsImageCaption;
     private AppCompatImageView newsImage;
     private WebView newsDescription;
-    private String newsTitleString, newsDescriptionString, newsImageString, newsCategoryString;
+    private String newsTitleString, newsDescriptionString, newsImageString, newsCategoryString, newsImageCaptionString;
     private int newsId;
     private ActionBar actionBar;
     private AppCompatToggleButton toggleButton;
@@ -57,12 +57,14 @@ public class NewsDetailsActivity extends AppCompatActivity {
         newsTitle = findViewById(R.id.news_title);
         newsImage = findViewById(R.id.news_image);
         newsDescription = findViewById(R.id.news_description);
+        newsImageCaption = findViewById(R.id.news_image_caption);
         if (bundle != null) {
             newsTitleString = bundle.getString("news_title");
             newsDescriptionString = bundle.getString("news_description");
             newsImageString = bundle.getString("news_image");
             newsId = bundle.getInt("news_id");
             newsCategoryString = bundle.getString("news_category");
+            newsImageCaptionString = bundle.getString("news_image_caption");
             Log.d(TAG, "init: newsID: " + newsId);
         }
         actionBar = getSupportActionBar();
@@ -72,6 +74,7 @@ public class NewsDetailsActivity extends AppCompatActivity {
 
     private void setViews(){
         newsTitle.setText(newsTitleString);
+        newsImageCaption.setText(newsImageCaptionString);
         newsDescription.loadDataWithBaseURL(null, newsDescriptionString, "text/html","UTF-8", null);
         newsDescription.getSettings().setAppCacheEnabled(true);
         newsDescription.getSettings().setCacheMode(WebSettings.LOAD_DEFAULT);
@@ -93,7 +96,7 @@ public class NewsDetailsActivity extends AppCompatActivity {
             }
         });
         FavouriteNews favouriteNews = new FavouriteNews(newsId, newsTitleString,
-                newsDescriptionString, newsImageString, newsCategoryString);
+                newsDescriptionString, newsImageString, newsCategoryString, newsImageCaptionString);
         toggleButton.setOnCheckedChangeListener((compoundButton, b) -> {
             if (b){
                 favouritesViewModel.insertFavNews(favouriteNews);

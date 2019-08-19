@@ -67,7 +67,7 @@
             android:src="@drawable/four" />
 
         <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/news_sub"
+            android:id="@+id/news_image_caption"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@+id/news_image"
@@ -78,7 +78,7 @@
             android:id="@+id/image_divider"
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:layout_below="@+id/news_sub"
+            android:layout_below="@+id/news_image_caption"
             android:layout_marginLeft="8dp"
             android:layout_marginRight="8dp"
             android:background="@color/DividerColor" />
