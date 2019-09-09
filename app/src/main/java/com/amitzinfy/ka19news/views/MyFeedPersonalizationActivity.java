@@ -47,7 +47,7 @@ public class MyFeedPersonalizationActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my_feed_personalization);
         init();
-
+        saveButton.setVisibility(View.GONE);
         myFeedViewModel = ViewModelProviders.of(this).get(MyFeedViewModel.class);
 
         feedChipGroup = findViewById(R.id.feed_chip_group);
@@ -91,6 +91,10 @@ public class MyFeedPersonalizationActivity extends AppCompatActivity {
         actionBar = getSupportActionBar();
     }
 
+    /**
+     * Get data from the server and create chips
+     * in feedChipGroup
+     * */
     public void loadChips(List<Category> categoryList){
         feedChipGroup.removeAllViews();
         float eightDp = TypedValue.applyDimension( TypedValue.COMPLEX_UNIT_DIP, 8,
@@ -121,6 +125,14 @@ public class MyFeedPersonalizationActivity extends AppCompatActivity {
                         }
                     });
 
+                    if (preferenceManager.getIsFeedFirstTimeLaunch() == 1){
+                        feedCategoryViewModel.getFeedCategories().observe(this, feedCategories -> {
+                            if (feedCategories.length > 0){
+                                saveButton.setVisibility(View.VISIBLE);
+                            }
+                        });
+                    }
+
                     FeedCategory feedCategory = new FeedCategory(categoryList.get(i).getId());
                     chip[i].setOnCheckedChangeListener((compoundButton, b) -> {
                         if (b){
@@ -137,6 +149,7 @@ public class MyFeedPersonalizationActivity extends AppCompatActivity {
                             preferenceManager.setCategory(preferenceManager.getIds());
                             Log.d(TAG, "loadChips: check: feed_categories: " + preferenceManager.getCategory());
                         } else {
+
                             feedCategoryViewModel.deleteFeedCategory(feedCategory);
                             if (preferenceManager.getIds() != null) {
                                 List<String> c_list = new ArrayList<>(Arrays.asList(preferenceManager.getIds().split(",")));
@@ -147,6 +160,13 @@ public class MyFeedPersonalizationActivity extends AppCompatActivity {
                                 preferenceManager.clearCategory();
                                 preferenceManager.setCategory(preferenceManager.getIds());
                                 Log.d(TAG, "loadChips: uncheck: feed_categories: " + preferenceManager.getCategory());
+                            }
+                            if (preferenceManager.getIsFeedFirstTimeLaunch() == 1){
+                                feedCategoryViewModel.getFeedCategories().observe(this, feedCategories -> {
+                                    if (feedCategories.length < 1){
+                                        saveButton.setVisibility(View.GONE);
+                                    }
+                                });
                             }
                         }
                     });

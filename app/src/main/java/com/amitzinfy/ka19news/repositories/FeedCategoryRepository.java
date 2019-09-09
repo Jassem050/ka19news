@@ -69,4 +69,8 @@ public class FeedCategoryRepository {
     public LiveData<FeedCategory[]> getFeedCategory(int id){
         return feedCategoryDao.getFeedCategory(id);
     }
+
+    public LiveData<FeedCategory[]> getFeedCategories(){
+        return feedCategoryDao.getFeedCategories();
+    }
 }

@@ -30,4 +30,8 @@ public class FeedCategoryViewModel extends AndroidViewModel {
         return feedCategoryRepository.getFeedCategory(id);
     }
 
+    public LiveData<FeedCategory[]> getFeedCategories(){
+        return feedCategoryRepository.getFeedCategories();
+    }
+
 }

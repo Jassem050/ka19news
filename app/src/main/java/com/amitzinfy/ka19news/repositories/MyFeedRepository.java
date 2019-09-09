@@ -48,7 +48,6 @@ public class MyFeedRepository {
                     if (response.body() != null) {
                         Collections.reverse(response.body());
                         newsList.postValue(response.body());
-                        Log.d(TAG, "onResponse: news: " + response.body().get(0).getTitle());
                     }
 
                 }

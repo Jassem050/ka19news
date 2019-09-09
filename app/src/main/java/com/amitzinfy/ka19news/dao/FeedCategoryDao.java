@@ -21,4 +21,7 @@ public interface FeedCategoryDao {
 
     @Query("SELECT * from feed_categories WHERE id= :id")
     LiveData<FeedCategory[]> getFeedCategory(int id);
+
+    @Query("SELECT * from feed_categories")
+    LiveData<FeedCategory[]> getFeedCategories();
 }
