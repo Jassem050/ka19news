@@ -102,6 +102,7 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnFr
     private void loadFragment(Fragment fragment){
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction.replace(R.id.content_main_frame, fragment);
+        fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
 //        fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
     }

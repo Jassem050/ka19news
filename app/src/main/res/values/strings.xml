@@ -4,18 +4,25 @@
     <string name="headlines">Headlines</string>
     <string name="favourites">Favourites</string>
 
+    <!-- My Feed text -->
     <string name="feed_personalization_title_1">Choose what you like to fill your feed</string>
     <string name="feed_personalization_title_2">This helps us personalize your news experience.</string>
     <string name="save">save</string>
+
+    <!-- Search Text -->
     <string name="search_hint">Search News</string>
     <string name="search">Search</string>
     <string name="back">Back</string>
     <string name="search_results_text">Search results for</string>
     <string name="no_results_found">No Results Found</string>
+
+    <!-- Favourite Text-->
     <string name="your_favourite_is_empty_add_news_to_your_favourite_list">Your Favourite is empty. Add news to your favourite list.</string>
     <string name="share">share</string>
     <string name="favourite">favourite</string>
     <string name="select_language">Select language&#8230;</string>
+
+    <!-- Navigation Drawer Text-->
     <string name="languages">Languages</string>
     <string name="english">English</string>
     <string name="kannada">ಕನ್ನಡ</string>
@@ -27,5 +34,26 @@
     <string name="instagram">Instagram</string>
     <string name="facebook">Facebook</string>
     <string name="twitter">Twitter</string>
+
+    <!-- Welcome Screen Title and Description-->
+
+    <string name="next">Next</string>
+    <string name="skip">Skip</string>
+    <string name="start">GOT IT</string>
+    <string name="slide_1_title">Welcome to KA19NEWS</string>
+    <string name="slide_1_desc">New dimension of news reading and sharing at your finger tips</string>
+    <string name="slide_2_title">User-friendly</string>
+    <string name="slide_2_desc">User-friendly application design with categorized contents, anyone at any age can use this simply </string>
+    <string name="slide_3_title">Get latest news of Mangaluru</string>
+    <string name="slide_3_desc">Get latest news of Mangaluru within minutes ,know the events before no one else does!!</string>
+    <string name="slide_4_title">Get latest news from all around the world</string>
+    <string name="slide_4_desc">Also get notified latest news from all around the globe</string>
+    <string name="world">world</string>
+    <string name="maps">maps</string>
+    <string name="shaking_hands">shaking_hands</string>
+    <string name="title_placeholder_text">Trial of the Day</string>
+    <string name="category_placeholder_text">sports</string>
+    <string name="time_placeholder_text">9 hours ago</string>
+    <string name="newspaper">newspaper</string>
 
 </resources>

@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -21,8 +22,10 @@ import androidx.core.content.ContextCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.airbnb.lottie.LottieAnimationView;
 import com.amitzinfy.ka19news.R;
@@ -64,6 +67,7 @@ public class FavouriteFragment extends Fragment implements FavouriteNewsAdapter.
     private List<FavouriteNews> newsList;
     private ActionBarDrawerToggle actionBarDrawerToggle;
     private DrawerLayout drawerLayout;
+    private SwipeRefreshLayout swipeRefreshLayout;
 
     public FavouriteFragment() {
         // Required empty public constructor
@@ -106,6 +110,25 @@ public class FavouriteFragment extends Fragment implements FavouriteNewsAdapter.
         init(rootView);
         subscribe();
 
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(
+                new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
+            @Override
+            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+                int position = viewHolder.getAdapterPosition();
+                FavouriteNews favouriteNews = favouriteNewsAdapter.getFavNewsAtPosition(position);
+                Log.d(TAG, "onSwiped: favNews at position: " + position);
+                favouritesViewModel.deleteFavNews(favouriteNews);
+            }
+        });
+        itemTouchHelper.attachToRecyclerView(recyclerView);
+
+        swipeRefreshLayout.setOnRefreshListener(() -> swipeRefreshLayout.setRefreshing(false));
+
         return rootView;
     }
 
@@ -139,6 +162,7 @@ public class FavouriteFragment extends Fragment implements FavouriteNewsAdapter.
         actionBarDrawerToggle.getDrawerArrowDrawable().setColor(ContextCompat.getColor(getActivity(), R.color.white));
         actionBarDrawerToggle.setDrawerSlideAnimationEnabled(true);
         drawerLayout.addDrawerListener(actionBarDrawerToggle);
+        swipeRefreshLayout = view.findViewById(R.id.swipe_refresh_layout);
 
     }
 
@@ -234,6 +258,7 @@ public class FavouriteFragment extends Fragment implements FavouriteNewsAdapter.
         intent.putExtra("news_title", news.getTitle());
         intent.putExtra("news_description", news.getDescription());
         intent.putExtra("news_image", news.getImage());
+        intent.putExtra("news_image_caption", news.getImageCaption());
         intent.putExtra("news_category", news.getCategory());
 //        intent.putExtra("news_time", news.());
         startActivity(intent);

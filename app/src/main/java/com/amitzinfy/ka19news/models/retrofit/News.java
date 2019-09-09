@@ -18,6 +18,9 @@ public class News {
     @SerializedName("news_image")
     private String image;
     @Expose
+    @SerializedName("news_image_caption")
+    private String imageCaption;
+    @Expose
     @SerializedName("news_time")
     private String time;
     @Expose
@@ -74,5 +77,13 @@ public class News {
 
     public void setCategoryName(String categoryName) {
         this.categoryName = categoryName;
+    }
+
+    public String getImageCaption() {
+        return imageCaption;
+    }
+
+    public void setImageCaption(String imageCaption) {
+        this.imageCaption = imageCaption;
     }
 }

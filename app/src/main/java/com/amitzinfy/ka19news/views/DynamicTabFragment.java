@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -55,6 +56,8 @@ public class DynamicTabFragment extends Fragment implements CategoryNewsAdapter.
     private SwipeRefreshLayout swipeRefreshLayout;
     private List<News> newsList;
     private PreferenceManager preferenceManager;
+    private Handler handler;
+    private Runnable runnable;
 
     public DynamicTabFragment() {
         // Required empty public constructor
@@ -95,10 +98,7 @@ public class DynamicTabFragment extends Fragment implements CategoryNewsAdapter.
         init(rootView);
         subscribe();
 
-        swipeRefreshLayout.setOnRefreshListener(() -> {
-            subscribe();
-            swipeRefreshLayout.setRefreshing(false);
-        });
+        swipeRefreshLayout.setOnRefreshListener(this::subscribe);
 
         return rootView;
     }
@@ -116,15 +116,20 @@ public class DynamicTabFragment extends Fragment implements CategoryNewsAdapter.
         shimmerFrameLayout.startShimmer();
         headLinesViewModel = ViewModelProviders.of(this).get(HeadLinesViewModel.class);
         preferenceManager = PreferenceManager.getInstance(getActivity());
+        handler = new Handler();
+
     }
 
     private void subscribe(){
         newsObserver = news -> {
-            newsList = news;
-            categoryNewsAdapter.setNewsList(news);
-            categoryNewsAdapter.notifyDataSetChanged();
-            shimmerFrameLayout.stopShimmer();
-            shimmerFrameLayout.setVisibility(View.GONE);
+            if (news != null && news.size() > 0) {
+                newsList = news;
+                categoryNewsAdapter.setNewsList(news);
+                categoryNewsAdapter.notifyDataSetChanged();
+                shimmerFrameLayout.stopShimmer();
+                shimmerFrameLayout.setVisibility(View.GONE);
+                handler.postDelayed(runnable = () -> swipeRefreshLayout.setRefreshing(false), 1000);
+            }
         };
         headLinesViewModel.getNewsList(preferenceManager.getLanguageName(), mCategoryId).observe(getViewLifecycleOwner(), newsObserver);
     }
@@ -158,7 +163,7 @@ public class DynamicTabFragment extends Fragment implements CategoryNewsAdapter.
         News news = newsList.get(position);
         Log.d(TAG, "onItemToggleButtonChecked: id: " + news.getId());
         headLinesViewModel.insertFavNews(new FavouriteNews(news.getId(),news.getTitle(), news.getDescription(),
-                news.getImage(), news.getCategoryName()));
+                news.getImage(), news.getCategoryName(), news.getImageCaption()));
     }
 
     @Override
@@ -166,7 +171,7 @@ public class DynamicTabFragment extends Fragment implements CategoryNewsAdapter.
         News news = newsList.get(position);
         Log.d(TAG, "onItemToggleButtonUnChecked: id: " + news.getId());
         headLinesViewModel.deleteFavNews(new FavouriteNews(news.getId(),news.getTitle(), news.getDescription(),
-                news.getImage(), news.getCategoryName()));
+                news.getImage(), news.getCategoryName(), news.getImageCaption()));
     }
 
     @Override
@@ -189,6 +194,7 @@ public class DynamicTabFragment extends Fragment implements CategoryNewsAdapter.
         intent.putExtra("news_title", news.getTitle());
         intent.putExtra("news_description", news.getDescription());
         intent.putExtra("news_image", news.getImage());
+        intent.putExtra("news_image_caption", news.getImageCaption());
         intent.putExtra("news_category", news.getCategoryName());
         intent.putExtra("news_time", news.getTime());
         startActivity(intent);
@@ -219,5 +225,11 @@ public class DynamicTabFragment extends Fragment implements CategoryNewsAdapter.
     public interface OnFragmentInteractionListener {
 
         void onFragmentInteraction(Uri uri);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        handler.removeCallbacks(runnable);
     }
 }

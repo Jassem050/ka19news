@@ -55,6 +55,10 @@ public class FavouriteNewsAdapter extends RecyclerView.Adapter<FavouriteNewsAdap
         this.favouriteNewsList = favouriteNewsList;
     }
 
+    public FavouriteNews getFavNewsAtPosition(int position){
+        return favouriteNewsList.get(position);
+    }
+
     @NonNull
     @Override
     public FavNewsViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {

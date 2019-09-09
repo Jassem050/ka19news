@@ -201,7 +201,7 @@ public class SearchResultsActivity extends AppCompatActivity implements SearchNe
         News news = newsList.get(position);
         Log.d(TAG, "onItemToggleButtonChecked: id: " + news.getId());
         searchNewsViewModel.insertFavNews(new FavouriteNews(news.getId(),news.getTitle(), news.getDescription(),
-                news.getImage(), news.getCategoryName()));
+                news.getImage(), news.getCategoryName(), news.getImageCaption()));
     }
 
     @Override
@@ -209,7 +209,7 @@ public class SearchResultsActivity extends AppCompatActivity implements SearchNe
         News news = newsList.get(position);
         Log.d(TAG, "onItemToggleButtonUnChecked: id: " + news.getId());
         searchNewsViewModel.deleteFavNews(new FavouriteNews(news.getId(),news.getTitle(), news.getDescription(),
-                news.getImage(), news.getCategoryName()));
+                news.getImage(), news.getCategoryName(), news.getImageCaption()));
     }
 
     @Override
@@ -235,6 +235,7 @@ public class SearchResultsActivity extends AppCompatActivity implements SearchNe
         intent.putExtra("news_title", news.getTitle());
         intent.putExtra("news_description", news.getDescription());
         intent.putExtra("news_image", news.getImage());
+        intent.putExtra("news_image_caption", news.getImageCaption());
         intent.putExtra("news_category", news.getCategoryName());
         intent.putExtra("news_time", news.getTime());
         startActivity(intent);

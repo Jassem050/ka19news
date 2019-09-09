@@ -41,7 +41,7 @@ public class PreferenceManager {
         editor.apply();
     }
 
-    public boolean isFirstTimeLauncg(){
+    public boolean isFirstTimeLaunch(){
         return pref.getBoolean(IS_FIRST_TIME_LAUNCH, true);
     }
 
