@@ -73,6 +73,17 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnFr
                     startActivity(new Intent(this, MyFeedPersonalizationActivity.class));
                     Log.d(TAG, "setUpNavigationView: manufctrr: " + Build.MANUFACTURER + Build.MODEL);
                     break;
+                case R.id.feedback:
+                    String deviceInfo = "\n\n\n\n" +  "Device: " + Build.DEVICE + "\n" + "Brand: " + Build.BRAND + "\n"
+                            + "Model: " + Build.MODEL + "\n" + "Manufacturer: " + Build.MANUFACTURER +
+                            "\n" + "Version: " + Build.VERSION.SDK_INT ;
+                    Intent intent = new Intent(Intent.ACTION_SENDTO);
+                    intent.setType("text/plain");
+                    intent.setData(Uri.parse("mailto:ka19news@gmail.com"));
+                    intent.putExtra(Intent.EXTRA_SUBJECT, "Feedback");
+                    intent.putExtra(Intent.EXTRA_TEXT, deviceInfo);
+                    startActivity(Intent.createChooser(intent, "Send Feedback"));
+                    break;
             }
             return false;
         });
