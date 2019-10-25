@@ -27,8 +27,16 @@ public class News {
     @SerializedName("category_name")
     private String categoryName;
 
+    private String messageType;
+    private String errorMessage;
+
     public News(String title) {
         this.title = title;
+    }
+
+    public News(String messageType, String errorMessage){
+        this.messageType = messageType;
+        this.errorMessage = errorMessage;
     }
 
     public int getId() {
@@ -85,5 +93,21 @@ public class News {
 
     public void setImageCaption(String imageCaption) {
         this.imageCaption = imageCaption;
+    }
+
+    public String getMessageType() {
+        return messageType;
+    }
+
+    public void setMessageType(String messageType) {
+        this.messageType = messageType;
+    }
+
+    public String getErrorMessage() {
+        return errorMessage;
+    }
+
+    public void setErrorMessage(String errorMessage) {
+        this.errorMessage = errorMessage;
     }
 }
