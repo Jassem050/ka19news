@@ -56,4 +56,14 @@
     <string name="time_placeholder_text">9 hours ago</string>
     <string name="newspaper">newspaper</string>
 
+
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="account">Account</string>
+    <string name="login">Login</string>
+    <string name="login_info_text">Enter your mobile number, we will send you  \n\t\t\t\t\t\t\t\t\t OTP to verify later</string>
+    <string name="done">Done</string>
+    <string name="otp_info_text">Enter 4 digit number that sent to</string>
+    <string name="phone_number_hint">10 digit mobile number</string>
+    <string name="continue_btn_string">Continue</string>
+
 </resources>

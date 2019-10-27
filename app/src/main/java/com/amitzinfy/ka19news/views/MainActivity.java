@@ -22,7 +22,7 @@ import com.google.android.material.navigation.NavigationView;
 
 public class MainActivity extends AppCompatActivity implements HomeFragment.OnFragmentInteractionListener,
         HeadLineFragment.OnFragmentInteractionListener, FavouriteFragment.OnFragmentInteractionListener,
-        DynamicTabFragment.OnFragmentInteractionListener{
+        DynamicTabFragment.OnFragmentInteractionListener, LoginFragment.OnFragmentInteractionListener {
     private static final String TAG = "MainActivity";
 
     private BottomNavigationView bottomNavigationView;
@@ -103,6 +103,10 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnFr
                     return true;
                 case R.id.navigation_favourites:
                     fragment = FavouriteFragment.newInstance("favourites", "favourites");
+                    loadFragment(fragment);
+                    return true;
+                case R.id.navigation_account:
+                    fragment = LoginFragment.newInstance("login", "login");
                     loadFragment(fragment);
                     return true;
             }

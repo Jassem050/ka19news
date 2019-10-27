@@ -16,8 +16,10 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".views.OTPActivity"/>
-        <activity android:name=".views.PhoneNumberActivity" />
+        <activity android:name=".views.OTPActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".views.PhoneNumberActivity"
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".views.WelcomeActivity"
             android:theme="@style/WelcomeScreenTheme" />
