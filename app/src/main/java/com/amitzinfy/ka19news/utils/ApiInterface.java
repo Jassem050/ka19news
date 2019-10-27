@@ -2,11 +2,15 @@ package com.amitzinfy.ka19news.utils;
 
 import com.amitzinfy.ka19news.models.retrofit.Category;
 import com.amitzinfy.ka19news.models.retrofit.News;
+import com.amitzinfy.ka19news.models.retrofit.OTPResponse;
 
 import java.util.List;
 
 import retrofit2.Call;
+import retrofit2.http.Field;
+import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
+import retrofit2.http.POST;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
 
@@ -26,4 +30,8 @@ public interface ApiInterface {
 
     @GET("language_news/{language_name}")
     Call<List<News>> getLanguageNews(@Path("language_name") String language_name);
+
+    @FormUrlEncoded
+    @POST("otp_generate")
+    Call<OTPResponse> getOTPInfo(@Field("mobile") String phoneNumber);
 }
