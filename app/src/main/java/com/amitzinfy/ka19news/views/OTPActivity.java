@@ -14,7 +14,6 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.amitzinfy.ka19news.R;
@@ -25,7 +24,6 @@ import com.google.android.gms.common.api.CommonStatusCodes;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.button.MaterialButton;
-import com.mukesh.OnOtpCompletionListener;
 import com.mukesh.OtpView;
 
 import java.util.regex.Matcher;
@@ -42,6 +40,7 @@ public class OTPActivity extends AppCompatActivity implements View.OnClickListen
     private String phoneNumber;
     private OTPViewModel otpViewModel;
     private String otpText;
+    private OTPResponse oTPResponse;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,6 +68,7 @@ public class OTPActivity extends AppCompatActivity implements View.OnClickListen
         otpViewModel = ViewModelProviders.of(this).get(OTPViewModel.class);
         otpView = findViewById(R.id.otp_view);
         doneButton = findViewById(R.id.done_btn);
+        doneButton.setOnClickListener(this);
         if (getIntent().hasExtra("phone_number")) {
             Bundle extras = getIntent().getExtras();
 
@@ -83,10 +83,12 @@ public class OTPActivity extends AppCompatActivity implements View.OnClickListen
         }
 
 
-        otpView.setOtpCompletionListener(new OnOtpCompletionListener() {
-            @Override
-            public void onOtpCompleted(String otp) {
-                Toast.makeText(OTPActivity.this, "Otp Entered", Toast.LENGTH_SHORT).show();
+        otpView.setOtpCompletionListener(otp -> {
+            Toast.makeText(OTPActivity.this, "Otp Entered", Toast.LENGTH_SHORT).show();
+            if (otpView.getText().toString().equals(oTPResponse.getOtp()) && oTPResponse.getType().equals("register")){
+                startActivity(new Intent(OTPActivity.this, RegisterActivity.class));
+            } else {
+                Toast.makeText(OTPActivity.this, "Login", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -96,12 +98,10 @@ public class OTPActivity extends AppCompatActivity implements View.OnClickListen
      */
     private void getOtpInfo(String phoneNumber){
         Log.d(TAG, "getOtpInfo: entered");
-        otpViewModel.getOTP(phoneNumber).observe(this, new Observer<OTPResponse>() {
-            @Override
-            public void onChanged(OTPResponse otpResponse) {
-                otpText = otpResponse.getOtp();
-                Log.d(TAG, "onChanged: otp: " + otpText);
-            }
+        otpViewModel.getOTP(phoneNumber).observe(this, otpResponse -> {
+            otpText = otpResponse.getOtp();
+            oTPResponse = otpResponse;
+            Log.d(TAG, "onChanged: otp: " + otpText);
         });
     }
 
@@ -111,23 +111,28 @@ public class OTPActivity extends AppCompatActivity implements View.OnClickListen
         public void onReceive(Context context, Intent intent) {
             if (SmsRetriever.SMS_RETRIEVED_ACTION.equals(intent.getAction())) {
                 Bundle extras = intent.getExtras();
-                Status smsRetrieverStatus = (Status) extras.get(SmsRetriever.EXTRA_STATUS);
+                Status smsRetrieverStatus = null;
+                if (extras != null) {
+                    smsRetrieverStatus = (Status) extras.get(SmsRetriever.EXTRA_STATUS);
+                }
 
-                switch (smsRetrieverStatus.getStatusCode()) {
-                    case CommonStatusCodes.SUCCESS:
-                        // Get consent intent
-                        Intent consentIntent = extras.getParcelable(SmsRetriever.EXTRA_CONSENT_INTENT);
-                        try {
-                            // Start activity to show consent dialog to user, activity must be started in
-                            // 5 minutes, otherwise you'll receive another TIMEOUT intent
-                            startActivityForResult(consentIntent, SMS_CONSENT_REQUEST);
-                        } catch (ActivityNotFoundException e) {
-                            // Handle the exception ...
-                        }
-                        break;
-                    case CommonStatusCodes.TIMEOUT:
-                        // Time out occurred, handle the error.
-                        break;
+                if (smsRetrieverStatus != null) {
+                    switch (smsRetrieverStatus.getStatusCode()) {
+                        case CommonStatusCodes.SUCCESS:
+                            // Get consent intent
+                            Intent consentIntent = extras.getParcelable(SmsRetriever.EXTRA_CONSENT_INTENT);
+                            try {
+                                // Start activity to show consent dialog to user, activity must be started in
+                                // 5 minutes, otherwise you'll receive another TIMEOUT intent
+                                startActivityForResult(consentIntent, SMS_CONSENT_REQUEST);
+                            } catch (ActivityNotFoundException e) {
+                                // Handle the exception ...
+                            }
+                            break;
+                        case CommonStatusCodes.TIMEOUT:
+                            // Time out occurred, handle the error.
+                            break;
+                    }
                 }
             }
         }
@@ -174,8 +179,12 @@ public class OTPActivity extends AppCompatActivity implements View.OnClickListen
 
     @Override
     public void onClick(View view) {
-        switch (view.getId()){
-            case R.id.done_btn:
+        if (view.getId() == R.id.done_btn) {
+            if (otpView.getText().toString().equals(oTPResponse.getOtp()) && oTPResponse.getType().equals("register")) {
+                startActivity(new Intent(OTPActivity.this, RegisterActivity.class));
+            } else {
+                Toast.makeText(OTPActivity.this, "Login", Toast.LENGTH_SHORT).show();
+            }
         }
     }
 }

@@ -65,5 +65,13 @@
     <string name="otp_info_text">Enter 4 digit number that sent to</string>
     <string name="phone_number_hint">10 digit mobile number</string>
     <string name="continue_btn_string">Continue</string>
+    <string name="create_an_account">Create an Account</string>
+    <string name="name_hint">Enter your name</string>
+    <string name="email_hint">Enter your email (Optional)</string>
+    <string name="address_hint">Enter your address</string>
+    <string name="male">Male</string>
+    <string name="female">Female</string>
+    <string name="date_of_birth_hint">Date of Birth</string>
+    <string name="register_btn">Register</string>
 
 </resources>

@@ -67,7 +67,7 @@ public class LoginFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_login, container, false);
 
         rootView.findViewById(R.id.login_btn)
-                .setOnClickListener(view -> startActivity(new Intent(getActivity(), PhoneNumberActivity.class)));
+                .setOnClickListener(view -> startActivity(new Intent(getActivity(), RegisterActivity.class)));
         return rootView;
     }
 
