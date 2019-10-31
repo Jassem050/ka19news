@@ -3,6 +3,7 @@ package com.amitzinfy.ka19news.utils;
 import com.amitzinfy.ka19news.models.retrofit.Category;
 import com.amitzinfy.ka19news.models.retrofit.News;
 import com.amitzinfy.ka19news.models.retrofit.OTPResponse;
+import com.amitzinfy.ka19news.models.retrofit.UserResponse;
 
 import java.util.List;
 
@@ -34,4 +35,14 @@ public interface ApiInterface {
     @FormUrlEncoded
     @POST("otp_generate")
     Call<OTPResponse> getOTPInfo(@Field("mobile") String phoneNumber);
+
+    @FormUrlEncoded
+    @POST("register")
+    Call<UserResponse> registerUser(@Field("name") String name, @Field("email") String email,
+                                    @Field("location") String address, @Field("gender") String gender,
+                                    @Field("dob") String dateOfBirth, @Field("mobile") String phoneNumber);
+
+    @FormUrlEncoded
+    @POST("login")
+    Call<UserResponse> loginUser(@Field("mobile") String phoneNumber);
 }

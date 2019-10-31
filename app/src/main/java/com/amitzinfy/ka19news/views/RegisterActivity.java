@@ -1,23 +1,31 @@
 package com.amitzinfy.ka19news.views;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.DatePicker;
 import android.widget.RadioGroup;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProviders;
 
 import com.amitzinfy.ka19news.R;
+import com.amitzinfy.ka19news.models.retrofit.UserResponse;
+import com.amitzinfy.ka19news.viewmodels.UserViewModel;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 
 public class RegisterActivity extends AppCompatActivity implements View.OnClickListener {
 
+    private static final String TAG = "RegisterActivity";
     private TextInputEditText nameEditText, emailEditText, addressEditText;
     private RadioGroup genderRadioGroup;
     private DatePicker datePicker;
     private MaterialButton registerButton;
+    private UserViewModel userViewModel;
+    private UserResponse registerResp;
+    private String gender, phoneNumber;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,25 +44,54 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
         datePicker = findViewById(R.id.date_picker);
         registerButton = findViewById(R.id.register_btn);
         registerButton.setOnClickListener(this);
+        userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
 
         genderRadioGroup.setOnCheckedChangeListener((radioGroup, i) -> {
             int selectedId = radioGroup.getCheckedRadioButtonId();
             if (selectedId == R.id.male){
-                Toast.makeText(this, "male", Toast.LENGTH_SHORT).show();
+                gender = getString(R.string.male);
             } else {
-                Toast.makeText(this, "Female", Toast.LENGTH_SHORT).show();
+                gender = getString(R.string.female);
             }
         });
 
+        if (getIntent().hasExtra("phone_number")) {
+            Bundle extras = getIntent().getExtras();
 
+            phoneNumber = extras != null ? extras.getString("phone_number") : null;
+        } else {
+            Log.d(TAG, "bindViews: no number");
+        }
+
+    }
+
+    private void registerUser(String name, String email, String address, String gender,
+                              String dateOfBirth, String phoneNumber){
+        userViewModel.registerUser(name, email, address, gender, dateOfBirth, phoneNumber)
+                .observe(this, userResponse -> {
+            registerResp = userResponse;
+                    Log.d(TAG, "registerUser: activity " + registerResp.getAccessToken());
+        });
     }
 
     @Override
     public void onClick(View view) {
         if (view.getId() == R.id.register_btn){
+            Log.d(TAG, "onClick: in");
+            int day = datePicker.getDayOfMonth();
             int month = datePicker.getMonth() + 1;
-            Toast.makeText(this, datePicker.getDayOfMonth() + "/" + month + "/" +
-                    datePicker.getYear(), Toast.LENGTH_SHORT).show();
+            int year = datePicker.getYear();
+            String name = nameEditText.getText().toString();
+            String email = emailEditText.getText().toString();
+            String address = addressEditText.getText().toString();
+            String dateOfBirth = year + "-" + month + "-" + day;
+            
+            if (!name.equals("") && gender!= null && !gender.equals("") && !address.equals("") && !dateOfBirth.equals("")) {
+                Log.d(TAG, "onClick: inif");
+                registerUser(name, email, address, gender, dateOfBirth, "8086501423");
+            } else {
+                Toast.makeText(this, "Enter all the feilds", Toast.LENGTH_SHORT).show();
+            }
         }
     }
 }

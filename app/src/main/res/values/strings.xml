@@ -73,5 +73,12 @@
     <string name="female">Female</string>
     <string name="date_of_birth_hint">Date of Birth</string>
     <string name="register_btn">Register</string>
+    <string name="personal_information">Personal Information</string>
+    <string name="upload">Upload</string>
+    <string name="other">Other</string>
+    <string name="add_news">Add News</string>
+    <string name="news_posted">News Posted</string>
+    <string name="news_accepted">News Accepted</string>
+    <string name="view_news">View News</string>
 
 </resources>

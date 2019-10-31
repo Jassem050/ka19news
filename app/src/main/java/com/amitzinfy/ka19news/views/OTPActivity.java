@@ -19,6 +19,7 @@ import androidx.lifecycle.ViewModelProviders;
 import com.amitzinfy.ka19news.R;
 import com.amitzinfy.ka19news.models.retrofit.OTPResponse;
 import com.amitzinfy.ka19news.viewmodels.OTPViewModel;
+import com.amitzinfy.ka19news.viewmodels.UserViewModel;
 import com.google.android.gms.auth.api.phone.SmsRetriever;
 import com.google.android.gms.common.api.CommonStatusCodes;
 import com.google.android.gms.common.api.Status;
@@ -41,6 +42,7 @@ public class OTPActivity extends AppCompatActivity implements View.OnClickListen
     private OTPViewModel otpViewModel;
     private String otpText;
     private OTPResponse oTPResponse;
+    private UserViewModel userViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,6 +68,7 @@ public class OTPActivity extends AppCompatActivity implements View.OnClickListen
 
     private void bindViews(){
         otpViewModel = ViewModelProviders.of(this).get(OTPViewModel.class);
+        userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
         otpView = findViewById(R.id.otp_view);
         doneButton = findViewById(R.id.done_btn);
         doneButton.setOnClickListener(this);
@@ -85,10 +88,12 @@ public class OTPActivity extends AppCompatActivity implements View.OnClickListen
 
         otpView.setOtpCompletionListener(otp -> {
             Toast.makeText(OTPActivity.this, "Otp Entered", Toast.LENGTH_SHORT).show();
-            if (otpView.getText().toString().equals(oTPResponse.getOtp()) && oTPResponse.getType().equals("register")){
-                startActivity(new Intent(OTPActivity.this, RegisterActivity.class));
-            } else {
+            if (otpView.getText().toString().equals(oTPResponse.getOtp()) && oTPResponse.getType().equals("register")) {
+                OTPActivity.this.startActivity(new Intent(OTPActivity.this, RegisterActivity.class));
+            } else if (otpView.getText().toString().equals(oTPResponse.getOtp()) && oTPResponse.getType().equals("login")) {
                 Toast.makeText(OTPActivity.this, "Login", Toast.LENGTH_SHORT).show();
+                OTPActivity.this.loginUser(phoneNumber);
+
             }
         });
     }
@@ -102,6 +107,16 @@ public class OTPActivity extends AppCompatActivity implements View.OnClickListen
             otpText = otpResponse.getOtp();
             oTPResponse = otpResponse;
             Log.d(TAG, "onChanged: otp: " + otpText);
+        });
+    }
+
+    private void loginUser(String phoneNumber){
+        userViewModel.loginUser(phoneNumber).observe(this, userResponse -> {
+            Log.d(TAG, "loginUser: success");
+            Log.d(TAG, "loginUser: access_token: " + userResponse.getAccessToken());
+            Intent intent = new Intent(this, MainActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(intent);
         });
     }
 
@@ -181,7 +196,9 @@ public class OTPActivity extends AppCompatActivity implements View.OnClickListen
     public void onClick(View view) {
         if (view.getId() == R.id.done_btn) {
             if (otpView.getText().toString().equals(oTPResponse.getOtp()) && oTPResponse.getType().equals("register")) {
-                startActivity(new Intent(OTPActivity.this, RegisterActivity.class));
+                Intent intent = new Intent(OTPActivity.this, RegisterActivity.class);
+                intent.putExtra("phone_number", phoneNumber);
+                startActivity(intent);
             } else {
                 Toast.makeText(OTPActivity.this, "Login", Toast.LENGTH_SHORT).show();
             }
