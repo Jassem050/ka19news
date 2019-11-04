@@ -176,7 +176,7 @@ public class HomeFragment extends Fragment implements MyFeedNewsListAdapter.News
         recyclerView.setAdapter(myFeedNewsListAdapter);
         myFeedViewModel = ViewModelProviders.of(this).get(MyFeedViewModel.class);
         swipeRefreshLayout = view.findViewById(R.id.swipe_refresh_layout);
-        shimmerFrameLayout = (view.findViewById(R.id.shimmer_layout);
+        shimmerFrameLayout = view.findViewById(R.id.shimmer_layout);
         shimmerFrameLayout.startShimmer();
         preferenceManager = PreferenceManager.getInstance(getActivity());
         // for drawer hamburger animation
