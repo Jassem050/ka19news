@@ -1,5 +1,6 @@
 package com.amitzinfy.ka19news.views;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -12,6 +13,7 @@ import androidx.lifecycle.ViewModelProviders;
 
 import com.amitzinfy.ka19news.R;
 import com.amitzinfy.ka19news.models.retrofit.UserResponse;
+import com.amitzinfy.ka19news.utils.PreferenceManager;
 import com.amitzinfy.ka19news.viewmodels.UserViewModel;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
@@ -24,8 +26,9 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
     private DatePicker datePicker;
     private MaterialButton registerButton;
     private UserViewModel userViewModel;
-    private UserResponse registerResp;
+    private UserResponse userResp;
     private String gender, phoneNumber;
+    private PreferenceManager preferenceManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +48,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
         registerButton = findViewById(R.id.register_btn);
         registerButton.setOnClickListener(this);
         userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
+        preferenceManager = PreferenceManager.getInstance(this);
 
         genderRadioGroup.setOnCheckedChangeListener((radioGroup, i) -> {
             int selectedId = radioGroup.getCheckedRadioButtonId();
@@ -65,12 +69,22 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
 
     }
 
+    /*
+    *   observing user LiveData
+    *   @param name, email, address, gender, dateOfBirth, phoneNumber
+    * */
     private void registerUser(String name, String email, String address, String gender,
                               String dateOfBirth, String phoneNumber){
         userViewModel.registerUser(name, email, address, gender, dateOfBirth, phoneNumber)
                 .observe(this, userResponse -> {
-            registerResp = userResponse;
-                    Log.d(TAG, "registerUser: activity " + registerResp.getAccessToken());
+            this.userResp = userResponse;
+            Log.d(TAG, "registerUser: activity " + this.userResp.getAccessToken());
+            Intent intent = new Intent(RegisterActivity.this, MainActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            preferenceManager.setAppStatus(getString(R.string.writer_status));
+            preferenceManager.setUserStatus(getString(R.string.logged_in_status));
+            preferenceManager.setAccessToken(this.userResp.getAccessToken());
+            startActivity(intent);
         });
     }
 
@@ -88,7 +102,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
             
             if (!name.equals("") && gender!= null && !gender.equals("") && !address.equals("") && !dateOfBirth.equals("")) {
                 Log.d(TAG, "onClick: inif");
-                registerUser(name, email, address, gender, dateOfBirth, "8086501423");
+                registerUser(name, email, address, gender, dateOfBirth, phoneNumber);
             } else {
                 Toast.makeText(this, "Enter all the feilds", Toast.LENGTH_SHORT).show();
             }

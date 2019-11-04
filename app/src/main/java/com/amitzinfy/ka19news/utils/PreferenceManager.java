@@ -22,6 +22,12 @@ public class PreferenceManager {
     private static final String LANGUAGE_NAME = "languagename";
     private static final String IS_FEED_FIRST_TIME_LAUNCH = "isFeedFirstTimeLaunch";
 
+    // user info
+    private static final String USER_ID = "userid";
+    private static final String ACCESS_TOKEN = "access_token";
+    private static final String USER_STATUS = "user_status";
+    private static final String APP_STATUS = "app_status";
+
 
     public static PreferenceManager getInstance(Context context){
         if (preferenceManager == null){
@@ -86,6 +92,45 @@ public class PreferenceManager {
 
     public int getIsFeedFirstTimeLaunch(){
         return pref.getInt(IS_FEED_FIRST_TIME_LAUNCH, 1);
+    }
+
+    /*
+    * user part
+    * */
+    public void setUserId(String userId){
+        editor.putString(USER_ID, userId);
+        editor.apply();
+    }
+
+    public String getUserId() {
+        return pref.getString(USER_ID, "userid");
+    }
+
+    public void setAccessToken(String accessToken){
+        editor.putString(ACCESS_TOKEN, accessToken);
+        editor.apply();
+    }
+
+    public String getAccessToken() {
+        return pref.getString(ACCESS_TOKEN, "access_token");
+    }
+
+    public void setUserStatus(String userStatus){
+        editor.putString(USER_STATUS, userStatus);
+        editor.apply();
+    }
+
+    public String getUserStatus(){
+        return pref.getString(USER_STATUS, "logged_out");
+    }
+
+    public void setAppStatus(String appStatus){
+        editor.putString(APP_STATUS, appStatus);
+        editor.apply();
+    }
+
+    public String getAppStatus(){
+        return pref.getString(APP_STATUS, "reader");
     }
 
 }

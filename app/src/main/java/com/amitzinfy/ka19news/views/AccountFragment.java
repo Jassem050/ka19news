@@ -4,10 +4,12 @@ import android.content.Context;
 import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -17,9 +19,14 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProviders;
 
 import com.amitzinfy.ka19news.R;
+import com.amitzinfy.ka19news.utils.PreferenceManager;
+import com.amitzinfy.ka19news.viewmodels.UserViewModel;
 import com.google.android.material.appbar.MaterialToolbar;
+import com.google.android.material.button.MaterialButton;
+import com.google.android.material.textview.MaterialTextView;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -30,6 +37,7 @@ import com.google.android.material.appbar.MaterialToolbar;
  * create an instance of this fragment.
  */
 public class AccountFragment extends Fragment {
+    private static final String TAG = "AccountFragment";
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
@@ -42,6 +50,11 @@ public class AccountFragment extends Fragment {
     private ActionBar actionBar;
     private DrawerLayout drawerLayout;
     private ActionBarDrawerToggle actionBarDrawerToggle;
+    private PreferenceManager preferenceManager;
+    private UserViewModel userViewModel;
+    private MaterialButton uploadImageBtn;
+    private MaterialTextView profileName, profileEmail, profileMobileNo;
+    private MaterialTextView newsAddCount, newsAcceptCount;
 
     public AccountFragment() {
         // Required empty public constructor
@@ -81,7 +94,10 @@ public class AccountFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_account, container, false);
 
         setToolbar(rootView);
-
+        bindView(rootView);
+        if (preferenceManager.getUserStatus().equals(getString(R.string.logged_in_status))){
+            preferenceManager.setAppStatus(getString(R.string.reader_writer_status));
+        }
 
         // for drawer hamburger animation
         if (getActivity() != null)
@@ -92,6 +108,9 @@ public class AccountFragment extends Fragment {
         actionBarDrawerToggle.getDrawerArrowDrawable().setColor(ContextCompat.getColor(getActivity(), R.color.white));
         actionBarDrawerToggle.setDrawerSlideAnimationEnabled(true);
         drawerLayout.addDrawerListener(actionBarDrawerToggle);
+
+        getUserDetails(preferenceManager.getAccessToken());
+        getAddedNewsCount(preferenceManager.getAccessToken());
         return rootView;
     }
 
@@ -108,6 +127,43 @@ public class AccountFragment extends Fragment {
 
         }
     }
+
+    private void bindView(View view){
+        uploadImageBtn = view.findViewById(R.id.upload_image_btn);
+        profileName = view.findViewById(R.id.profile_name);
+        profileEmail = view.findViewById(R.id.profile_email);
+        profileMobileNo = view.findViewById(R.id.profile_phone);
+        newsAddCount = view.findViewById(R.id.news_add_count);
+        newsAcceptCount = view.findViewById(R.id.news_accept_count);
+
+        preferenceManager = PreferenceManager.getInstance(getActivity());
+        userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
+        uploadImageBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d(TAG, "onClick: access_token: " + preferenceManager.getAccessToken());
+                Toast.makeText(getActivity(), preferenceManager.getAccessToken(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void getUserDetails(String access_token){
+        Log.d(TAG, "getUserDetails: ");
+        userViewModel.getUserDetails(access_token).observe(getViewLifecycleOwner(), userResponse -> {
+            Log.d(TAG, "getUserDetails: user: " + userResponse.getUser().toString());
+            profileName.setText(userResponse.getUser().getName());
+            profileEmail.setText(userResponse.getUser().getEmail());
+            profileMobileNo.setText(userResponse.getUser().getMobileNumber());
+        });
+    }
+
+    private void getAddedNewsCount(String access_token){
+        userViewModel.getAddedNewsCount(access_token).observe(getViewLifecycleOwner(), newsAdded -> {
+            newsAddCount.setText(String.valueOf(newsAdded.getNewsCount()));
+            newsAcceptCount.setText(String.valueOf(newsAdded.getNewsAcceptedCount()));
+        });
+    }
+
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {

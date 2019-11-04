@@ -6,6 +6,7 @@ import android.util.Log;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import com.amitzinfy.ka19news.models.retrofit.NewsAdded;
 import com.amitzinfy.ka19news.models.retrofit.UserResponse;
 import com.amitzinfy.ka19news.utils.ApiInterface;
 import com.amitzinfy.ka19news.utils.RetrofitClient;
@@ -18,6 +19,8 @@ public class UserRepository {
     private static final String TAG = "UserRepository";
 
     private MutableLiveData<UserResponse> userLiveData = new MutableLiveData<>();
+    private MutableLiveData<UserResponse> userResponseLiveData = new MutableLiveData<>() ;
+    private MutableLiveData<NewsAdded> newsAddedMutableLiveData = new MutableLiveData<>();
 
     public UserRepository(Application application) {
     }
@@ -74,5 +77,52 @@ public class UserRepository {
         Log.d(TAG, "loginUser: repo");
         login(phoneNumber);
         return userLiveData;
+    }
+
+    private void userDetails(String access_token){
+        Log.d(TAG, "userDetails: serverResp");
+        ApiInterface apiInterface = RetrofitClient.getRetrofitClient().create(ApiInterface.class);
+        Call<UserResponse> call = apiInterface.getUserDetails("Bearer " + access_token);
+        call.enqueue(new Callback<UserResponse>() {
+            @Override
+            public void onResponse(Call<UserResponse> call, Response<UserResponse> response) {
+                if (response.isSuccessful() && response.body() != null){
+                    userResponseLiveData.postValue(response.body());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<UserResponse> call, Throwable t) {
+                Log.d(TAG, "onFailure: userDetails: ", t);
+            }
+        });
+    }
+
+    public LiveData<UserResponse> getUserDetails(String access_token){
+        userDetails(access_token);
+        return userResponseLiveData;
+    }
+
+    private void newsCount(String access_token){
+        ApiInterface apiInterface = RetrofitClient.getRetrofitClient().create(ApiInterface.class);
+        Call<NewsAdded> call = apiInterface.getNewsCount("Bearer " + access_token);
+        call.enqueue(new Callback<NewsAdded>() {
+            @Override
+            public void onResponse(Call<NewsAdded> call, Response<NewsAdded> response) {
+                if (response.isSuccessful() && response.body() != null){
+                    newsAddedMutableLiveData.postValue(response.body());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<NewsAdded> call, Throwable t) {
+                Log.d(TAG, "onFailure: newsAdded ", t);
+            }
+        });
+    }
+
+    public LiveData<NewsAdded> getAddedNewsCount(String access_token){
+        newsCount(access_token);
+        return newsAddedMutableLiveData;
     }
 }

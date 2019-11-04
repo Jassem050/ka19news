@@ -1,5 +1,7 @@
 package com.amitzinfy.ka19news.models.retrofit;
 
+import androidx.annotation.NonNull;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
@@ -70,5 +72,11 @@ public class User {
 
     public void setMobileNumber(String mobileNumber) {
         this.mobileNumber = mobileNumber;
+    }
+
+    @NonNull
+    @Override
+    public String toString() {
+        return name + "\n" + address + "\n" + mobileNumber;
     }
 }

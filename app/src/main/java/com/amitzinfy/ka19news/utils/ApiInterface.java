@@ -2,6 +2,7 @@ package com.amitzinfy.ka19news.utils;
 
 import com.amitzinfy.ka19news.models.retrofit.Category;
 import com.amitzinfy.ka19news.models.retrofit.News;
+import com.amitzinfy.ka19news.models.retrofit.NewsAdded;
 import com.amitzinfy.ka19news.models.retrofit.OTPResponse;
 import com.amitzinfy.ka19news.models.retrofit.UserResponse;
 
@@ -11,6 +12,8 @@ import retrofit2.Call;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
+import retrofit2.http.Header;
+import retrofit2.http.Headers;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
@@ -45,4 +48,12 @@ public interface ApiInterface {
     @FormUrlEncoded
     @POST("login")
     Call<UserResponse> loginUser(@Field("mobile") String phoneNumber);
+
+    @Headers("Accept: application/json")
+    @GET("user")
+    Call<UserResponse> getUserDetails(@Header("Authorization") String accessToken);
+
+    @Headers("Accept: application/json")
+    @POST("news_count")
+    Call<NewsAdded> getNewsCount(@Header("Authorization") String accessToken);
 }

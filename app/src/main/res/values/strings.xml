@@ -81,4 +81,15 @@
     <string name="news_accepted">News Accepted</string>
     <string name="view_news">View News</string>
 
+    <!-- user and app status -->
+    <string name="logged_in_status">logged_in</string>
+    <string name="logged_out_status">logged_out</string>
+    <string name="reader_writer_status">reader_writer</string>
+    <string name="reader_status">reader</string>
+    <string name="writer_status">writer</string>
+
+    <!-- languages   -->
+    <string name="english_language">English</string>
+    <string name="zero">0</string>
+
 </resources>

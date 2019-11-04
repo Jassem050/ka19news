@@ -94,7 +94,6 @@
                         android:layout_marginStart="30dp"
                         android:layout_marginTop="16dp"
                         android:gravity="clip_vertical"
-                        android:text="Jassem Abbas"
                         android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle2"
                         android:textSize="20sp"
                         android:textStyle="bold"
@@ -123,7 +122,6 @@
                         android:drawableStart="@drawable/ic_email_black_24dp"
                         android:drawablePadding="8dp"
                         android:gravity="clip_vertical"
-                        android:text="jassi050@gmail.com"
                         android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
                         android:textSize="12sp"
                         android:textStyle="bold"
@@ -139,7 +137,6 @@
                         android:drawableStart="@drawable/ic_phone_android_black_24dp"
                         android:drawablePadding="8dp"
                         android:gravity="clip_vertical"
-                        android:text="8086501423"
                         android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
                         android:textSize="12sp"
                         android:textStyle="bold"
@@ -172,13 +169,33 @@
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/other_activities">
 
-                <com.google.android.material.textview.MaterialTextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:padding="16dp"
-                    android:text="@string/add_news"
-                    android:textAppearance="@style/TextAppearance.MaterialComponents.Body2" />
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:padding="16dp"
+                        android:text="@string/add_news"
+                        android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintLeft_toLeftOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <androidx.appcompat.widget.AppCompatImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="8dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintRight_toRightOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:srcCompat="@drawable/ic_keyboard_arrow_right_black" />
+
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
 
             </com.google.android.material.card.MaterialCardView>
 
@@ -186,11 +203,11 @@
                 android:id="@+id/count_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
                 android:background="@color/white"
                 android:backgroundTint="@color/white"
                 app:cardCornerRadius="3dp"
                 app:cardElevation="2dp"
-                android:layout_marginTop="2dp"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/add_news">
@@ -198,9 +215,9 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:baselineAligned="false"
                     android:orientation="horizontal"
-                    android:padding="16dp"
-                    android:baselineAligned="false">
+                    android:padding="16dp">
 
                     <androidx.constraintlayout.widget.ConstraintLayout
                         android:id="@+id/add_layout"
@@ -214,7 +231,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginStart="36dp"
                             android:layout_marginEnd="92dp"
-                            android:text="0"
+                            android:text="@string/zero"
                             android:textSize="36sp"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintLeft_toLeftOf="parent"
@@ -233,7 +250,6 @@
                     </androidx.constraintlayout.widget.ConstraintLayout>
 
 
-
                     <androidx.constraintlayout.widget.ConstraintLayout
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
@@ -243,9 +259,9 @@
                             android:layout_width="1dp"
                             android:layout_height="match_parent"
                             android:background="@color/DividerColor"
+                            app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintLeft_toLeftOf="parent"
-                            app:layout_constraintTop_toTopOf="parent"
-                            app:layout_constraintBottom_toBottomOf="parent"/>
+                            app:layout_constraintTop_toTopOf="parent" />
 
                         <com.google.android.material.textview.MaterialTextView
                             android:id="@+id/news_accept_count"
@@ -253,7 +269,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginStart="36dp"
                             android:layout_marginTop="4dp"
-                            android:text="0"
+                            android:text="@string/zero"
                             android:textSize="36sp"
                             app:layout_constraintHorizontal_bias="0.38"
                             app:layout_constraintLeft_toLeftOf="parent"
@@ -266,8 +282,8 @@
                             android:layout_marginStart="54dp"
                             android:layout_marginTop="4dp"
                             android:text="@string/news_accepted"
-                            android:textSize="12sp"
                             android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
+                            android:textSize="12sp"
                             app:layout_constraintLeft_toLeftOf="parent"
                             app:layout_constraintTop_toBottomOf="@+id/news_accept_count" />
                     </androidx.constraintlayout.widget.ConstraintLayout>
@@ -279,20 +295,39 @@
                 android:id="@+id/view_btn_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:cardElevation="2dp"
                 android:layout_marginTop="2dp"
+                app:cardElevation="2dp"
                 app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/count_layout"
-                app:layout_constraintRight_toRightOf="parent">
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/count_layout">
 
-                <com.google.android.material.textview.MaterialTextView
-                    android:id="@+id/view_btn"
+                <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/view_news"
-                    android:padding="16dp"
-                    android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"/>
+                    android:layout_height="match_parent">
 
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/view_btn"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="16dp"
+                        android:text="@string/view_news"
+                        android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintLeft_toLeftOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+
+                    <androidx.appcompat.widget.AppCompatImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="8dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintRight_toRightOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:srcCompat="@drawable/ic_keyboard_arrow_right_black" />
+
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
             </com.google.android.material.card.MaterialCardView>
 
         </androidx.constraintlayout.widget.ConstraintLayout>

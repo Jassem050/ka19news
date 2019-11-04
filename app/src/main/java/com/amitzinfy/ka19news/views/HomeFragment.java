@@ -107,8 +107,10 @@ public class HomeFragment extends Fragment implements MyFeedNewsListAdapter.News
 
         setToolbar(rootView);
         init(rootView);
-
-        if (preferenceManager.getLanguageName().equals("English")) {
+        if (preferenceManager.getUserStatus().equals(getString(R.string.logged_in_status))) {
+            preferenceManager.setAppStatus(getString(R.string.reader_writer_status));
+        }
+        if (preferenceManager.getLanguageName().equals(getString(R.string.english_language))) {
             subscribe();
         } else {
             getLanguageNews();
@@ -116,7 +118,7 @@ public class HomeFragment extends Fragment implements MyFeedNewsListAdapter.News
 
 
         swipeRefreshLayout.setOnRefreshListener(() -> {
-            if (preferenceManager.getLanguageName().equals("English")) {
+            if (preferenceManager.getLanguageName().equals(getString(R.string.english_language))) {
                 subscribe();
             } else {
                 getLanguageNews();
@@ -173,8 +175,8 @@ public class HomeFragment extends Fragment implements MyFeedNewsListAdapter.News
         recyclerView.setHasFixedSize(true);
         recyclerView.setAdapter(myFeedNewsListAdapter);
         myFeedViewModel = ViewModelProviders.of(this).get(MyFeedViewModel.class);
-        swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_refresh_layout);
-        shimmerFrameLayout = (ShimmerFrameLayout) view.findViewById(R.id.shimmer_layout);
+        swipeRefreshLayout = view.findViewById(R.id.swipe_refresh_layout);
+        shimmerFrameLayout = (view.findViewById(R.id.shimmer_layout);
         shimmerFrameLayout.startShimmer();
         preferenceManager = PreferenceManager.getInstance(getActivity());
         // for drawer hamburger animation
@@ -202,7 +204,7 @@ public class HomeFragment extends Fragment implements MyFeedNewsListAdapter.News
     }
 
     private void setToolbar(View view){
-        materialToolbar = (MaterialToolbar) view.findViewById(R.id.myfeed_toolbar);
+        materialToolbar = view.findViewById(R.id.myfeed_toolbar);
         if (getActivity() != null) {
             ((AppCompatActivity) getActivity()).setSupportActionBar(materialToolbar);
             actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();

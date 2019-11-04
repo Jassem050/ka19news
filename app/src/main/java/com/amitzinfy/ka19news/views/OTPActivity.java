@@ -18,6 +18,7 @@ import androidx.lifecycle.ViewModelProviders;
 
 import com.amitzinfy.ka19news.R;
 import com.amitzinfy.ka19news.models.retrofit.OTPResponse;
+import com.amitzinfy.ka19news.utils.PreferenceManager;
 import com.amitzinfy.ka19news.viewmodels.OTPViewModel;
 import com.amitzinfy.ka19news.viewmodels.UserViewModel;
 import com.google.android.gms.auth.api.phone.SmsRetriever;
@@ -43,6 +44,7 @@ public class OTPActivity extends AppCompatActivity implements View.OnClickListen
     private String otpText;
     private OTPResponse oTPResponse;
     private UserViewModel userViewModel;
+    private PreferenceManager preferenceManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,7 +94,7 @@ public class OTPActivity extends AppCompatActivity implements View.OnClickListen
                 OTPActivity.this.startActivity(new Intent(OTPActivity.this, RegisterActivity.class));
             } else if (otpView.getText().toString().equals(oTPResponse.getOtp()) && oTPResponse.getType().equals("login")) {
                 Toast.makeText(OTPActivity.this, "Login", Toast.LENGTH_SHORT).show();
-                OTPActivity.this.loginUser(phoneNumber);
+                loginUser(phoneNumber);
 
             }
         });
@@ -116,6 +118,9 @@ public class OTPActivity extends AppCompatActivity implements View.OnClickListen
             Log.d(TAG, "loginUser: access_token: " + userResponse.getAccessToken());
             Intent intent = new Intent(this, MainActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            preferenceManager.setAppStatus(getString(R.string.writer_status));
+            preferenceManager.setUserStatus(getString(R.string.logged_in_status));
+            preferenceManager.setAccessToken(userResponse.getAccessToken());
             startActivity(intent);
         });
     }
@@ -201,6 +206,7 @@ public class OTPActivity extends AppCompatActivity implements View.OnClickListen
                 startActivity(intent);
             } else {
                 Toast.makeText(OTPActivity.this, "Login", Toast.LENGTH_SHORT).show();
+                loginUser(phoneNumber);
             }
         }
     }

@@ -23,7 +23,7 @@ import com.google.android.material.navigation.NavigationView;
 public class MainActivity extends AppCompatActivity implements HomeFragment.OnFragmentInteractionListener,
         HeadLineFragment.OnFragmentInteractionListener, FavouriteFragment.OnFragmentInteractionListener,
         DynamicTabFragment.OnFragmentInteractionListener, LoginFragment.OnFragmentInteractionListener,
-        AccountFragment.OnFragmentInteractionListener{
+        AccountFragment.OnFragmentInteractionListener {
     private static final String TAG = "MainActivity";
 
     private BottomNavigationView bottomNavigationView;
@@ -39,10 +39,18 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnFr
         init();
         setUpBottomNavView();
         setUpNavigationView();
-        loadFragment(HomeFragment.newInstance("home","home"));
+        Log.d(TAG, "onCreate: user_status " + preferenceManager.getUserStatus() + " " + preferenceManager.getAppStatus());
+        if (preferenceManager.getAppStatus().equals(getString(R.string.reader_status)) ||
+                preferenceManager.getAppStatus().equals(getString(R.string.reader_writer_status))) {
+            loadFragment(HomeFragment.newInstance("home", "home"));
+            bottomNavigationView.setSelectedItemId(R.id.navigation_home);
+        } else if (preferenceManager.getAppStatus().equals(getString(R.string.writer_status))) {
+            loadFragment(AccountFragment.newInstance("account", "account"));
+            bottomNavigationView.setSelectedItemId(R.id.navigation_account);
+        }
     }
 
-    private void init(){
+    private void init() {
         bottomNavigationView = findViewById(R.id.bottom_navigation);
         drawerLayout = findViewById(R.id.drawer_layout);
         navigationView = findViewById(R.id.navigation);
@@ -51,22 +59,22 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnFr
         navigationView.setItemIconTintList(null);
     }
 
-    private void setUpNavigationView(){
+    private void setUpNavigationView() {
         navigationView.setNavigationItemSelectedListener(item -> {
             drawerLayout.closeDrawers();
 //                item.setChecked(true);
-            switch (item.getItemId()){
+            switch (item.getItemId()) {
                 case R.id.english:
                     Toast.makeText(MainActivity.this, "english", Toast.LENGTH_SHORT).show();
                     preferenceManager.setLanguageName("English");
-                    Log.d(TAG, "onNavigationItemSelected: language_id: " +  preferenceManager.getLanguageName());
+                    Log.d(TAG, "onNavigationItemSelected: language_id: " + preferenceManager.getLanguageName());
                     myFeedViewModel.setLanguageId(preferenceManager.getLanguageName());
                     bottomNavigationView.setSelectedItemId(R.id.navigation_home);
                     break;
                 case R.id.kannada:
                     Toast.makeText(MainActivity.this, "Kannada", Toast.LENGTH_SHORT).show();
                     preferenceManager.setLanguageName("Kannada");
-                    Log.d(TAG, "onNavigationItemSelected: language_id: " +  preferenceManager.getLanguageName());
+                    Log.d(TAG, "onNavigationItemSelected: language_id: " + preferenceManager.getLanguageName());
                     myFeedViewModel.setLanguageId(preferenceManager.getLanguageName());
                     bottomNavigationView.setSelectedItemId(R.id.navigation_home);
                     break;
@@ -75,9 +83,9 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnFr
                     Log.d(TAG, "setUpNavigationView: manufctrr: " + Build.MANUFACTURER + Build.MODEL);
                     break;
                 case R.id.feedback:
-                    String deviceInfo = "\n\n\n\n" +  "Device: " + Build.DEVICE + "\n" + "Brand: " + Build.BRAND + "\n"
+                    String deviceInfo = "\n\n\n\n" + "Device: " + Build.DEVICE + "\n" + "Brand: " + Build.BRAND + "\n"
                             + "Model: " + Build.MODEL + "\n" + "Manufacturer: " + Build.MANUFACTURER +
-                            "\n" + "Version: " + Build.VERSION.SDK_INT ;
+                            "\n" + "Version: " + Build.VERSION.SDK_INT;
                     Intent intent = new Intent(Intent.ACTION_SENDTO);
                     intent.setType("text/plain");
                     intent.setData(Uri.parse("mailto:ka19news@gmail.com"));
@@ -90,10 +98,10 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnFr
         });
     }
 
-    private void setUpBottomNavView(){
+    private void setUpBottomNavView() {
         bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
             Fragment fragment;
-            switch (item.getItemId()){
+            switch (item.getItemId()) {
                 case R.id.navigation_home:
                     fragment = HomeFragment.newInstance("home", "home");
                     loadFragment(fragment);
@@ -107,15 +115,20 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnFr
                     loadFragment(fragment);
                     return true;
                 case R.id.navigation_account:
-                    fragment = AccountFragment.newInstance("login", "login");
-                    loadFragment(fragment);
+                    if (preferenceManager.getUserStatus().equals("logged_in")) {
+                        fragment = AccountFragment.newInstance("account", "account");
+                        loadFragment(fragment);
+                    } else if (preferenceManager.getUserStatus().equals("logged_out")) {
+                        fragment = LoginFragment.newInstance("login", "login");
+                        loadFragment(fragment);
+                    }
                     return true;
             }
             return false;
         });
     }
 
-    private void loadFragment(Fragment fragment){
+    private void loadFragment(Fragment fragment) {
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction.replace(R.id.content_main_frame, fragment);
         fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
