@@ -7,10 +7,16 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.amitzinfy.ka19news.models.retrofit.NewsAdded;
+import com.amitzinfy.ka19news.models.retrofit.User;
 import com.amitzinfy.ka19news.models.retrofit.UserResponse;
 import com.amitzinfy.ka19news.utils.ApiInterface;
 import com.amitzinfy.ka19news.utils.RetrofitClient;
 
+import java.io.File;
+
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -21,9 +27,9 @@ public class UserRepository {
     private MutableLiveData<UserResponse> userLiveData = new MutableLiveData<>();
     private MutableLiveData<UserResponse> userResponseLiveData = new MutableLiveData<>() ;
     private MutableLiveData<NewsAdded> newsAddedMutableLiveData = new MutableLiveData<>();
+    private MutableLiveData<User> imageResponseMutableLiveData = new MutableLiveData<>();
 
-    public UserRepository(Application application) {
-    }
+    public UserRepository(Application application) {}
 
     private void register(String name, String email, String address, String gender,
                          String dateOfBirth, String phoneNumber) {
@@ -124,5 +130,65 @@ public class UserRepository {
     public LiveData<NewsAdded> getAddedNewsCount(String access_token){
         newsCount(access_token);
         return newsAddedMutableLiveData;
+    }
+
+    private void updateImage(String access_token, String encodedImageString){
+        Log.d(TAG, "updateImage: serverRepo");
+        ApiInterface apiInterface = RetrofitClient.getRetrofitClient().create(ApiInterface.class);
+        Call<User> call = apiInterface.updateImage("Bearer " + access_token, encodedImageString);
+        call.enqueue(new Callback<User>() {
+            @Override
+            public void onResponse(Call<User> call, Response<User> response) {
+                if (response.isSuccessful() && response.body() != null){
+                    imageResponseMutableLiveData.postValue(response.body());
+                    Log.d(TAG, "onResponse: updateImage: " + response.body().getImage() + "\n" + response.body().getMessage());
+                } else {
+                    Log.d(TAG, "onResponse: updateFail: " + response);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<User> call, Throwable t) {
+                Log.d(TAG, "onFailure: ", t);
+            }
+        });
+    }
+
+    private void updateProfImage(String accessToken, File file){
+        Log.d(TAG, "updateProfImage: serverRepo");
+        ApiInterface apiInterface = RetrofitClient.getRetrofitClient().create(ApiInterface.class);
+
+        RequestBody fileReqBody = RequestBody.create(MediaType.get("image/*"), file);
+        Log.d(TAG, "updateProfImage: fileName: " + file.getName());
+        MultipartBody.Part part = MultipartBody.Part.createFormData("image", file.getName(), fileReqBody);
+
+        Call<User> call = apiInterface.updateProfImage("Bearer " + accessToken, part);
+        call.enqueue(new Callback<User>() {
+            @Override
+            public void onResponse(Call<User> call, Response<User> response) {
+                if (response.isSuccessful() && response.body() != null){
+                    imageResponseMutableLiveData.postValue(response.body());
+                    Log.d(TAG, "onResponse: updateImage: " + response.body().getImage() + "\n message: "
+                            + response.body().getMessage());
+                } else {
+                    Log.d(TAG, "onResponse: updateImage:else " + response);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<User> call, Throwable t) {
+                Log.d(TAG, "onFailure: updateImage: ", t);
+            }
+        });
+    }
+
+//    public LiveData<User> updateProfileImage(String access_token, String encodedImageString){
+//        updateImage(access_token, encodedImageString);
+//        return imageResponseMutableLiveData;
+//    }
+
+    public LiveData<User> updateProfilePhoto(String access_token, File file){
+        updateProfImage(access_token, file);
+        return imageResponseMutableLiveData;
     }
 }

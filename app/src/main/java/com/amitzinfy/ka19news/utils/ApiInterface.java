@@ -4,17 +4,21 @@ import com.amitzinfy.ka19news.models.retrofit.Category;
 import com.amitzinfy.ka19news.models.retrofit.News;
 import com.amitzinfy.ka19news.models.retrofit.NewsAdded;
 import com.amitzinfy.ka19news.models.retrofit.OTPResponse;
+import com.amitzinfy.ka19news.models.retrofit.User;
 import com.amitzinfy.ka19news.models.retrofit.UserResponse;
 
 import java.util.List;
 
+import okhttp3.MultipartBody;
 import retrofit2.Call;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.Headers;
+import retrofit2.http.Multipart;
 import retrofit2.http.POST;
+import retrofit2.http.Part;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
 
@@ -56,4 +60,14 @@ public interface ApiInterface {
     @Headers("Accept: application/json")
     @POST("news_count")
     Call<NewsAdded> getNewsCount(@Header("Authorization") String accessToken);
+
+    @Headers("Accept: application/json")
+    @FormUrlEncoded
+    @POST("update_image")
+    Call<User> updateImage(@Header("Authorization") String accessToken, @Field("image") String encodedImageString);
+
+    @Headers("Accept: application/json")
+    @Multipart
+    @POST("updateimage")
+    Call<User> updateProfImage(@Header("Authorization") String accessToken, @Part MultipartBody.Part file);
 }

@@ -25,6 +25,12 @@ public class User {
     @Expose
     @SerializedName("mobile")
     private String mobileNumber;
+    @Expose
+    @SerializedName("image")
+    private String image;
+    @Expose
+    @SerializedName("message")
+    private String message;
 
     public String getName() {
         return name;
@@ -72,6 +78,22 @@ public class User {
 
     public void setMobileNumber(String mobileNumber) {
         this.mobileNumber = mobileNumber;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
     }
 
     @NonNull

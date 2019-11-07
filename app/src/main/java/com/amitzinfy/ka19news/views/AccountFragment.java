@@ -1,32 +1,43 @@
 package com.amitzinfy.ka19news.views;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Configuration;
+import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
+import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.AppCompatImageView;
 import androidx.core.content.ContextCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.amitzinfy.ka19news.R;
+import com.amitzinfy.ka19news.utils.GlideApp;
+import com.amitzinfy.ka19news.utils.NetworkUtils;
 import com.amitzinfy.ka19news.utils.PreferenceManager;
 import com.amitzinfy.ka19news.viewmodels.UserViewModel;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textview.MaterialTextView;
+
+import java.io.ByteArrayOutputStream;
+import java.io.File;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -41,6 +52,7 @@ public class AccountFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
+    private static final int IMG_REQUEST_CODE = 123;
 
     private String mParam1;
     private String mParam2;
@@ -55,6 +67,9 @@ public class AccountFragment extends Fragment {
     private MaterialButton uploadImageBtn;
     private MaterialTextView profileName, profileEmail, profileMobileNo;
     private MaterialTextView newsAddCount, newsAcceptCount;
+    private Bitmap bitmap;
+    private String encodedImage;
+    private AppCompatImageView profileImage;
 
     public AccountFragment() {
         // Required empty public constructor
@@ -135,15 +150,13 @@ public class AccountFragment extends Fragment {
         profileMobileNo = view.findViewById(R.id.profile_phone);
         newsAddCount = view.findViewById(R.id.news_add_count);
         newsAcceptCount = view.findViewById(R.id.news_accept_count);
+        profileImage = view.findViewById(R.id.profile_image);
 
         preferenceManager = PreferenceManager.getInstance(getActivity());
         userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
-        uploadImageBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Log.d(TAG, "onClick: access_token: " + preferenceManager.getAccessToken());
-                Toast.makeText(getActivity(), preferenceManager.getAccessToken(), Toast.LENGTH_SHORT).show();
-            }
+        uploadImageBtn.setOnClickListener(view1 -> {
+            Log.d(TAG, "onClick: access_token: " + preferenceManager.getAccessToken());
+            selectImage();
         });
     }
 
@@ -154,6 +167,8 @@ public class AccountFragment extends Fragment {
             profileName.setText(userResponse.getUser().getName());
             profileEmail.setText(userResponse.getUser().getEmail());
             profileMobileNo.setText(userResponse.getUser().getMobileNumber());
+            if (getActivity() != null)
+            GlideApp.with(getActivity()).load(NetworkUtils.PROFILE_IMG_URL + userResponse.getUser().getImage()).into(profileImage);
         });
     }
 
@@ -164,6 +179,165 @@ public class AccountFragment extends Fragment {
         });
     }
 
+    private void selectImage(){
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(intent, IMG_REQUEST_CODE);
+    }
+
+//    private void updateImage(String access_token, String encodedImageString){
+//        Log.d(TAG, "updateImage: fragment");
+//        userViewModel.updateProfileImage(access_token, encodedImageString).observe(getViewLifecycleOwner(), user -> {
+//            if (getActivity() != null)
+//            GlideApp.with(getActivity()).load(NetworkUtils.IMAGE_URL + user.getImage()).into(profileImage);
+//        });
+//    }
+
+    private void uploadImage(String access_token, File file){
+        userViewModel.updateProfImage(access_token, file).observe(getViewLifecycleOwner(), user -> {
+            if (getActivity() != null)
+                GlideApp.with(getActivity()).load(NetworkUtils.PROFILE_IMG_URL + user.getImage()).into(profileImage);
+        });
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (getActivity() != null) {
+            if (requestCode == IMG_REQUEST_CODE && resultCode == Activity.RESULT_OK && data != null) {
+                Uri path = data.getData();
+//                try {
+//                    if (Build.VERSION.SDK_INT < 28) {
+//                        bitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), path);
+//                        bitmap = getResizedBitmap(bitmap, 900);
+//                        Log.d(TAG, "onActivityResult: <28");
+//                    } else {
+//                        ImageDecoder.Source source = null;
+//                        if (path != null) {
+//                            source = ImageDecoder.createSource(getActivity().getContentResolver(), path);
+//                        }
+//                        if (source != null) {
+//                            bitmap = ImageDecoder.decodeBitmap(source);
+//                        }
+//                        bitmap = getResizedBitmap(bitmap, 1024);
+////                        final InputStream imageStream = getActivity().getContentResolver().openInputStream(path);
+////                        bitmap = BitmapFactory.decodeStream(imageStream);
+//                        Log.d(TAG, "onActivityResult: >28");
+//                    }
+////                newsImageView.setImageBitmap(bitmap);
+////                newsImageView.setVisibility(View.VISIBLE);
+////                relativeLayout.setVisibility(View.GONE);
+////                removeImageButton.setVisibility(View.VISIBLE);
+//                    encodedImage = imageToString();
+//                    updateImage(preferenceManager.getAccessToken(), encodedImage);
+//                    Log.d(TAG, "onActivityResult: imageString : " + encodedImage);
+////                addNewsPrefManager.setNewsImage(encodedImage);
+//
+//                    String fileName;
+//                    if (path.getScheme().equals("file")) {
+//                        fileName = path.getLastPathSegment();
+//                    } else {
+//                        Cursor cursor = null;
+//                        try {
+//                            cursor = getActivity().getContentResolver().query(path, new String[]{
+//                                    MediaStore.Images.ImageColumns.DISPLAY_NAME
+//                            }, null, null, null);
+//
+//                            if (cursor != null && cursor.moveToFirst()) {
+//                                fileName = cursor.getString(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DISPLAY_NAME));
+//                                Log.d("ImageName", "name is " + fileName);
+//                            }
+//                        } finally {
+//
+//                            if (cursor != null) {
+//                                cursor.close();
+//                            }
+//                        }
+//                    }
+//
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
+
+//                if (path != null) {
+//                    Log.d(TAG, "onActivityResult: path_uri: " + path);
+//                    Log.d(TAG, "onActivityResult: path: " + getRealPathFromURI(getActivity(), path));
+//                    Log.d(TAG, "onActivityResult: path: s " + path.getPath());
+//                    String pa = path.getPath();
+//                    File file = new File(getRealPathFromURI(getContext(), path));
+//                    uploadImage(preferenceManager.getAccessToken(), file);
+//                }
+                File file = new File(getImageFilePath(path));
+                uploadImage(preferenceManager.getAccessToken(), file);
+            }
+        }
+    }
+
+
+//    public String getRealPathFromURI(Context context, Uri contentUri) {
+//        Cursor cursor = null;
+//        try {
+//            String[] proj = { MediaStore.Images.Media.DATA };
+//            cursor = context.getContentResolver().query(contentUri,  proj, null, null, null);
+//            int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+//            Log.d(TAG, "getRealPathFromURI: index: " + column_index);
+//            cursor.moveToFirst();
+//            return cursor.getString(column_index);
+//        } catch (Exception e) {
+//            Log.e(TAG, "getRealPathFromURI Exception : " + e.toString());
+//            return "";
+//        } finally {
+//            if (cursor != null) {
+//                cursor.close();
+//            }
+//        }
+//    }
+
+    private String getImageFilePath(Uri uri) {
+        String path = null, image_id = null;
+        Cursor cursor = null;
+        Cursor cursor1 = null;
+        if (getActivity() != null)
+        cursor = getActivity().getContentResolver().query(uri, null, null, null, null);
+        if (cursor != null) {
+            cursor.moveToFirst();
+            image_id = cursor.getString(0);
+            image_id = image_id.substring(image_id.lastIndexOf(":") + 1);
+            cursor.close();
+        }
+        if (getActivity() != null)
+        cursor1 = getActivity().getContentResolver().query(android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI, null, MediaStore.Images.Media._ID + " = ? ", new String[]{image_id}, null);
+        if (cursor1!=null) {
+            cursor1.moveToFirst();
+            path = cursor1.getString(cursor1.getColumnIndex(MediaStore.Images.Media.DATA));
+            Log.d(TAG, "getImageFilePath: path: " + path);
+            cursor1.close();
+        }
+        return path;
+    }
+
+    private Bitmap getResizedBitmap(Bitmap image, int maxSize) {
+        int width = image.getWidth();
+        int height = image.getHeight();
+
+        float bitmapRatio = (float)width / (float) height;
+        if (bitmapRatio > 1) {
+            width = maxSize;
+            height = (int) (width / bitmapRatio);
+        } else {
+            height = maxSize;
+            width = (int) (height * bitmapRatio);
+        }
+        return Bitmap.createScaledBitmap(image, width, height, true);
+    }
+
+    private String imageToString(){
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG,100,byteArrayOutputStream);
+        byte[] imageBytes = byteArrayOutputStream.toByteArray();
+        return Base64.encodeToString(imageBytes, Base64.DEFAULT);
+    }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {

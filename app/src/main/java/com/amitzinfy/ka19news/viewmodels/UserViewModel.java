@@ -8,8 +8,11 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 
 import com.amitzinfy.ka19news.models.retrofit.NewsAdded;
+import com.amitzinfy.ka19news.models.retrofit.User;
 import com.amitzinfy.ka19news.models.retrofit.UserResponse;
 import com.amitzinfy.ka19news.repositories.UserRepository;
+
+import java.io.File;
 
 public class UserViewModel extends AndroidViewModel {
     private static final String TAG = "UserViewModel";
@@ -38,5 +41,16 @@ public class UserViewModel extends AndroidViewModel {
 
     public LiveData<NewsAdded> getAddedNewsCount(String access_token){
         return userRepository.getAddedNewsCount(access_token);
+    }
+
+//    public LiveData<User> updateProfileImage(String access_token, String encodedImageString){
+//        Log.d(TAG, "updateProfileImage: viewModel");
+//        Log.d(TAG, "updateProfileImage: encode: " + encodedImageString);
+//        return userRepository.updateProfileImage(access_token, encodedImageString);
+//    }
+
+    public LiveData<User> updateProfImage(String access_token, File file){
+        Log.d(TAG, "updateProfImage: viewModel");
+        return userRepository.updateProfilePhoto(access_token, file);
     }
 }

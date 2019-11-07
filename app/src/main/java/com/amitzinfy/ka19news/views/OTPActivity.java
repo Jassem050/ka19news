@@ -91,7 +91,9 @@ public class OTPActivity extends AppCompatActivity implements View.OnClickListen
         otpView.setOtpCompletionListener(otp -> {
             Toast.makeText(OTPActivity.this, "Otp Entered", Toast.LENGTH_SHORT).show();
             if (otpView.getText().toString().equals(oTPResponse.getOtp()) && oTPResponse.getType().equals("register")) {
-                OTPActivity.this.startActivity(new Intent(OTPActivity.this, RegisterActivity.class));
+                Intent intent = new Intent(OTPActivity.this, RegisterActivity.class);
+                intent.putExtra("phone_number", phoneNumber);
+                OTPActivity.this.startActivity(intent);
             } else if (otpView.getText().toString().equals(oTPResponse.getOtp()) && oTPResponse.getType().equals("login")) {
                 Toast.makeText(OTPActivity.this, "Login", Toast.LENGTH_SHORT).show();
                 loginUser(phoneNumber);

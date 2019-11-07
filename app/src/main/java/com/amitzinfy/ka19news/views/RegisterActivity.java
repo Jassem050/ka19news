@@ -63,6 +63,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
             Bundle extras = getIntent().getExtras();
 
             phoneNumber = extras != null ? extras.getString("phone_number") : null;
+            Log.d(TAG, "bindViews: phone Number");
         } else {
             Log.d(TAG, "bindViews: no number");
         }
@@ -99,6 +100,11 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
             String email = emailEditText.getText().toString();
             String address = addressEditText.getText().toString();
             String dateOfBirth = year + "-" + month + "-" + day;
+            Log.d(TAG, "onClick: phone: " + phoneNumber);
+            Log.d(TAG, "onClick: name: " + name);
+            Log.d(TAG, "onClick: email: " + email);
+            Log.d(TAG, "onClick: address: " + address);
+            Log.d(TAG, "onClick: dateOfBirth : " + dateOfBirth);
             
             if (!name.equals("") && gender!= null && !gender.equals("") && !address.equals("") && !dateOfBirth.equals("")) {
                 Log.d(TAG, "onClick: inif");

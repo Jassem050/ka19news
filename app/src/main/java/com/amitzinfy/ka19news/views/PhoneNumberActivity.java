@@ -6,6 +6,7 @@ import android.content.IntentSender;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Toast;
 
 import androidx.appcompat.app.ActionBar;
@@ -19,6 +20,7 @@ import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 
 public class PhoneNumberActivity extends AppCompatActivity {
+    private static final String TAG = "PhoneNumberActivity";
 
     private static final int CREDENTIAL_PICKER_REQUEST = 1;  // Set to an unused request code
 
@@ -35,6 +37,7 @@ public class PhoneNumberActivity extends AppCompatActivity {
         try {
             requestHint();
         } catch (IntentSender.SendIntentException e) {
+            Log.d(TAG, "onCreate: hintExcep: " + e.getMessage());
             e.printStackTrace();
         }
     }
