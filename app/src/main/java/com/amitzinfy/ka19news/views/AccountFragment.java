@@ -1,8 +1,10 @@
 package com.amitzinfy.ka19news.views;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -15,6 +17,7 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -53,6 +56,7 @@ public class AccountFragment extends Fragment {
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
     private static final int IMG_REQUEST_CODE = 123;
+    private static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 123;
 
     private String mParam1;
     private String mParam2;
@@ -156,7 +160,15 @@ public class AccountFragment extends Fragment {
         userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
         uploadImageBtn.setOnClickListener(view1 -> {
             Log.d(TAG, "onClick: access_token: " + preferenceManager.getAccessToken());
-            selectImage();
+            if (getActivity() != null) {
+                if (ContextCompat.checkSelfPermission(getActivity(),
+                        Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                    requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                            MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE);
+                } else {
+                    selectImage();
+                }
+            }
         });
     }
 
@@ -186,13 +198,6 @@ public class AccountFragment extends Fragment {
         startActivityForResult(intent, IMG_REQUEST_CODE);
     }
 
-//    private void updateImage(String access_token, String encodedImageString){
-//        Log.d(TAG, "updateImage: fragment");
-//        userViewModel.updateProfileImage(access_token, encodedImageString).observe(getViewLifecycleOwner(), user -> {
-//            if (getActivity() != null)
-//            GlideApp.with(getActivity()).load(NetworkUtils.IMAGE_URL + user.getImage()).into(profileImage);
-//        });
-//    }
 
     private void uploadImage(String access_token, File file){
         userViewModel.updateProfImage(access_token, file).observe(getViewLifecycleOwner(), user -> {
@@ -202,72 +207,26 @@ public class AccountFragment extends Fragment {
     }
 
     @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (requestCode == MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Log.d(TAG, "onRequestPermissionsResult: granted");
+                selectImage();
+            } else {
+                Toast.makeText(getActivity(), "Permission is needed to upload", Toast.LENGTH_SHORT).show();
+            }
+            return;
+        }
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
+
+    @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (getActivity() != null) {
             if (requestCode == IMG_REQUEST_CODE && resultCode == Activity.RESULT_OK && data != null) {
                 Uri path = data.getData();
-//                try {
-//                    if (Build.VERSION.SDK_INT < 28) {
-//                        bitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), path);
-//                        bitmap = getResizedBitmap(bitmap, 900);
-//                        Log.d(TAG, "onActivityResult: <28");
-//                    } else {
-//                        ImageDecoder.Source source = null;
-//                        if (path != null) {
-//                            source = ImageDecoder.createSource(getActivity().getContentResolver(), path);
-//                        }
-//                        if (source != null) {
-//                            bitmap = ImageDecoder.decodeBitmap(source);
-//                        }
-//                        bitmap = getResizedBitmap(bitmap, 1024);
-////                        final InputStream imageStream = getActivity().getContentResolver().openInputStream(path);
-////                        bitmap = BitmapFactory.decodeStream(imageStream);
-//                        Log.d(TAG, "onActivityResult: >28");
-//                    }
-////                newsImageView.setImageBitmap(bitmap);
-////                newsImageView.setVisibility(View.VISIBLE);
-////                relativeLayout.setVisibility(View.GONE);
-////                removeImageButton.setVisibility(View.VISIBLE);
-//                    encodedImage = imageToString();
-//                    updateImage(preferenceManager.getAccessToken(), encodedImage);
-//                    Log.d(TAG, "onActivityResult: imageString : " + encodedImage);
-////                addNewsPrefManager.setNewsImage(encodedImage);
-//
-//                    String fileName;
-//                    if (path.getScheme().equals("file")) {
-//                        fileName = path.getLastPathSegment();
-//                    } else {
-//                        Cursor cursor = null;
-//                        try {
-//                            cursor = getActivity().getContentResolver().query(path, new String[]{
-//                                    MediaStore.Images.ImageColumns.DISPLAY_NAME
-//                            }, null, null, null);
-//
-//                            if (cursor != null && cursor.moveToFirst()) {
-//                                fileName = cursor.getString(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DISPLAY_NAME));
-//                                Log.d("ImageName", "name is " + fileName);
-//                            }
-//                        } finally {
-//
-//                            if (cursor != null) {
-//                                cursor.close();
-//                            }
-//                        }
-//                    }
-//
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
 
-//                if (path != null) {
-//                    Log.d(TAG, "onActivityResult: path_uri: " + path);
-//                    Log.d(TAG, "onActivityResult: path: " + getRealPathFromURI(getActivity(), path));
-//                    Log.d(TAG, "onActivityResult: path: s " + path.getPath());
-//                    String pa = path.getPath();
-//                    File file = new File(getRealPathFromURI(getContext(), path));
-//                    uploadImage(preferenceManager.getAccessToken(), file);
-//                }
                 File file = new File(getImageFilePath(path));
                 uploadImage(preferenceManager.getAccessToken(), file);
             }

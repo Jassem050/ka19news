@@ -43,12 +43,6 @@ public class UserViewModel extends AndroidViewModel {
         return userRepository.getAddedNewsCount(access_token);
     }
 
-//    public LiveData<User> updateProfileImage(String access_token, String encodedImageString){
-//        Log.d(TAG, "updateProfileImage: viewModel");
-//        Log.d(TAG, "updateProfileImage: encode: " + encodedImageString);
-//        return userRepository.updateProfileImage(access_token, encodedImageString);
-//    }
-
     public LiveData<User> updateProfImage(String access_token, File file){
         Log.d(TAG, "updateProfImage: viewModel");
         return userRepository.updateProfilePhoto(access_token, file);

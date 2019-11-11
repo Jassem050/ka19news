@@ -132,28 +132,6 @@ public class UserRepository {
         return newsAddedMutableLiveData;
     }
 
-    private void updateImage(String access_token, String encodedImageString){
-        Log.d(TAG, "updateImage: serverRepo");
-        ApiInterface apiInterface = RetrofitClient.getRetrofitClient().create(ApiInterface.class);
-        Call<User> call = apiInterface.updateImage("Bearer " + access_token, encodedImageString);
-        call.enqueue(new Callback<User>() {
-            @Override
-            public void onResponse(Call<User> call, Response<User> response) {
-                if (response.isSuccessful() && response.body() != null){
-                    imageResponseMutableLiveData.postValue(response.body());
-                    Log.d(TAG, "onResponse: updateImage: " + response.body().getImage() + "\n" + response.body().getMessage());
-                } else {
-                    Log.d(TAG, "onResponse: updateFail: " + response);
-                }
-            }
-
-            @Override
-            public void onFailure(Call<User> call, Throwable t) {
-                Log.d(TAG, "onFailure: ", t);
-            }
-        });
-    }
-
     private void updateProfImage(String accessToken, File file){
         Log.d(TAG, "updateProfImage: serverRepo");
         ApiInterface apiInterface = RetrofitClient.getRetrofitClient().create(ApiInterface.class);
@@ -182,10 +160,6 @@ public class UserRepository {
         });
     }
 
-//    public LiveData<User> updateProfileImage(String access_token, String encodedImageString){
-//        updateImage(access_token, encodedImageString);
-//        return imageResponseMutableLiveData;
-//    }
 
     public LiveData<User> updateProfilePhoto(String access_token, File file){
         updateProfImage(access_token, file);
