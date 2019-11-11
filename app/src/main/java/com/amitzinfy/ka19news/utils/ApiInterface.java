@@ -1,6 +1,7 @@
 package com.amitzinfy.ka19news.utils;
 
 import com.amitzinfy.ka19news.models.retrofit.Category;
+import com.amitzinfy.ka19news.models.retrofit.Language;
 import com.amitzinfy.ka19news.models.retrofit.News;
 import com.amitzinfy.ka19news.models.retrofit.NewsAdded;
 import com.amitzinfy.ka19news.models.retrofit.OTPResponse;
@@ -62,12 +63,24 @@ public interface ApiInterface {
     Call<NewsAdded> getNewsCount(@Header("Authorization") String accessToken);
 
     @Headers("Accept: application/json")
-    @FormUrlEncoded
-    @POST("update_image")
-    Call<User> updateImage(@Header("Authorization") String accessToken, @Field("image") String encodedImageString);
-
-    @Headers("Accept: application/json")
     @Multipart
     @POST("updateimage")
     Call<User> updateProfImage(@Header("Authorization") String accessToken, @Part MultipartBody.Part file);
+
+    @Headers("Accept: application/json")
+    @Multipart
+    @POST("addnews")
+    Call<News> postNews(@Header("Authorization") String accessToken, @Part MultipartBody.Part file,
+                        @Part("language_id") String languageId, @Part("language_name") String languageName,
+                        @Part("cat_id") String categoryId, @Part("news_title") String newsTitle,
+                        @Part("news_content") String newsContent, @Part("place") String place);
+
+    @Headers("Accept: application/json")
+    @POST("languages")
+    Call<Language> getLanguages(@Header("Authorization") String accessToken);
+
+    @Headers("Accept: application/json")
+    @FormUrlEncoded
+    @POST("languages")
+    Call<Category> getCategories(@Header("Authorization") String accessToken, @Field("language_id") String languageId);
 }

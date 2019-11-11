@@ -37,6 +37,7 @@ import com.amitzinfy.ka19news.utils.PreferenceManager;
 import com.amitzinfy.ka19news.viewmodels.UserViewModel;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.textview.MaterialTextView;
 
 import java.io.ByteArrayOutputStream;
@@ -74,6 +75,7 @@ public class AccountFragment extends Fragment {
     private Bitmap bitmap;
     private String encodedImage;
     private AppCompatImageView profileImage;
+    private MaterialCardView addNewsBtn, viewNewsBtn;
 
     public AccountFragment() {
         // Required empty public constructor
@@ -155,6 +157,8 @@ public class AccountFragment extends Fragment {
         newsAddCount = view.findViewById(R.id.news_add_count);
         newsAcceptCount = view.findViewById(R.id.news_accept_count);
         profileImage = view.findViewById(R.id.profile_image);
+        addNewsBtn = view.findViewById(R.id.add_news);
+        viewNewsBtn = view.findViewById(R.id.view_btn_layout);
 
         preferenceManager = PreferenceManager.getInstance(getActivity());
         userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
@@ -170,6 +174,8 @@ public class AccountFragment extends Fragment {
                 }
             }
         });
+
+        addNewsBtn.setOnClickListener(view1 -> startActivity(new Intent(getActivity(), AddNewsActivity.class)));
     }
 
     private void getUserDetails(String access_token){
