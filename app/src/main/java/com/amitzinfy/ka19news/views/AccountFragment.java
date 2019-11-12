@@ -31,10 +31,10 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.amitzinfy.ka19news.R;
-import com.amitzinfy.ka19news.utils.GlideApp;
 import com.amitzinfy.ka19news.utils.NetworkUtils;
 import com.amitzinfy.ka19news.utils.PreferenceManager;
 import com.amitzinfy.ka19news.viewmodels.UserViewModel;
+import com.chinalwb.are.glidesupport.GlideApp;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.card.MaterialCardView;

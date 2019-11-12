@@ -18,9 +18,9 @@ import androidx.lifecycle.ViewModelProviders;
 
 import com.amitzinfy.ka19news.R;
 import com.amitzinfy.ka19news.models.room.FavouriteNews;
-import com.amitzinfy.ka19news.utils.GlideApp;
 import com.amitzinfy.ka19news.utils.NetworkUtils;
 import com.amitzinfy.ka19news.viewmodels.FavouritesViewModel;
+import com.chinalwb.are.glidesupport.GlideApp;
 
 public class NewsDetailsActivity extends AppCompatActivity {
 

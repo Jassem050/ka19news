@@ -26,12 +26,20 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatImageView;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProviders;
 
 import com.amitzinfy.ka19news.R;
+import com.amitzinfy.ka19news.models.retrofit.Category;
+import com.amitzinfy.ka19news.models.retrofit.Language;
+import com.amitzinfy.ka19news.utils.PreferenceManager;
+import com.amitzinfy.ka19news.viewmodels.AddNewsViewModel;
+import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -41,7 +49,7 @@ import java.io.IOException;
  * Use the {@link AddNewsDetailsFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class AddNewsDetailsFragment extends Fragment {
+public class AddNewsDetailsFragment extends Fragment implements View.OnClickListener {
     private static final String TAG = "AddNewsDetailsFragment";
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -54,12 +62,17 @@ public class AddNewsDetailsFragment extends Fragment {
 
     private OnFragmentInteractionListener mListener;
 
-    private TextInputLayout languageInputLayout, categoryInputLayout;
+    private TextInputLayout languageInputLayout, categoryInputLayout, newsTitleLayout;
     private TextInputEditText newsTitleEditText;
     private AutoCompleteTextView languageDropDown, categoryDropDown;
     private RelativeLayout selectImageBtn;
     private AppCompatImageView uploadedImageView;
     private Bitmap bitmap;
+    private MaterialButton nextBtn;
+
+    private AddNewsViewModel addNewsViewModel;
+    private PreferenceManager preferenceManager;
+    private List<Language> languageListForID;
 
     public AddNewsDetailsFragment() {
         // Required empty public constructor
@@ -98,52 +111,80 @@ public class AddNewsDetailsFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_add_news_details, container, false);
         bindViews(rootView);
 
-        String[] COUNTRIES = new String[] {"Item 1", "Item 2", "Item 3", "Item 4"};
-
-        ArrayAdapter<String> adapter =
-                new ArrayAdapter<>(
-                        getContext(),
-                        R.layout.dropdown_menu_popup_item,
-                        COUNTRIES);
-
-
-        languageDropDown.setAdapter(adapter);
+        getLanguages(preferenceManager.getAccessToken());
 
 
         languageDropDown.setOnItemClickListener((adapterView, view, position, l) -> {
             Log.d(TAG, "onItemSelected: id: " + position);
         });
-        rootView.findViewById(R.id.click_btn).setOnClickListener(view -> {
-            Log.d(TAG, "onCreateView: " + languageDropDown.getText().toString());
 
-            if (languageDropDown.getText().toString().equals("")) {
-                languageInputLayout.setErrorEnabled(true);
-                languageInputLayout.setError("not selected");
+        languageDropDown.setOnItemClickListener((adapterView, view, position, l) -> {
+            Log.d(TAG, "onItemClick: " + languageDropDown.getText().toString());
+            if (languageListForID != null && languageListForID.size() > 0){
+                Language language = languageListForID.get(position);
+                categoryDropDown.setText("");
+                getCategories(preferenceManager.getAccessToken(), language.getLanguageId());
             }
         });
 
-        selectImageBtn.setOnClickListener(view-> {
-            if (getActivity() != null) {
-                if (ContextCompat.checkSelfPermission(getActivity(),
-                        Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                    requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
-                            MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE);
-                } else {
-                    selectImage();
-                }
-            }
+        categoryDropDown.setOnItemClickListener((adapterView, view, position, l) -> {
+            newsTitleLayout.setVisibility(View.VISIBLE);
+            selectImageBtn.setVisibility(View.VISIBLE);
+            nextBtn.setVisibility(View.VISIBLE);
         });
 
         return rootView;
     }
 
     private void bindViews(View view){
+        preferenceManager = PreferenceManager.getInstance(getActivity());
+        addNewsViewModel = ViewModelProviders.of(this).get(AddNewsViewModel.class);
         languageInputLayout = view.findViewById(R.id.languages_input_layout);
         categoryInputLayout = view.findViewById(R.id.categories_input_layout);
         languageDropDown = view.findViewById(R.id.languages_dropdown);
         categoryDropDown = view.findViewById(R.id.categories_dropdown);
         selectImageBtn = view.findViewById(R.id.upload_img_layout);
         uploadedImageView = view.findViewById(R.id.uploaded_img);
+        newsTitleLayout = view.findViewById(R.id.news_title_layout);
+        nextBtn = view.findViewById(R.id.next_btn);
+        selectImageBtn.setOnClickListener(this);
+        nextBtn.setOnClickListener(this);
+    }
+
+    private void getLanguages(String accessToken){
+        addNewsViewModel.getLanguages(accessToken).observe(getViewLifecycleOwner(), languages -> {
+            languageListForID = languages;
+            List<String> languageList = new ArrayList<>();
+            for (Language language : languages) {
+                 languageList.add(language.getLanguage());
+            }
+//            String[] COUNTRIES = new String[] {"Item 1", "Item 2", "Item 3", "Item 4"};
+
+            ArrayAdapter<String> adapter =
+                    new ArrayAdapter<>(
+                            getContext(),
+                            R.layout.dropdown_menu_popup_item,
+                            languageList);
+
+
+            languageDropDown.setAdapter(adapter);
+        });
+    }
+
+    private void getCategories(String accessToken, String languageId){
+        addNewsViewModel.getCategories(accessToken, languageId).observe(getViewLifecycleOwner(), categories -> {
+            List<String> categoryList = new ArrayList<>();
+            for (Category category : categories){
+                categoryList.add(category.getName());
+            }
+            ArrayAdapter<String> adapter =
+                    new ArrayAdapter<>(
+                            getContext(),
+                            R.layout.dropdown_menu_popup_item,
+                            categoryList);
+            categoryDropDown.setAdapter(adapter);
+            categoryInputLayout.setVisibility(View.VISIBLE);
+        });
     }
 
     private void selectImage(){
@@ -260,6 +301,31 @@ public class AddNewsDetailsFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
+    }
+
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()){
+            case R.id.upload_img_layout:
+                if (getActivity() != null) {
+                    if (ContextCompat.checkSelfPermission(getActivity(),
+                            Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                        requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                                MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE);
+                    } else {
+                        selectImage();
+                    }
+                }
+                break;
+            case R.id.next_btn:
+                Log.d(TAG, "onCreateView: " + languageDropDown.getText().toString());
+
+                if (languageDropDown.getText().toString().equals("")) {
+                    languageInputLayout.setErrorEnabled(true);
+                    languageInputLayout.setError("not selected");
+                }
+                break;
+        }
     }
 
     /**

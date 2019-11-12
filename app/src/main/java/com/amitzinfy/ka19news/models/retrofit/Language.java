@@ -6,11 +6,22 @@ import com.google.gson.annotations.SerializedName;
 public class Language {
 
     @Expose
+    @SerializedName("language_id")
+    private String languageId;
+    @Expose
     @SerializedName("language_name")
     private String languageName;
     @Expose
     @SerializedName("language")
     private String language;
+
+    public String getLanguageId() {
+        return languageId;
+    }
+
+    public void setLanguageId(String languageId) {
+        this.languageId = languageId;
+    }
 
     public String getLanguageName() {
         return languageName;

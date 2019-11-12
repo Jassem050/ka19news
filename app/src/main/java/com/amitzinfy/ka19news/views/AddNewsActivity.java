@@ -28,4 +28,12 @@ public class AddNewsActivity extends AppCompatActivity implements AddNewsDetails
     public void onFragmentInteraction(Uri uri) {
 
     }
+
+    @Override
+    public void onBackPressed() {
+        if (getSupportFragmentManager().getBackStackEntryCount() == 1){
+            finish();
+        }
+        super.onBackPressed();
+    }
 }

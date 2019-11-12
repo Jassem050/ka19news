@@ -80,4 +80,7 @@ dependencies {
     // play services auth component
     implementation 'com.google.android.gms:play-services-auth:17.0.0'
     implementation 'com.google.android.gms:play-services-auth-api-phone:17.3.0'
+
+    // richText editor
+    implementation project(':are')
 }

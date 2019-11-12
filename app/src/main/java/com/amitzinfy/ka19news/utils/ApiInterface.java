@@ -77,10 +77,10 @@ public interface ApiInterface {
 
     @Headers("Accept: application/json")
     @POST("languages")
-    Call<Language> getLanguages(@Header("Authorization") String accessToken);
+    Call<List<Language>> getLanguages(@Header("Authorization") String accessToken);
 
     @Headers("Accept: application/json")
     @FormUrlEncoded
-    @POST("languages")
-    Call<Category> getCategories(@Header("Authorization") String accessToken, @Field("language_id") String languageId);
+    @POST("find_cat")
+    Call<List<Category>> getCategories(@Header("Authorization") String accessToken, @Field("language_id") String languageId);
 }
