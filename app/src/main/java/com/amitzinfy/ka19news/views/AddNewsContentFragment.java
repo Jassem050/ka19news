@@ -1,10 +1,13 @@
 package com.amitzinfy.ka19news.views;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -19,9 +22,11 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatImageView;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProviders;
 
 import com.amitzinfy.ka19news.R;
 import com.amitzinfy.ka19news.utils.PreferenceManager;
+import com.amitzinfy.ka19news.viewmodels.AddNewsViewModel;
 import com.chinalwb.are.AREditText;
 import com.chinalwb.are.styles.toolbar.ARE_ToolbarDefault;
 import com.chinalwb.are.styles.toolbar.IARE_Toolbar;
@@ -42,6 +47,7 @@ import com.chinalwb.are.styles.toolitems.ARE_ToolItem_Superscript;
 import com.chinalwb.are.styles.toolitems.ARE_ToolItem_Underline;
 import com.chinalwb.are.styles.toolitems.IARE_ToolItem;
 
+import java.io.File;
 
 
 /**
@@ -53,6 +59,7 @@ import com.chinalwb.are.styles.toolitems.IARE_ToolItem;
  * create an instance of this fragment.
  */
 public class AddNewsContentFragment extends Fragment {
+    private static final String TAG = "AddNewsContentFragment";
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
@@ -67,6 +74,7 @@ public class AddNewsContentFragment extends Fragment {
 
     private PreferenceManager preferenceManager;
     private ActionBar actionBar;
+    private AddNewsViewModel addNewsViewModel;
 
 
     public AddNewsContentFragment() {
@@ -109,6 +117,11 @@ public class AddNewsContentFragment extends Fragment {
         initToolbar(rootView);
 
         preferenceManager = PreferenceManager.getInstance(getActivity());
+        addNewsViewModel = ViewModelProviders.of(this).get(AddNewsViewModel.class);
+
+        if (!preferenceManager.getNewsContent().equals("")){
+            mEditText.fromHtml(preferenceManager.getNewsContent());
+        }
         return rootView;
     }
 
@@ -182,6 +195,29 @@ public class AddNewsContentFragment extends Fragment {
         inflater.inflate(R.menu.add_news_menu, menu);
     }
 
+    private String getImageFilePath(Uri uri) {
+        String path = null, image_id = null;
+        Cursor cursor = null;
+        Cursor cursor1 = null;
+        if (getActivity() != null)
+            cursor = getActivity().getContentResolver().query(uri, null, null, null, null);
+        if (cursor != null) {
+            cursor.moveToFirst();
+            image_id = cursor.getString(0);
+            image_id = image_id.substring(image_id.lastIndexOf(":") + 1);
+            cursor.close();
+        }
+        if (getActivity() != null)
+            cursor1 = getActivity().getContentResolver().query(android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI, null, MediaStore.Images.Media._ID + " = ? ", new String[]{image_id}, null);
+        if (cursor1!=null) {
+            cursor1.moveToFirst();
+            path = cursor1.getString(cursor1.getColumnIndex(MediaStore.Images.Media.DATA));
+            Log.d(TAG, "getImageFilePath: path: " + path);
+            cursor1.close();
+        }
+        return path;
+    }
+
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
 
@@ -190,10 +226,32 @@ public class AddNewsContentFragment extends Fragment {
                 mEditText.setError("Enter the content");
             } else {
                 preferenceManager.setNewsContent(mEditText.getHtml());
-                Toast.makeText(getActivity(), mEditText.getHtml(), Toast.LENGTH_SHORT).show();
+                String languageId = preferenceManager.getLanguageId();
+                String languageName = preferenceManager.getLanguageNameNews();
+                String categoryId = preferenceManager.getCategoryIdNews();
+                String newsTitle = preferenceManager.getNewsTitle();
+                String newsContent = preferenceManager.getNewsContent();
+                Uri path = Uri.parse(preferenceManager.getNewsImageUrl());
+                Log.d(TAG, "onOptionsItemSelected: accessToken: " + preferenceManager.getAccessToken());
+                File file = new File(getImageFilePath(path));
+                addNewsViewModel.postNews(preferenceManager.getAccessToken(), file, languageId, languageName, categoryId, newsTitle,
+                        newsContent, "cdvdvs", "dcdcd").observe(getViewLifecycleOwner(), addNewsResponse -> {
+                    Toast.makeText(getActivity(), "News Added", Toast.LENGTH_SHORT).show();
+                });
+                clearAllDataFromPref();
+//                Toast.makeText(getActivity(), mEditText.getHtml(), Toast.LENGTH_SHORT).show();
             }
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void clearAllDataFromPref(){
+        preferenceManager.setLanguageId("");
+        preferenceManager.setLanguageNameNews("");
+        preferenceManager.setCategoryIdNews("");
+        preferenceManager.setNewsTitle("");
+        preferenceManager.setNewsContent("");
+        preferenceManager.setNewsImageUrl("");
     }
 
     private void initToolbarArrow(View view) {

@@ -5,7 +5,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.ImageDecoder;
 import android.net.Uri;
@@ -299,28 +298,7 @@ public class AddNewsDetailsFragment extends Fragment implements View.OnClickList
         super.onActivityResult(requestCode, resultCode, data);
     }
 
-    private String getImageFilePath(Uri uri) {
-        String path = null, image_id = null;
-        Cursor cursor = null;
-        Cursor cursor1 = null;
-        if (getActivity() != null)
-            cursor = getActivity().getContentResolver().query(uri, null, null, null, null);
-        if (cursor != null) {
-            cursor.moveToFirst();
-            image_id = cursor.getString(0);
-            image_id = image_id.substring(image_id.lastIndexOf(":") + 1);
-            cursor.close();
-        }
-        if (getActivity() != null)
-            cursor1 = getActivity().getContentResolver().query(android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI, null, MediaStore.Images.Media._ID + " = ? ", new String[]{image_id}, null);
-        if (cursor1!=null) {
-            cursor1.moveToFirst();
-            path = cursor1.getString(cursor1.getColumnIndex(MediaStore.Images.Media.DATA));
-            Log.d(TAG, "getImageFilePath: path: " + path);
-            cursor1.close();
-        }
-        return path;
-    }
+
 
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {
@@ -422,6 +400,8 @@ public class AddNewsDetailsFragment extends Fragment implements View.OnClickList
         }
         if (bitmap != null){
             selectImageBtn.setVisibility(View.GONE);
+            uploadedImageView.setVisibility(View.VISIBLE);
+            uploadedImageView.setImageBitmap(bitmap);
         }
     }
 }

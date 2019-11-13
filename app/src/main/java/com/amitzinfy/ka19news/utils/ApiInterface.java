@@ -1,5 +1,6 @@
 package com.amitzinfy.ka19news.utils;
 
+import com.amitzinfy.ka19news.models.retrofit.AddNewsResponse;
 import com.amitzinfy.ka19news.models.retrofit.Category;
 import com.amitzinfy.ka19news.models.retrofit.Language;
 import com.amitzinfy.ka19news.models.retrofit.News;
@@ -11,6 +12,7 @@ import com.amitzinfy.ka19news.models.retrofit.UserResponse;
 import java.util.List;
 
 import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
@@ -70,10 +72,11 @@ public interface ApiInterface {
     @Headers("Accept: application/json")
     @Multipart
     @POST("addnews")
-    Call<News> postNews(@Header("Authorization") String accessToken, @Part MultipartBody.Part file,
-                        @Part("language_id") String languageId, @Part("language_name") String languageName,
-                        @Part("cat_id") String categoryId, @Part("news_title") String newsTitle,
-                        @Part("news_content") String newsContent, @Part("place") String place);
+    Call<AddNewsResponse> postNews(@Header("Authorization") String accessToken, @Part MultipartBody.Part file,
+                                   @Part("language_id") RequestBody languageId, @Part("language_name") RequestBody languageName,
+                                   @Part("cat_id") RequestBody categoryId, @Part("news_title") RequestBody newsTitle,
+                                   @Part("news_content") RequestBody newsContent, @Part("img_caption") RequestBody imgCaption,
+                                   @Part("place") RequestBody place);
 
     @Headers("Accept: application/json")
     @POST("languages")
