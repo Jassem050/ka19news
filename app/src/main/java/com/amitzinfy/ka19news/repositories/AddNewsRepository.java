@@ -38,6 +38,7 @@ public class AddNewsRepository {
             @Override
             public void onFailure(Call<List<Language>> call, Throwable t) {
                 Log.d(TAG, "onFailure: languages: ", t);
+                call.clone().enqueue(this);
             }
         });
     }
@@ -64,6 +65,7 @@ public class AddNewsRepository {
             @Override
             public void onFailure(Call<List<Category>> call, Throwable t) {
                 Log.d(TAG, "onFailure: categories: ", t);
+                call.clone().enqueue(this);
             }
         });
     }

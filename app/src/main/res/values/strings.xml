@@ -98,5 +98,7 @@
     <string name="arrow_content_descp">arrow</string>
     <string name="news_content_hint">Type your news content here......</string>
     <string name="next_btn">Next</string>
+    <string name="change_image_btn">Change Image</string>
+    <string name="remove_image_btn">Remove Image</string>
 
 </resources>

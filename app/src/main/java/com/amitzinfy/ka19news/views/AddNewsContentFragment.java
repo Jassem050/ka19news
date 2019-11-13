@@ -3,15 +3,25 @@ package com.amitzinfy.ka19news.views;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
-import android.widget.ImageView;
+import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.AppCompatImageView;
 import androidx.fragment.app.Fragment;
 
 import com.amitzinfy.ka19news.R;
+import com.amitzinfy.ka19news.utils.PreferenceManager;
 import com.chinalwb.are.AREditText;
 import com.chinalwb.are.styles.toolbar.ARE_ToolbarDefault;
 import com.chinalwb.are.styles.toolbar.IARE_Toolbar;
@@ -21,7 +31,6 @@ import com.chinalwb.are.styles.toolitems.ARE_ToolItem_AlignmentRight;
 import com.chinalwb.are.styles.toolitems.ARE_ToolItem_At;
 import com.chinalwb.are.styles.toolitems.ARE_ToolItem_Bold;
 import com.chinalwb.are.styles.toolitems.ARE_ToolItem_Hr;
-import com.chinalwb.are.styles.toolitems.ARE_ToolItem_Image;
 import com.chinalwb.are.styles.toolitems.ARE_ToolItem_Italic;
 import com.chinalwb.are.styles.toolitems.ARE_ToolItem_Link;
 import com.chinalwb.are.styles.toolitems.ARE_ToolItem_ListBullet;
@@ -31,7 +40,6 @@ import com.chinalwb.are.styles.toolitems.ARE_ToolItem_Strikethrough;
 import com.chinalwb.are.styles.toolitems.ARE_ToolItem_Subscript;
 import com.chinalwb.are.styles.toolitems.ARE_ToolItem_Superscript;
 import com.chinalwb.are.styles.toolitems.ARE_ToolItem_Underline;
-import com.chinalwb.are.styles.toolitems.ARE_ToolItem_Video;
 import com.chinalwb.are.styles.toolitems.IARE_ToolItem;
 
 
@@ -54,10 +62,11 @@ public class AddNewsContentFragment extends Fragment {
 
     private OnFragmentInteractionListener mListener;
     private IARE_Toolbar mToolbar;
-
     private AREditText mEditText;
-
     private boolean scrollerAtEnd;
+
+    private PreferenceManager preferenceManager;
+    private ActionBar actionBar;
 
 
     public AddNewsContentFragment() {
@@ -93,13 +102,21 @@ public class AddNewsContentFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        setHasOptionsMenu(true);
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_add_news_content, container, false);
 
         initToolbar(rootView);
+
+        preferenceManager = PreferenceManager.getInstance(getActivity());
         return rootView;
     }
 
+    private void setActionBar(View view){
+        if (getActivity() != null) {
+            actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+        }
+    }
     private void initToolbar(View view) {
         mToolbar = view.findViewById(R.id.areToolbar);
         IARE_ToolItem bold = new ARE_ToolItem_Bold();
@@ -116,8 +133,8 @@ public class AddNewsContentFragment extends Fragment {
         IARE_ToolItem left = new ARE_ToolItem_AlignmentLeft();
         IARE_ToolItem center = new ARE_ToolItem_AlignmentCenter();
         IARE_ToolItem right = new ARE_ToolItem_AlignmentRight();
-        IARE_ToolItem image = new ARE_ToolItem_Image();
-        IARE_ToolItem video = new ARE_ToolItem_Video();
+//        IARE_ToolItem image = new ARE_ToolItem_Image();
+//        IARE_ToolItem video = new ARE_ToolItem_Video();
         IARE_ToolItem at = new ARE_ToolItem_At();
         mToolbar.addToolbarItem(bold);
         mToolbar.addToolbarItem(italic);
@@ -133,19 +150,54 @@ public class AddNewsContentFragment extends Fragment {
         mToolbar.addToolbarItem(left);
         mToolbar.addToolbarItem(center);
         mToolbar.addToolbarItem(right);
-        mToolbar.addToolbarItem(image);
-        mToolbar.addToolbarItem(video);
+//        mToolbar.addToolbarItem(image);
+//        mToolbar.addToolbarItem(video);
         mToolbar.addToolbarItem(at);
 
         mEditText = view.findViewById(R.id.arEditText);
         mEditText.setToolbar(mToolbar);
-
         initToolbarArrow(view);
+
+        mEditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
     }
 
+    @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.add_news_menu, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+
+        if (item.getItemId() == R.id.action_next){
+            if (mEditText.getText().toString().equals("")){
+                mEditText.setError("Enter the content");
+            } else {
+                preferenceManager.setNewsContent(mEditText.getHtml());
+                Toast.makeText(getActivity(), mEditText.getHtml(), Toast.LENGTH_SHORT).show();
+            }
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
     private void initToolbarArrow(View view) {
-        final ImageView imageView = view.findViewById(R.id.arrow);
+        final AppCompatImageView imageView = view.findViewById(R.id.arrow);
         if (this.mToolbar instanceof ARE_ToolbarDefault) {
             ((ARE_ToolbarDefault) mToolbar).getViewTreeObserver().addOnScrollChangedListener(new ViewTreeObserver.OnScrollChangedListener() {
                 @Override
@@ -165,21 +217,17 @@ public class AddNewsContentFragment extends Fragment {
             });
         }
 
-        imageView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (scrollerAtEnd) {
-                    ((ARE_ToolbarDefault) mToolbar).smoothScrollBy(-Integer.MAX_VALUE, 0);
-                    scrollerAtEnd = false;
-                } else {
-                    int hsWidth = ((ARE_ToolbarDefault) mToolbar).getChildAt(0).getWidth();
-                    ((ARE_ToolbarDefault) mToolbar).smoothScrollBy(hsWidth, 0);
-                    scrollerAtEnd = true;
-                }
+        imageView.setOnClickListener(view1 -> {
+            if (scrollerAtEnd) {
+                ((ARE_ToolbarDefault) mToolbar).smoothScrollBy(-Integer.MAX_VALUE, 0);
+                scrollerAtEnd = false;
+            } else {
+                int hsWidth = ((ARE_ToolbarDefault) mToolbar).getChildAt(0).getWidth();
+                ((ARE_ToolbarDefault) mToolbar).smoothScrollBy(hsWidth, 0);
+                scrollerAtEnd = true;
             }
         });
     }
-
 
 
 
@@ -207,16 +255,6 @@ public class AddNewsContentFragment extends Fragment {
     }
 
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
     public interface OnFragmentInteractionListener {
         void onFragmentInteraction(Uri uri);
     }

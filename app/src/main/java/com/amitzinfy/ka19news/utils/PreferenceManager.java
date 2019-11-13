@@ -28,6 +28,14 @@ public class PreferenceManager {
     private static final String USER_STATUS = "user_status";
     private static final String APP_STATUS = "app_status";
 
+    // add news constants
+    private static final String LANGUAGE_ID = "languageId";
+    private static final String LANGUAGE_NAME_NEWS = "languageName";
+    private static final String CATEGORY_ID_NEWS = "categoryId";
+    private static final String NEWS_TITLE = "newsTitle";
+    private static final String NEWS_IMAGE_URL = "newsImageUrl";
+    private static final String NEWS_CONTENT = "newsContent";
+
 
     public static PreferenceManager getInstance(Context context){
         if (preferenceManager == null){
@@ -133,4 +141,66 @@ public class PreferenceManager {
         return pref.getString(APP_STATUS, "reader");
     }
 
+
+    /*
+    *   Add News methods
+    * */
+
+    public void setLanguageId(String languageId){
+        editor.putString(LANGUAGE_ID, languageId);
+        editor.apply();
+    }
+
+    public String getLanguageId(){
+        return pref.getString(LANGUAGE_ID, null);
+    }
+
+    public void setLanguageNameNews(String languageNameNews){
+        editor.putString(LANGUAGE_NAME_NEWS, languageNameNews);
+        editor.apply();
+    }
+
+    public String getLanguageNameNews(){
+        return pref.getString(LANGUAGE_NAME_NEWS, null);
+    }
+
+    // news category
+    public void setCategoryIdNews(String categoryIdNews){
+        editor.putString(CATEGORY_ID_NEWS, categoryIdNews);
+        editor.apply();
+    }
+
+    public String getCategoryIdNews(){
+        return pref.getString(CATEGORY_ID_NEWS, null);
+    }
+
+    // news title
+    public void setNewsTitle(String newsTitle){
+        editor.putString(NEWS_TITLE, newsTitle);
+        editor.apply();
+    }
+
+    public String getNewsTitle(){
+        return pref.getString(NEWS_TITLE, null);
+    }
+
+    // news image
+    public void setNewsImageUrl(String newsImageUrl){
+        editor.putString(NEWS_IMAGE_URL, newsImageUrl);
+        editor.apply();
+    }
+
+    public String getNewsImageUrl(){
+        return pref.getString(NEWS_IMAGE_URL, null);
+    }
+
+    // news content
+    public void setNewsContent(String newsContent){
+        editor.putString(NEWS_CONTENT, newsContent);
+        editor.apply();
+    }
+
+    public String getNewsContent(){
+        return pref.getString(NEWS_CONTENT, null);
+    }
 }

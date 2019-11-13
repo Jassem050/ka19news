@@ -12,12 +12,15 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
@@ -66,13 +69,15 @@ public class AddNewsDetailsFragment extends Fragment implements View.OnClickList
     private TextInputEditText newsTitleEditText;
     private AutoCompleteTextView languageDropDown, categoryDropDown;
     private RelativeLayout selectImageBtn;
+    private LinearLayout btnLayout;
     private AppCompatImageView uploadedImageView;
     private Bitmap bitmap;
-    private MaterialButton nextBtn;
+    private MaterialButton nextBtn, changeImgBtn, removeImgBtn;
 
     private AddNewsViewModel addNewsViewModel;
     private PreferenceManager preferenceManager;
     private List<Language> languageListForID;
+    private List<Category> categoryListForID;
 
     public AddNewsDetailsFragment() {
         // Required empty public constructor
@@ -123,14 +128,37 @@ public class AddNewsDetailsFragment extends Fragment implements View.OnClickList
             if (languageListForID != null && languageListForID.size() > 0){
                 Language language = languageListForID.get(position);
                 categoryDropDown.setText("");
+                preferenceManager.setLanguageId(language.getLanguageId());
+                preferenceManager.setLanguageNameNews(language.getLanguageName());
                 getCategories(preferenceManager.getAccessToken(), language.getLanguageId());
             }
         });
 
         categoryDropDown.setOnItemClickListener((adapterView, view, position, l) -> {
+            Category category = categoryListForID.get(position);
+            preferenceManager.setCategoryIdNews(String.valueOf(category.getId()));
             newsTitleLayout.setVisibility(View.VISIBLE);
             selectImageBtn.setVisibility(View.VISIBLE);
             nextBtn.setVisibility(View.VISIBLE);
+        });
+
+        newsTitleEditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                if (newsTitleEditText.getText().toString().length() > 0){
+                    newsTitleLayout.setErrorEnabled(false);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
         });
 
         return rootView;
@@ -139,16 +167,27 @@ public class AddNewsDetailsFragment extends Fragment implements View.OnClickList
     private void bindViews(View view){
         preferenceManager = PreferenceManager.getInstance(getActivity());
         addNewsViewModel = ViewModelProviders.of(this).get(AddNewsViewModel.class);
+        // input layouts
         languageInputLayout = view.findViewById(R.id.languages_input_layout);
         categoryInputLayout = view.findViewById(R.id.categories_input_layout);
+        newsTitleLayout = view.findViewById(R.id.news_title_layout);
+        // editext
+        newsTitleEditText = view.findViewById(R.id.news_title_edittext);
+        // Dropdowns
         languageDropDown = view.findViewById(R.id.languages_dropdown);
         categoryDropDown = view.findViewById(R.id.categories_dropdown);
-        selectImageBtn = view.findViewById(R.id.upload_img_layout);
         uploadedImageView = view.findViewById(R.id.uploaded_img);
-        newsTitleLayout = view.findViewById(R.id.news_title_layout);
+        // buttons
+        selectImageBtn = view.findViewById(R.id.upload_img_layout);
         nextBtn = view.findViewById(R.id.next_btn);
+        changeImgBtn = view.findViewById(R.id.change_image_btn);
+        btnLayout = view.findViewById(R.id.btn_layout);
+        removeImgBtn = view.findViewById(R.id.remove_image_btn);
+        // setOnclickListeners
         selectImageBtn.setOnClickListener(this);
         nextBtn.setOnClickListener(this);
+        changeImgBtn.setOnClickListener(this);
+        removeImgBtn.setOnClickListener(this);
     }
 
     private void getLanguages(String accessToken){
@@ -173,6 +212,7 @@ public class AddNewsDetailsFragment extends Fragment implements View.OnClickList
 
     private void getCategories(String accessToken, String languageId){
         addNewsViewModel.getCategories(accessToken, languageId).observe(getViewLifecycleOwner(), categories -> {
+            categoryListForID = categories;
             List<String> categoryList = new ArrayList<>();
             for (Category category : categories){
                 categoryList.add(category.getName());
@@ -231,22 +271,24 @@ public class AddNewsDetailsFragment extends Fragment implements View.OnClickList
 //            Log.d(TAG, "onActivityResult: path: " + path.toString());
 //            Uri uri = Uri.parse(path.toString());
 //            Log.d(TAG, "onActivityResult: uri: " + uri.toString());
+            if (path != null) {
+                preferenceManager.setNewsImageUrl(path.toString());
+            }
 
-
+            bitmap = null;
             try {
                 if (getActivity() != null) {
                     if (Build.VERSION.SDK_INT < 28) {
                         bitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), path);
-                        bitmap = getResizedBitmap(bitmap, 1024);
                     } else {
                         ImageDecoder.Source source;
                         if (path != null) {
                             source = ImageDecoder.createSource(getActivity().getContentResolver(), path);
                             bitmap = ImageDecoder.decodeBitmap(source);
                         }
-
                     }
-                    selectImageBtn.setVisibility(View.GONE);
+                    bitmap = getResizedBitmap(bitmap, 1024);
+                    btnLayout.setVisibility(View.VISIBLE);
                     uploadedImageView.setVisibility(View.VISIBLE);
                     uploadedImageView.setImageBitmap(bitmap);
                 }
@@ -317,28 +359,69 @@ public class AddNewsDetailsFragment extends Fragment implements View.OnClickList
                     }
                 }
                 break;
+
             case R.id.next_btn:
                 Log.d(TAG, "onCreateView: " + languageDropDown.getText().toString());
-
+                String title = newsTitleEditText.getText().toString();
                 if (languageDropDown.getText().toString().equals("")) {
                     languageInputLayout.setErrorEnabled(true);
                     languageInputLayout.setError("not selected");
                 }
+                else if (languageDropDown.getText().toString().equals("")){
+                    categoryInputLayout.setErrorEnabled(true);
+                    categoryInputLayout.setError("not selected");
+                }
+                else if (title.equals("")){
+                    newsTitleLayout.setErrorEnabled(true);
+                    newsTitleLayout.setError("Enter the news title");
+                } else {
+                    preferenceManager.setNewsTitle(title);
+                    Fragment fragment = AddNewsContentFragment.newInstance("news_content", "news_content");
+                    if (getFragmentManager() != null) {
+                        getFragmentManager().beginTransaction()
+                                .replace(R.id.frame_container, fragment).addToBackStack(null).commit();
+                    }
+                }
+                break;
+
+            case R.id.change_image_btn:
+                selectImage();
+                break;
+            case R.id.remove_image_btn:
+                removeImageFromImageView();
                 break;
         }
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
+    private void removeImageFromImageView(){
+        bitmap = null;
+        uploadedImageView.setImageBitmap(bitmap);
+        uploadedImageView.setVisibility(View.GONE);
+        btnLayout.setVisibility(View.GONE);
+        selectImageBtn.setVisibility(View.VISIBLE);
+        preferenceManager.setNewsImageUrl("");
+    }
+
+
     public interface OnFragmentInteractionListener {
         void onFragmentInteraction(Uri uri);
+    }
+
+    private void displayAllViews(){
+        categoryInputLayout.setVisibility(View.VISIBLE);
+        newsTitleLayout.setVisibility(View.VISIBLE);
+        selectImageBtn.setVisibility(View.VISIBLE);
+        nextBtn.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (categoryListForID != null && categoryListForID.size() > 0){
+            displayAllViews();
+        }
+        if (bitmap != null){
+            selectImageBtn.setVisibility(View.GONE);
+        }
     }
 }
