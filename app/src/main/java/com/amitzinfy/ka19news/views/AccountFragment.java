@@ -72,7 +72,7 @@ public class AccountFragment extends Fragment {
     private PreferenceManager preferenceManager;
     private UserViewModel userViewModel;
     private MaterialButton uploadImageBtn;
-    private MaterialTextView profileName, profileEmail, profileMobileNo;
+    private MaterialTextView profileName, profileEmail, profileMobileNo, profileAddress;
     private MaterialTextView newsAddCount, newsAcceptCount;
     private Bitmap bitmap;
     private String encodedImage;
@@ -156,6 +156,7 @@ public class AccountFragment extends Fragment {
         profileName = view.findViewById(R.id.profile_name);
         profileEmail = view.findViewById(R.id.profile_email);
         profileMobileNo = view.findViewById(R.id.profile_phone);
+        profileAddress = view.findViewById(R.id.profile_address);
         newsAddCount = view.findViewById(R.id.news_add_count);
         newsAcceptCount = view.findViewById(R.id.news_accept_count);
         profileImage = view.findViewById(R.id.profile_image);
@@ -170,7 +171,7 @@ public class AccountFragment extends Fragment {
                 if (ContextCompat.checkSelfPermission(getActivity(),
                         Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED ) {
                     requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE,
-                                    Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                                    Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA},
                             MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE);
                 } else {
                     selectImage();
@@ -188,6 +189,7 @@ public class AccountFragment extends Fragment {
             profileName.setText(userResponse.getUser().getName());
             profileEmail.setText(userResponse.getUser().getEmail());
             profileMobileNo.setText(userResponse.getUser().getMobileNumber());
+            profileAddress.setText(userResponse.getUser().getAddress());
             if (getActivity() != null)
             GlideApp.with(getActivity()).load(NetworkUtils.PROFILE_IMG_URL + userResponse.getUser().getImage()).into(profileImage);
         });

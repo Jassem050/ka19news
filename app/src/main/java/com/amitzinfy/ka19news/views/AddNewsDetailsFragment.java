@@ -10,6 +10,7 @@ import android.graphics.ImageDecoder;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -27,6 +28,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatImageView;
 import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 
@@ -35,13 +37,21 @@ import com.amitzinfy.ka19news.models.retrofit.Category;
 import com.amitzinfy.ka19news.models.retrofit.Language;
 import com.amitzinfy.ka19news.utils.PreferenceManager;
 import com.amitzinfy.ka19news.viewmodels.AddNewsViewModel;
+import com.chinalwb.are.glidesupport.GlideApp;
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
+import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
+
+import id.zelory.compressor.Compressor;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -58,6 +68,7 @@ public class AddNewsDetailsFragment extends Fragment implements View.OnClickList
     private static final String ARG_PARAM2 = "param2";
     private static final int IMG_REQUEST_CODE = 321;
     private static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 456;
+    private static final int CAMERA_IMG_REQUEST_CODE = 789;
 
     private String mParam1;
     private String mParam2;
@@ -77,6 +88,8 @@ public class AddNewsDetailsFragment extends Fragment implements View.OnClickList
     private PreferenceManager preferenceManager;
     private List<Language> languageListForID;
     private List<Category> categoryListForID;
+    private File mPhotoFile;
+    private Uri mImgUri;
 
     public AddNewsDetailsFragment() {
         // Required empty public constructor
@@ -117,10 +130,6 @@ public class AddNewsDetailsFragment extends Fragment implements View.OnClickList
 
         getLanguages(preferenceManager.getAccessToken());
 
-
-        languageDropDown.setOnItemClickListener((adapterView, view, position, l) -> {
-            Log.d(TAG, "onItemSelected: id: " + position);
-        });
 
         languageDropDown.setOnItemClickListener((adapterView, view, position, l) -> {
             Log.d(TAG, "onItemClick: " + languageDropDown.getText().toString());
@@ -199,14 +208,16 @@ public class AddNewsDetailsFragment extends Fragment implements View.OnClickList
             }
 //            String[] COUNTRIES = new String[] {"Item 1", "Item 2", "Item 3", "Item 4"};
 
-            ArrayAdapter<String> adapter =
-                    new ArrayAdapter<>(
-                            getContext(),
-                            R.layout.dropdown_menu_popup_item,
-                            languageList);
+            if (getContext() != null) {
+                ArrayAdapter<String> adapter =
+                        new ArrayAdapter<>(
+                                getContext(),
+                                R.layout.dropdown_menu_popup_item,
+                                languageList);
 
 
-            languageDropDown.setAdapter(adapter);
+                languageDropDown.setAdapter(adapter);
+            }
         });
     }
 
@@ -217,17 +228,81 @@ public class AddNewsDetailsFragment extends Fragment implements View.OnClickList
             for (Category category : categories){
                 categoryList.add(category.getName());
             }
-            ArrayAdapter<String> adapter =
-                    new ArrayAdapter<>(
-                            getContext(),
-                            R.layout.dropdown_menu_popup_item,
-                            categoryList);
-            categoryDropDown.setAdapter(adapter);
-            categoryInputLayout.setVisibility(View.VISIBLE);
+            if (getContext() != null) {
+                ArrayAdapter<String> adapter =
+                        new ArrayAdapter<>(
+                                getContext(),
+                                R.layout.dropdown_menu_popup_item,
+                                categoryList);
+                categoryDropDown.setAdapter(adapter);
+                categoryInputLayout.setVisibility(View.VISIBLE);
+            }
         });
     }
 
+    private void imagePickerAlertDialog(){
+        CharSequence[] items = {"Camera", "Gallery"};
+        if (getActivity() != null) {
+            MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getActivity());
+            builder.setItems(items, (dialogInterface, i) -> {
+                switch (i) {
+                    case 0:
+                        captureImageFromCamera();
+                        break;
+                    case 1:
+                        selectImage();
+                        break;
+                }
+            });
+            builder.create().show();
+        }
+    }
+
+    private void captureImageFromCamera(){
+        preferenceManager.setImgChooser("camera");
+        Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        if (getActivity() != null)
+        if (cameraIntent.resolveActivity(getActivity().getPackageManager()) != null){
+            //Create a file to store the image
+            File photoFile = null;
+            try {
+                photoFile = createImageFile();
+            } catch (IOException ex) {
+                // Error occurred while creating the File
+                Log.d(TAG, "captureImageFromCamera: fileError: ", ex);
+            }
+            if (photoFile != null) {
+                Uri photoURI = FileProvider.getUriForFile(getActivity(),"com.amitzinfy.ka19news.provider", photoFile);
+                cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT,
+                        photoURI);
+                mPhotoFile = photoFile;
+                mImgUri = photoURI;
+                Log.d(TAG, "captureImageFromCamera: imgName: " + mPhotoFile.getName());
+                startActivityForResult(cameraIntent, CAMERA_IMG_REQUEST_CODE);
+            }
+
+        }
+    }
+
+    String imageFilePath;
+    private File createImageFile() throws IOException {
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss",
+                        Locale.getDefault()).format(new Date());
+        String imageFileName = "IMG_" + timeStamp + "_";
+        File storageDir =
+                getActivity().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File image = File.createTempFile(
+                imageFileName,  /* prefix */
+                ".webp",         /* suffix */
+                storageDir      /* directory */
+        );
+
+        imageFilePath = image.getAbsolutePath();
+        return image;
+    }
+
     private void selectImage(){
+        preferenceManager.setImgChooser("gallery");
         Intent intent = new Intent();
         intent.setType("image/*");
         intent.setAction(Intent.ACTION_GET_CONTENT);
@@ -254,7 +329,7 @@ public class AddNewsDetailsFragment extends Fragment implements View.OnClickList
         if (requestCode == MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 Log.d(TAG, "onRequestPermissionsResult: granted");
-                selectImage();
+                imagePickerAlertDialog();
             } else {
                 Toast.makeText(getActivity(), "Permission is needed to upload", Toast.LENGTH_SHORT).show();
             }
@@ -266,39 +341,61 @@ public class AddNewsDetailsFragment extends Fragment implements View.OnClickList
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         if (requestCode == IMG_REQUEST_CODE && resultCode == Activity.RESULT_OK && data != null){
-            Uri path = data.getData();
-            // store uri in sharedpreferences with other data
-//            Log.d(TAG, "onActivityResult: path: " + path.toString());
-//            Uri uri = Uri.parse(path.toString());
-//            Log.d(TAG, "onActivityResult: uri: " + uri.toString());
-            if (path != null) {
-                preferenceManager.setNewsImageUrl(path.toString());
-            }
+            imageUploadFromCameraOrGalley(data);
+        } else if (requestCode == CAMERA_IMG_REQUEST_CODE && resultCode == Activity.RESULT_OK ){
+//            imageUploadFromCameraOrGalley(data);
 
-            bitmap = null;
+            preferenceManager.setNewsImageUrl(mPhotoFile.getAbsolutePath());
+            Log.d(TAG, "onActivityResult: imgNameUri: " +mImgUri.toString());
+            Log.d(TAG, "onActivityResult: imgNamePath: " + mImgUri.getPath());
             try {
                 if (getActivity() != null) {
-                    if (Build.VERSION.SDK_INT < 28) {
-                        bitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), path);
-                    } else {
-                        ImageDecoder.Source source;
-                        if (path != null) {
-                            source = ImageDecoder.createSource(getActivity().getContentResolver(), path);
-                            bitmap = ImageDecoder.decodeBitmap(source);
-                        }
-                    }
-                    bitmap = getResizedBitmap(bitmap, 1024);
-                    btnLayout.setVisibility(View.VISIBLE);
-                    uploadedImageView.setVisibility(View.VISIBLE);
-                    uploadedImageView.setImageBitmap(bitmap);
+                    mPhotoFile = new Compressor(getActivity())
+                            .setMaxWidth(640)
+                            .setMaxHeight(480)
+                            .setQuality(75)
+                            .setCompressFormat(Bitmap.CompressFormat.WEBP)
+                            .compressToFile(mPhotoFile);
+                    GlideApp.with(getActivity()).load(mPhotoFile).into(uploadedImageView);
                 }
-            } catch (IOException e){
+            } catch (IOException e) {
                 e.printStackTrace();
             }
+
+
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
 
+
+    private void imageUploadFromCameraOrGalley(Intent data){
+        Uri path = data.getData();
+
+        if (path != null) {
+            preferenceManager.setNewsImageUrl(path.toString());
+        }
+
+        bitmap = null;
+        try {
+            if (getActivity() != null) {
+                if (Build.VERSION.SDK_INT < 28) {
+                    bitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), path);
+                } else {
+                    ImageDecoder.Source source;
+                    if (path != null) {
+                        source = ImageDecoder.createSource(getActivity().getContentResolver(), path);
+                        bitmap = ImageDecoder.decodeBitmap(source);
+                    }
+                }
+                bitmap = getResizedBitmap(bitmap, 1024);
+                btnLayout.setVisibility(View.VISIBLE);
+                uploadedImageView.setVisibility(View.VISIBLE);
+                uploadedImageView.setImageBitmap(bitmap);
+            }
+        } catch (IOException e){
+            e.printStackTrace();
+        }
+    }
 
 
     public void onButtonPressed(Uri uri) {
@@ -331,10 +428,12 @@ public class AddNewsDetailsFragment extends Fragment implements View.OnClickList
                 if (getActivity() != null) {
                     if (ContextCompat.checkSelfPermission(getActivity(),
                             Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                        requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                        requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE,
+                                        Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                                Manifest.permission.CAMERA},
                                 MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE);
                     } else {
-                        selectImage();
+                        imagePickerAlertDialog();
                     }
                 }
                 break;
@@ -404,6 +503,12 @@ public class AddNewsDetailsFragment extends Fragment implements View.OnClickList
             btnLayout.setVisibility(View.VISIBLE);
             uploadedImageView.setVisibility(View.VISIBLE);
             uploadedImageView.setImageBitmap(bitmap);
+        }
+        if (mPhotoFile != null){
+            selectImageBtn.setVisibility(View.GONE);
+            btnLayout.setVisibility(View.VISIBLE);
+            uploadedImageView.setVisibility(View.VISIBLE);
+            GlideApp.with(getActivity()).load(mPhotoFile).into(uploadedImageView);
         }
     }
 }

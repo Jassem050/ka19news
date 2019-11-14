@@ -238,26 +238,39 @@ public class AddNewsContentFragment extends Fragment {
                 String newsTitle = preferenceManager.getNewsTitle();
                 String newsContent = preferenceManager.getNewsContent();
                 Uri path = Uri.parse(preferenceManager.getNewsImageUrl());
-                Log.d(TAG, "onOptionsItemSelected: accessToken: " + preferenceManager.getAccessToken());
-                File file = new File(getImageFilePath(path));
+                String imgChooser = preferenceManager.getImgChooser();
+                File file = null;
+                if (imgChooser.equals("gallery")) {
+                    file = new File(getImageFilePath(path));
+                } else if (imgChooser.equals("camera")){
+                    file = new File(preferenceManager.getNewsImageUrl());
+                }
                 try {
-                    String imageName = file.getName().replaceAll(".[jpg][png][jpeg]", "");
-                    File compressedImage = new Compressor(getActivity())
-                            .setMaxWidth(640)
-                            .setMaxHeight(480)
-                            .setQuality(75)
-                            .setCompressFormat(Bitmap.CompressFormat.WEBP)
-                            .setDestinationDirectoryPath(Environment.getExternalStoragePublicDirectory(
-                                    Environment.DIRECTORY_PICTURES).getAbsolutePath())
-                            .compressToFile(file, imageName + ".webp");
+                    String imageName = null;
+                    if (file != null) {
+                        imageName = file.getName().replaceAll(".[jpg][png][jpeg][webp]", "");
+                    }
+                    if (getActivity() != null) {
+                        File compressedImage = null;
+                        if (file != null) {
+                            compressedImage = new Compressor(getActivity())
+                                    .setMaxWidth(640)
+                                    .setMaxHeight(480)
+                                    .setQuality(75)
+                                    .setCompressFormat(Bitmap.CompressFormat.WEBP)
+                                    .setDestinationDirectoryPath(Environment.getExternalStoragePublicDirectory(
+                                            Environment.DIRECTORY_PICTURES).getAbsolutePath())
+                                    .compressToFile(file, imageName + ".webp");
+                        }
 
-                    addNewsViewModel.postNews(preferenceManager.getAccessToken(), compressedImage, 
-                            languageId, languageName, categoryId, newsTitle, newsContent, 
-                            "cdvdvs", "dcdcd").observe(getViewLifecycleOwner(),
-                            addNewsResponse -> {
-                                Toast.makeText(AddNewsContentFragment.this.getActivity(), "News Added" + addNewsResponse.getSuccess(), Toast.LENGTH_SHORT).show();
-                                AddNewsContentFragment.this.clearAllDataFromPref();
-                            });
+                        addNewsViewModel.postNews(preferenceManager.getAccessToken(), compressedImage,
+                                languageId, languageName, categoryId, newsTitle, newsContent,
+                                "cdvdvs", "dcdcd").observe(getViewLifecycleOwner(),
+                                addNewsResponse -> {
+                                    Toast.makeText(AddNewsContentFragment.this.getActivity(), "News Added" + addNewsResponse.getSuccess(), Toast.LENGTH_SHORT).show();
+                                    AddNewsContentFragment.this.clearAllDataFromPref();
+                                });
+                    }
 
                 } catch (IOException e) {
                     e.printStackTrace();

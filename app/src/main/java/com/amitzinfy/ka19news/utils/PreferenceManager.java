@@ -35,6 +35,7 @@ public class PreferenceManager {
     private static final String NEWS_TITLE = "newsTitle";
     private static final String NEWS_IMAGE_URL = "newsImageUrl";
     private static final String NEWS_CONTENT = "newsContent";
+    private static final String IMG_CHOOSER = "imgChooser";
 
 
     public static PreferenceManager getInstance(Context context){
@@ -202,5 +203,14 @@ public class PreferenceManager {
 
     public String getNewsContent(){
         return pref.getString(NEWS_CONTENT, null);
+    }
+
+    public void setImgChooser(String imgChooser){
+        editor.putString(IMG_CHOOSER, imgChooser);
+        editor.apply();
+    }
+
+    public String getImgChooser(){
+        return pref.getString(IMG_CHOOSER, null);
     }
 }
