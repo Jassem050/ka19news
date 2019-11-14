@@ -69,7 +69,6 @@ public class SearchResultsActivity extends AppCompatActivity implements SearchNe
         recyclerView = (RecyclerView) findViewById(R.id.search_recyclerview);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setHasFixedSize(true);
-        recyclerView.setAdapter(searchNewsAdapter);
         searchNewsViewModel = ViewModelProviders.of(this).get(SearchNewsViewModel.class);
         searchAnimation = (LottieAnimationView) findViewById(R.id.search_progress);
         handler = new Handler();
@@ -79,15 +78,20 @@ public class SearchResultsActivity extends AppCompatActivity implements SearchNe
     }
 
     private void subscribe(String searchQuery){
+        noResultsText.setVisibility(View.GONE);
         newsObserver = news -> {
             if (news != null && news.size() > 0) {
+                searchAnimation.setVisibility(View.GONE);
                 noResultsText.setVisibility(View.GONE);
                 Log.d(TAG, "onChanged: searchresultsactivity: " + news.get(0).getTitle());
                 newsList = news;
-                searchNewsAdapter.setNewsList(news);
+                searchNewsAdapter.setNewsList(newsList);
                 searchNewsAdapter.notifyDataSetChanged();
+                recyclerView.setAdapter(searchNewsAdapter);
+                recyclerView.setVisibility(View.VISIBLE);
             } else {
                 recyclerView.setVisibility(View.GONE);
+                searchAnimation.setVisibility(View.GONE);
                 handler.postDelayed(mRunnable = () -> noResultsText.setVisibility(View.VISIBLE), 1500);
             }
         };
@@ -120,8 +124,10 @@ public class SearchResultsActivity extends AppCompatActivity implements SearchNe
             searchView.clearFocus();
             searchView.setQuery("", true);
             closeButton.setVisibility(View.GONE);
+            newsList.clear();
             searchAnimation.setVisibility(View.GONE);
             searchQueryText.setVisibility(View.GONE);
+            recyclerView.invalidate();
             recyclerView.setVisibility(View.GONE);
             noResultsText.setVisibility(View.GONE);
         });
@@ -135,12 +141,7 @@ public class SearchResultsActivity extends AppCompatActivity implements SearchNe
                 searchAnimation.setVisibility(View.VISIBLE);
                 searchQueryText.setText(String.format("%s%s", getString(R.string.search_results_text) + ": ", query));
                 if (!TextUtils.isEmpty(query) && query.length() > 1) {
-                    handler.postDelayed(mRunnable = () -> {
-                        Toast.makeText(SearchResultsActivity.this, query, Toast.LENGTH_SHORT).show();
-                        subscribe(query);
-                        recyclerView.setVisibility(View.VISIBLE);
-                        searchAnimation.setVisibility(View.GONE);
-                    }, 1500);
+                    subscribe(query);
 
                 }
                 return false;

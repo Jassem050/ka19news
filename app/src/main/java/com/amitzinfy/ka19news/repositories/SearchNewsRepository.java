@@ -60,6 +60,7 @@ public class SearchNewsRepository {
             @Override
             public void onFailure(Call<List<News>> call, Throwable t) {
                 Log.d(TAG, "onFailure: search: " + t);
+                call.clone().enqueue(this);
             }
         });
     }
