@@ -2,8 +2,10 @@ package com.amitzinfy.ka19news.views;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -14,7 +16,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -48,6 +49,9 @@ import com.chinalwb.are.styles.toolitems.ARE_ToolItem_Underline;
 import com.chinalwb.are.styles.toolitems.IARE_ToolItem;
 
 import java.io.File;
+import java.io.IOException;
+
+import id.zelory.compressor.Compressor;
 
 
 /**
@@ -117,19 +121,21 @@ public class AddNewsContentFragment extends Fragment {
         initToolbar(rootView);
 
         preferenceManager = PreferenceManager.getInstance(getActivity());
-        addNewsViewModel = ViewModelProviders.of(this).get(AddNewsViewModel.class);
+        if (getActivity() != null)
+        addNewsViewModel = ViewModelProviders.of(getActivity()).get(AddNewsViewModel.class);
 
-        if (!preferenceManager.getNewsContent().equals("")){
+        if (!preferenceManager.getNewsContent().equals("")) {
             mEditText.fromHtml(preferenceManager.getNewsContent());
         }
         return rootView;
     }
 
-    private void setActionBar(View view){
+    private void setActionBar(View view) {
         if (getActivity() != null) {
             actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
         }
     }
+
     private void initToolbar(View view) {
         mToolbar = view.findViewById(R.id.areToolbar);
         IARE_ToolItem bold = new ARE_ToolItem_Bold();
@@ -209,7 +215,7 @@ public class AddNewsContentFragment extends Fragment {
         }
         if (getActivity() != null)
             cursor1 = getActivity().getContentResolver().query(android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI, null, MediaStore.Images.Media._ID + " = ? ", new String[]{image_id}, null);
-        if (cursor1!=null) {
+        if (cursor1 != null) {
             cursor1.moveToFirst();
             path = cursor1.getString(cursor1.getColumnIndex(MediaStore.Images.Media.DATA));
             Log.d(TAG, "getImageFilePath: path: " + path);
@@ -221,8 +227,8 @@ public class AddNewsContentFragment extends Fragment {
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
 
-        if (item.getItemId() == R.id.action_next){
-            if (mEditText.getText().toString().equals("")){
+        if (item.getItemId() == R.id.action_next) {
+            if (mEditText.getText().toString().equals("")) {
                 mEditText.setError("Enter the content");
             } else {
                 preferenceManager.setNewsContent(mEditText.getHtml());
@@ -234,18 +240,37 @@ public class AddNewsContentFragment extends Fragment {
                 Uri path = Uri.parse(preferenceManager.getNewsImageUrl());
                 Log.d(TAG, "onOptionsItemSelected: accessToken: " + preferenceManager.getAccessToken());
                 File file = new File(getImageFilePath(path));
-                addNewsViewModel.postNews(preferenceManager.getAccessToken(), file, languageId, languageName, categoryId, newsTitle,
-                        newsContent, "cdvdvs", "dcdcd").observe(getViewLifecycleOwner(), addNewsResponse -> {
-                    Toast.makeText(getActivity(), "News Added", Toast.LENGTH_SHORT).show();
-                });
-                clearAllDataFromPref();
-//                Toast.makeText(getActivity(), mEditText.getHtml(), Toast.LENGTH_SHORT).show();
+                try {
+                    String imageName = file.getName().replaceAll(".[jpg][png][jpeg]", "");
+                    File compressedImage = new Compressor(getActivity())
+                            .setMaxWidth(640)
+                            .setMaxHeight(480)
+                            .setQuality(75)
+                            .setCompressFormat(Bitmap.CompressFormat.WEBP)
+                            .setDestinationDirectoryPath(Environment.getExternalStoragePublicDirectory(
+                                    Environment.DIRECTORY_PICTURES).getAbsolutePath())
+                            .compressToFile(file, imageName + ".webp");
+
+                    addNewsViewModel.postNews(preferenceManager.getAccessToken(), compressedImage, 
+                            languageId, languageName, categoryId, newsTitle, newsContent, 
+                            "cdvdvs", "dcdcd").observe(getViewLifecycleOwner(),
+                            addNewsResponse -> {
+                                Toast.makeText(AddNewsContentFragment.this.getActivity(), "News Added" + addNewsResponse.getSuccess(), Toast.LENGTH_SHORT).show();
+                                AddNewsContentFragment.this.clearAllDataFromPref();
+                            });
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+
             }
         }
         return super.onOptionsItemSelected(item);
     }
 
-    private void clearAllDataFromPref(){
+    private void clearAllDataFromPref() {
+        Log.d(TAG, "clearAllDataFromPref: ");
         preferenceManager.setLanguageId("");
         preferenceManager.setLanguageNameNews("");
         preferenceManager.setCategoryIdNews("");
@@ -257,20 +282,17 @@ public class AddNewsContentFragment extends Fragment {
     private void initToolbarArrow(View view) {
         final AppCompatImageView imageView = view.findViewById(R.id.arrow);
         if (this.mToolbar instanceof ARE_ToolbarDefault) {
-            ((ARE_ToolbarDefault) mToolbar).getViewTreeObserver().addOnScrollChangedListener(new ViewTreeObserver.OnScrollChangedListener() {
-                @Override
-                public void onScrollChanged() {
-                    int scrollX = ((ARE_ToolbarDefault) mToolbar).getScrollX();
-                    int scrollWidth = ((ARE_ToolbarDefault) mToolbar).getWidth();
-                    int fullWidth = ((ARE_ToolbarDefault) mToolbar).getChildAt(0).getWidth();
+            ((ARE_ToolbarDefault) mToolbar).getViewTreeObserver().addOnScrollChangedListener(() -> {
+                int scrollX = ((ARE_ToolbarDefault) mToolbar).getScrollX();
+                int scrollWidth = ((ARE_ToolbarDefault) mToolbar).getWidth();
+                int fullWidth = ((ARE_ToolbarDefault) mToolbar).getChildAt(0).getWidth();
 
-                    if (scrollX + scrollWidth < fullWidth) {
-                        imageView.setImageResource(R.drawable.ic_arrow_forward_black_24dp);
-                        scrollerAtEnd = false;
-                    } else {
-                        imageView.setImageResource(R.drawable.ic_arrow_back_black_24dp);
-                        scrollerAtEnd = true;
-                    }
+                if (scrollX + scrollWidth < fullWidth) {
+                    imageView.setImageResource(R.drawable.ic_arrow_forward_black_24dp);
+                    scrollerAtEnd = false;
+                } else {
+                    imageView.setImageResource(R.drawable.ic_arrow_back_black_24dp);
+                    scrollerAtEnd = true;
                 }
             });
         }
@@ -286,7 +308,6 @@ public class AddNewsContentFragment extends Fragment {
             }
         });
     }
-
 
 
     public void onButtonPressed(Uri uri) {

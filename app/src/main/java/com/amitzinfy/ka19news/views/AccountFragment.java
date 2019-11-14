@@ -10,8 +10,8 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
-import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -40,8 +40,10 @@ import com.google.android.material.button.MaterialButton;
 import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.textview.MaterialTextView;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
+
+import id.zelory.compressor.Compressor;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -166,8 +168,9 @@ public class AccountFragment extends Fragment {
             Log.d(TAG, "onClick: access_token: " + preferenceManager.getAccessToken());
             if (getActivity() != null) {
                 if (ContextCompat.checkSelfPermission(getActivity(),
-                        Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                    requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                        Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED ) {
+                    requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE,
+                                    Manifest.permission.WRITE_EXTERNAL_STORAGE},
                             MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE);
                 } else {
                     selectImage();
@@ -234,7 +237,23 @@ public class AccountFragment extends Fragment {
                 Uri path = data.getData();
 
                 File file = new File(getImageFilePath(path));
-                uploadImage(preferenceManager.getAccessToken(), file);
+                File compressImage;
+                try {
+                     String imageName = file.getName().replaceAll(".[jpg][png][jpeg]", "");
+                     compressImage = new Compressor(getActivity())
+                            .setMaxWidth(640)
+                            .setMaxHeight(480)
+                            .setQuality(75)
+                            .setCompressFormat(Bitmap.CompressFormat.WEBP)
+                            .setDestinationDirectoryPath(Environment.getExternalStoragePublicDirectory(
+                                    Environment.DIRECTORY_PICTURES).getAbsolutePath())
+                            .compressToFile(file, imageName + ".webp");
+                    Log.d(TAG, "onActivityResult: compressImage: " + compressImage.getPath());
+                    uploadImage(preferenceManager.getAccessToken(), compressImage);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
             }
         }
     }
@@ -297,12 +316,6 @@ public class AccountFragment extends Fragment {
         return Bitmap.createScaledBitmap(image, width, height, true);
     }
 
-    private String imageToString(){
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG,100,byteArrayOutputStream);
-        byte[] imageBytes = byteArrayOutputStream.toByteArray();
-        return Base64.encodeToString(imageBytes, Base64.DEFAULT);
-    }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {

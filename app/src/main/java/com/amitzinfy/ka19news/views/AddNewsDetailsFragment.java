@@ -165,7 +165,8 @@ public class AddNewsDetailsFragment extends Fragment implements View.OnClickList
 
     private void bindViews(View view){
         preferenceManager = PreferenceManager.getInstance(getActivity());
-        addNewsViewModel = ViewModelProviders.of(this).get(AddNewsViewModel.class);
+        if (getActivity() != null)
+        addNewsViewModel = ViewModelProviders.of(getActivity()).get(AddNewsViewModel.class);
         // input layouts
         languageInputLayout = view.findViewById(R.id.languages_input_layout);
         categoryInputLayout = view.findViewById(R.id.categories_input_layout);
@@ -400,6 +401,7 @@ public class AddNewsDetailsFragment extends Fragment implements View.OnClickList
         }
         if (bitmap != null){
             selectImageBtn.setVisibility(View.GONE);
+            btnLayout.setVisibility(View.VISIBLE);
             uploadedImageView.setVisibility(View.VISIBLE);
             uploadedImageView.setImageBitmap(bitmap);
         }

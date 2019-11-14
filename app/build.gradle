@@ -83,4 +83,7 @@ dependencies {
 
     // richText editor
     implementation project(':are')
+
+    // image compressor
+    implementation 'id.zelory:compressor:2.1.0'
 }

@@ -103,7 +103,7 @@ public class AddNewsRepository {
             @Override
             public void onResponse(Call<AddNewsResponse> call, Response<AddNewsResponse> response) {
                 if (response.isSuccessful() && response.body() != null){
-                    Log.d(TAG, "onResponse: addnews" + response.body().getSuccess());
+                    addNewsResponseMutableLiveData.postValue(response.body());
                 } else {
                     Log.d(TAG, "onResponse: addnewsfail: " + response);
                 }

@@ -8,17 +8,20 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
 import com.amitzinfy.ka19news.R;
+import com.amitzinfy.ka19news.utils.PreferenceManager;
 
 public class AddNewsActivity extends AppCompatActivity implements AddNewsDetailsFragment.OnFragmentInteractionListener,
         AddNewsContentFragment.OnFragmentInteractionListener {
 
     private ActionBar actionBar;
+    private PreferenceManager preferenceManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_news);
 
+        preferenceManager = PreferenceManager.getInstance(this);
         loadFragment(AddNewsDetailsFragment.newInstance("news_details", "news_details"));
         setActionBar();
     }
@@ -48,9 +51,19 @@ public class AddNewsActivity extends AppCompatActivity implements AddNewsDetails
 
     }
 
+    private void clearAllDataFromPref() {
+        preferenceManager.setLanguageId("");
+        preferenceManager.setLanguageNameNews("");
+        preferenceManager.setCategoryIdNews("");
+        preferenceManager.setNewsTitle("");
+        preferenceManager.setNewsContent("");
+        preferenceManager.setNewsImageUrl("");
+    }
+
     @Override
     public void onBackPressed() {
         if (getSupportFragmentManager().getBackStackEntryCount() == 1){
+            clearAllDataFromPref();
             finish();
         }
         super.onBackPressed();
