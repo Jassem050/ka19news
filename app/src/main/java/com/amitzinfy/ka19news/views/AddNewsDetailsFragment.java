@@ -88,7 +88,7 @@ public class AddNewsDetailsFragment extends Fragment implements View.OnClickList
     private PreferenceManager preferenceManager;
     private List<Language> languageListForID;
     private List<Category> categoryListForID;
-    private File mPhotoFile;
+    private File mPhotoFile = null;
     private Uri mImgUri;
 
     public AddNewsDetailsFragment() {
@@ -112,6 +112,7 @@ public class AddNewsDetailsFragment extends Fragment implements View.OnClickList
         return fragment;
     }
 
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -132,7 +133,6 @@ public class AddNewsDetailsFragment extends Fragment implements View.OnClickList
 
 
         languageDropDown.setOnItemClickListener((adapterView, view, position, l) -> {
-            Log.d(TAG, "onItemClick: " + languageDropDown.getText().toString());
             if (languageListForID != null && languageListForID.size() > 0){
                 Language language = languageListForID.get(position);
                 categoryDropDown.setText("");
@@ -199,6 +199,11 @@ public class AddNewsDetailsFragment extends Fragment implements View.OnClickList
         removeImgBtn.setOnClickListener(this);
     }
 
+    /**
+     * load languages from server to the dropdown menu
+     * livedata observer
+     * @param accessToken user access token
+     */
     private void getLanguages(String accessToken){
         addNewsViewModel.getLanguages(accessToken).observe(getViewLifecycleOwner(), languages -> {
             languageListForID = languages;
@@ -206,7 +211,6 @@ public class AddNewsDetailsFragment extends Fragment implements View.OnClickList
             for (Language language : languages) {
                  languageList.add(language.getLanguage());
             }
-//            String[] COUNTRIES = new String[] {"Item 1", "Item 2", "Item 3", "Item 4"};
 
             if (getContext() != null) {
                 ArrayAdapter<String> adapter =
@@ -221,6 +225,12 @@ public class AddNewsDetailsFragment extends Fragment implements View.OnClickList
         });
     }
 
+    /**
+     * load categories of particular language from to category dropdown menu
+     * livedata observer
+     * @param accessToken user access token
+     * @param languageId language id of selected language
+     */
     private void getCategories(String accessToken, String languageId){
         addNewsViewModel.getCategories(accessToken, languageId).observe(getViewLifecycleOwner(), categories -> {
             categoryListForID = categories;
@@ -240,7 +250,11 @@ public class AddNewsDetailsFragment extends Fragment implements View.OnClickList
         });
     }
 
-    private void imagePickerAlertDialog(){
+    /**
+     * image picker dialog to upload picture from
+     * camera or gallery
+     */
+    private void showImagePickerDialog(){
         CharSequence[] items = {"Camera", "Gallery"};
         if (getActivity() != null) {
             MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getActivity());
@@ -250,7 +264,7 @@ public class AddNewsDetailsFragment extends Fragment implements View.OnClickList
                         captureImageFromCamera();
                         break;
                     case 1:
-                        selectImage();
+                        selectImageFromGallery();
                         break;
                 }
             });
@@ -258,7 +272,16 @@ public class AddNewsDetailsFragment extends Fragment implements View.OnClickList
         }
     }
 
+    /**
+     * camera image picker
+     * create image file in application package in file/Pictures directory
+     * then start camera intent.
+     */
     private void captureImageFromCamera(){
+        if (mPhotoFile != null && mPhotoFile.length() == 0){
+            mPhotoFile.delete();
+            mPhotoFile = null;
+        }
         preferenceManager.setImgChooser("camera");
         Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         if (getActivity() != null)
@@ -284,7 +307,11 @@ public class AddNewsDetailsFragment extends Fragment implements View.OnClickList
         }
     }
 
-    String imageFilePath;
+    /**
+     * creating image file before capturing from camera and
+     * store it in the Pictures directory in the application package.
+     */
+    private String imageFilePath;
     private File createImageFile() throws IOException {
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss",
                         Locale.getDefault()).format(new Date());
@@ -293,7 +320,7 @@ public class AddNewsDetailsFragment extends Fragment implements View.OnClickList
                 getActivity().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
         File image = File.createTempFile(
                 imageFileName,  /* prefix */
-                ".webp",         /* suffix */
+                ".jpg",         /* suffix */
                 storageDir      /* directory */
         );
 
@@ -301,7 +328,10 @@ public class AddNewsDetailsFragment extends Fragment implements View.OnClickList
         return image;
     }
 
-    private void selectImage(){
+    /**
+     * image selection from gallery
+     */
+    private void selectImageFromGallery(){
         preferenceManager.setImgChooser("gallery");
         Intent intent = new Intent();
         intent.setType("image/*");
@@ -309,6 +339,12 @@ public class AddNewsDetailsFragment extends Fragment implements View.OnClickList
         startActivityForResult(intent, IMG_REQUEST_CODE);
     }
 
+    /**
+     * resizing the image picked from gallery
+     * @param image bitmap image
+     * @param maxSize size
+     * @return scaled bitmap
+     */
     private Bitmap getResizedBitmap(Bitmap image, int maxSize) {
         int width = image.getWidth();
         int height = image.getHeight();
@@ -329,7 +365,7 @@ public class AddNewsDetailsFragment extends Fragment implements View.OnClickList
         if (requestCode == MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 Log.d(TAG, "onRequestPermissionsResult: granted");
-                imagePickerAlertDialog();
+                showImagePickerDialog();
             } else {
                 Toast.makeText(getActivity(), "Permission is needed to upload", Toast.LENGTH_SHORT).show();
             }
@@ -341,22 +377,23 @@ public class AddNewsDetailsFragment extends Fragment implements View.OnClickList
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         if (requestCode == IMG_REQUEST_CODE && resultCode == Activity.RESULT_OK && data != null){
-            imageUploadFromCameraOrGalley(data);
+            imageUploadFromGalley(data);
         } else if (requestCode == CAMERA_IMG_REQUEST_CODE && resultCode == Activity.RESULT_OK ){
-//            imageUploadFromCameraOrGalley(data);
 
             preferenceManager.setNewsImageUrl(mPhotoFile.getAbsolutePath());
+            Log.d(TAG, "onActivityResult: imgNameAbsoloute: " + mPhotoFile.getAbsolutePath());
             Log.d(TAG, "onActivityResult: imgNameUri: " +mImgUri.toString());
             Log.d(TAG, "onActivityResult: imgNamePath: " + mImgUri.getPath());
+
             try {
                 if (getActivity() != null) {
-                    mPhotoFile = new Compressor(getActivity())
+                    File photoFile = new Compressor(getActivity())
                             .setMaxWidth(640)
                             .setMaxHeight(480)
                             .setQuality(75)
-                            .setCompressFormat(Bitmap.CompressFormat.WEBP)
+                            .setCompressFormat(Bitmap.CompressFormat.JPEG)
                             .compressToFile(mPhotoFile);
-                    GlideApp.with(getActivity()).load(mPhotoFile).into(uploadedImageView);
+                    GlideApp.with(getActivity()).load(photoFile).into(uploadedImageView);
                 }
             } catch (IOException e) {
                 e.printStackTrace();
@@ -368,7 +405,13 @@ public class AddNewsDetailsFragment extends Fragment implements View.OnClickList
     }
 
 
-    private void imageUploadFromCameraOrGalley(Intent data){
+    /**
+     *  get intent data from onActivityResult and
+     *  store the uri of image in sharedPreference
+     *  and set image bitmap to uploadImageView
+     *
+     */
+    private void imageUploadFromGalley(Intent data){
         Uri path = data.getData();
 
         if (path != null) {
@@ -397,6 +440,24 @@ public class AddNewsDetailsFragment extends Fragment implements View.OnClickList
         }
     }
 
+    /**
+     * check for read, write external storage
+     * and camera runtime permissions
+     * @return boolean
+     */
+    private boolean isPermissionGranted(){
+        if (ContextCompat.checkSelfPermission(getActivity(),
+                Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+
+            requestPermissions(new String[]{
+                            Manifest.permission.READ_EXTERNAL_STORAGE,
+                            Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                            Manifest.permission.CAMERA
+                    }, MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE);
+            return false;
+        } else
+            return true;
+    }
 
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {
@@ -426,20 +487,13 @@ public class AddNewsDetailsFragment extends Fragment implements View.OnClickList
         switch (view.getId()){
             case R.id.upload_img_layout:
                 if (getActivity() != null) {
-                    if (ContextCompat.checkSelfPermission(getActivity(),
-                            Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                        requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE,
-                                        Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                                Manifest.permission.CAMERA},
-                                MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE);
-                    } else {
-                        imagePickerAlertDialog();
+                    if (isPermissionGranted()){
+                        showImagePickerDialog();
                     }
                 }
                 break;
 
             case R.id.next_btn:
-                Log.d(TAG, "onCreateView: " + languageDropDown.getText().toString());
                 String title = newsTitleEditText.getText().toString();
                 if (languageDropDown.getText().toString().equals("")) {
                     languageInputLayout.setErrorEnabled(true);
@@ -454,16 +508,16 @@ public class AddNewsDetailsFragment extends Fragment implements View.OnClickList
                     newsTitleLayout.setError("Enter the news title");
                 } else {
                     preferenceManager.setNewsTitle(title);
-                    Fragment fragment = AddNewsContentFragment.newInstance("news_content", "news_content");
-                    if (getFragmentManager() != null) {
-                        getFragmentManager().beginTransaction()
-                                .replace(R.id.frame_container, fragment).addToBackStack(null).commit();
+                    if (bitmap == null && mPhotoFile == null) {
+                        showConfirmDialog();
+                    } else {
+                        loadAddNewsContentFragment();
                     }
                 }
                 break;
 
             case R.id.change_image_btn:
-                selectImage();
+                showImagePickerDialog();
                 break;
             case R.id.remove_image_btn:
                 removeImageFromImageView();
@@ -471,6 +525,31 @@ public class AddNewsDetailsFragment extends Fragment implements View.OnClickList
         }
     }
 
+
+
+    private void loadAddNewsContentFragment(){
+        Fragment fragment = AddNewsContentFragment.newInstance("news_content", "news_content");
+        if (getFragmentManager() != null) {
+            getFragmentManager().beginTransaction()
+                    .replace(R.id.frame_container, fragment).addToBackStack(null).commit();
+        }
+    }
+
+    /**
+     * dialog shown if image is not picked
+     */
+    private void showConfirmDialog(){
+        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getActivity());
+        builder.setTitle("Do you want to proceed without an image?");
+        builder.setCancelable(true);
+        builder.setPositiveButton("YES", (dialogInterface, i) -> loadAddNewsContentFragment());
+        builder.setNegativeButton("CANCEL", (dialogInterface, i) -> dialogInterface.dismiss());
+        builder.create().show();
+    }
+
+    /**
+     * make the uploadImageView invisible if image is not picked
+     */
     private void removeImageFromImageView(){
         bitmap = null;
         uploadedImageView.setImageBitmap(bitmap);
@@ -478,6 +557,7 @@ public class AddNewsDetailsFragment extends Fragment implements View.OnClickList
         btnLayout.setVisibility(View.GONE);
         selectImageBtn.setVisibility(View.VISIBLE);
         preferenceManager.setNewsImageUrl("");
+        if (mPhotoFile != null) mPhotoFile.delete();
     }
 
 
@@ -498,17 +578,35 @@ public class AddNewsDetailsFragment extends Fragment implements View.OnClickList
         if (categoryListForID != null && categoryListForID.size() > 0){
             displayAllViews();
         }
+        // display the image picked from gallery
         if (bitmap != null){
             selectImageBtn.setVisibility(View.GONE);
             btnLayout.setVisibility(View.VISIBLE);
             uploadedImageView.setVisibility(View.VISIBLE);
             uploadedImageView.setImageBitmap(bitmap);
         }
+        // load the captured image file from camera to uploadImageView
         if (mPhotoFile != null){
             selectImageBtn.setVisibility(View.GONE);
             btnLayout.setVisibility(View.VISIBLE);
             uploadedImageView.setVisibility(View.VISIBLE);
+            if (getActivity() != null)
             GlideApp.with(getActivity()).load(mPhotoFile).into(uploadedImageView);
         }
+        // if image not captured from camera or camera closed before capturing
+        // delete the created image file from Pictures directory in application package
+        if (mPhotoFile != null && mPhotoFile.length() == 0){
+            mPhotoFile.delete();
+            mPhotoFile = null;
+            removeImageFromImageView();
+        }
+    }
+
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (mPhotoFile != null)
+        mPhotoFile.delete();
     }
 }

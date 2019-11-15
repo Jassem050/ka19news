@@ -9,7 +9,6 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -124,7 +123,7 @@ public class AddNewsContentFragment extends Fragment {
         if (getActivity() != null)
         addNewsViewModel = ViewModelProviders.of(getActivity()).get(AddNewsViewModel.class);
 
-        if (!preferenceManager.getNewsContent().equals("")) {
+        if (preferenceManager.getNewsContent() != null && !preferenceManager.getNewsContent().equals("")) {
             mEditText.fromHtml(preferenceManager.getNewsContent());
         }
         return rootView;
@@ -136,6 +135,10 @@ public class AddNewsContentFragment extends Fragment {
         }
     }
 
+    /**
+     * editor tools toolbar
+     * @param view rootView
+     */
     private void initToolbar(View view) {
         mToolbar = view.findViewById(R.id.areToolbar);
         IARE_ToolItem bold = new ARE_ToolItem_Bold();
@@ -201,6 +204,11 @@ public class AddNewsContentFragment extends Fragment {
         inflater.inflate(R.menu.add_news_menu, menu);
     }
 
+    /**
+     * get path of image picked from gallery
+     * @param uri image content uri
+     * @return absolute path
+     */
     private String getImageFilePath(Uri uri) {
         String path = null, image_id = null;
         Cursor cursor = null;
@@ -214,11 +222,12 @@ public class AddNewsContentFragment extends Fragment {
             cursor.close();
         }
         if (getActivity() != null)
-            cursor1 = getActivity().getContentResolver().query(android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI, null, MediaStore.Images.Media._ID + " = ? ", new String[]{image_id}, null);
+            cursor1 = getActivity().getContentResolver()
+                    .query(android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI, null,
+                            MediaStore.Images.Media._ID + " = ? ", new String[]{image_id}, null);
         if (cursor1 != null) {
             cursor1.moveToFirst();
             path = cursor1.getString(cursor1.getColumnIndex(MediaStore.Images.Media.DATA));
-            Log.d(TAG, "getImageFilePath: path: " + path);
             cursor1.close();
         }
         return path;
@@ -228,62 +237,95 @@ public class AddNewsContentFragment extends Fragment {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
 
         if (item.getItemId() == R.id.action_next) {
-            if (mEditText.getText().toString().equals("")) {
+            String newsContent = mEditText.getText().toString();
+            if (newsContent.equals("")) {
                 mEditText.setError("Enter the content");
             } else {
-                preferenceManager.setNewsContent(mEditText.getHtml());
-                String languageId = preferenceManager.getLanguageId();
-                String languageName = preferenceManager.getLanguageNameNews();
-                String categoryId = preferenceManager.getCategoryIdNews();
-                String newsTitle = preferenceManager.getNewsTitle();
-                String newsContent = preferenceManager.getNewsContent();
-                Uri path = Uri.parse(preferenceManager.getNewsImageUrl());
-                String imgChooser = preferenceManager.getImgChooser();
-                File file = null;
-                if (imgChooser.equals("gallery")) {
-                    file = new File(getImageFilePath(path));
-                } else if (imgChooser.equals("camera")){
-                    file = new File(preferenceManager.getNewsImageUrl());
-                }
-                try {
-                    String imageName = null;
-                    if (file != null) {
-                        imageName = file.getName().replaceAll(".[jpg][png][jpeg][webp]", "");
-                    }
-                    if (getActivity() != null) {
-                        File compressedImage = null;
-                        if (file != null) {
-                            compressedImage = new Compressor(getActivity())
-                                    .setMaxWidth(640)
-                                    .setMaxHeight(480)
-                                    .setQuality(75)
-                                    .setCompressFormat(Bitmap.CompressFormat.WEBP)
-                                    .setDestinationDirectoryPath(Environment.getExternalStoragePublicDirectory(
-                                            Environment.DIRECTORY_PICTURES).getAbsolutePath())
-                                    .compressToFile(file, imageName + ".webp");
-                        }
-
-                        addNewsViewModel.postNews(preferenceManager.getAccessToken(), compressedImage,
-                                languageId, languageName, categoryId, newsTitle, newsContent,
-                                "cdvdvs", "dcdcd").observe(getViewLifecycleOwner(),
-                                addNewsResponse -> {
-                                    Toast.makeText(AddNewsContentFragment.this.getActivity(), "News Added" + addNewsResponse.getSuccess(), Toast.LENGTH_SHORT).show();
-                                    AddNewsContentFragment.this.clearAllDataFromPref();
-                                });
-                    }
-
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
-
+                postNews();
             }
         }
         return super.onOptionsItemSelected(item);
     }
 
+    /**
+     * upload news to server
+     */
+    private void postNews(){
+        preferenceManager.setNewsContent(mEditText.getHtml());
+        String languageId = preferenceManager.getLanguageId();
+        String languageName = preferenceManager.getLanguageNameNews();
+        String categoryId = preferenceManager.getCategoryIdNews();
+        String newsTitle = preferenceManager.getNewsTitle();
+        String newsContent = preferenceManager.getNewsContent();
+        Uri path = Uri.parse(preferenceManager.getNewsImageUrl());
+
+        File imageFile = getImageFile(path);
+        File compressedFile = getCompressedFile(imageFile);
+        addNewsViewModel.postNews(preferenceManager.getAccessToken(), compressedFile,
+                languageId, languageName, categoryId, newsTitle, newsContent,
+                "cdvdvs", "dcdcd").observe(getViewLifecycleOwner(),
+                addNewsResponse -> {
+                    Toast.makeText(AddNewsContentFragment.this.getActivity(), "News Added" + addNewsResponse.getSuccess(), Toast.LENGTH_SHORT).show();
+                    AddNewsContentFragment.this.clearAllDataFromPref();
+                    if (preferenceManager.getImgChooser().equals("camera")) {
+                        if (imageFile != null) {
+                            imageFile.delete();
+                        }
+                    }
+                });
+
+    }
+
+    /**
+     * actual image file
+     * @param path image Uri
+     * @return file
+     */
+    private File getImageFile(Uri path){
+        String imgChooser = preferenceManager.getImgChooser();
+        File file = null;
+        if (imgChooser.equals("gallery")) {
+            file = new File(getImageFilePath(path));
+        } else if (imgChooser.equals("camera")){
+            file = new File(preferenceManager.getNewsImageUrl());
+        }
+        return file;
+    }
+
+    /**
+     * compress the image using Compressor
+     * @param file image file
+     * @return compressed image file
+     */
+    private File getCompressedFile(File file){
+        try {
+            String imageName = null;
+            if (file != null) {
+                imageName = file.getName().replaceAll(".[jpg][png][jpeg]", "");
+            }
+            if (getActivity() != null) {
+                File compressedImage = null;
+                if (file != null) {
+                    compressedImage = new Compressor(getActivity())
+                            .setMaxWidth(640)
+                            .setMaxHeight(480)
+                            .setQuality(75)
+                            .setCompressFormat(Bitmap.CompressFormat.WEBP)
+                            .setDestinationDirectoryPath(Environment.getExternalStoragePublicDirectory(
+                                    Environment.DIRECTORY_PICTURES).getAbsolutePath() + "/ka19news")
+                            .compressToFile(file, imageName + ".webp");
+                }
+
+                return compressedImage;
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     private void clearAllDataFromPref() {
-        Log.d(TAG, "clearAllDataFromPref: ");
         preferenceManager.setLanguageId("");
         preferenceManager.setLanguageNameNews("");
         preferenceManager.setCategoryIdNews("");
@@ -292,6 +334,10 @@ public class AddNewsContentFragment extends Fragment {
         preferenceManager.setNewsImageUrl("");
     }
 
+    /**
+     * editor tools toolbar arrow
+     * @param view imageView
+     */
     private void initToolbarArrow(View view) {
         final AppCompatImageView imageView = view.findViewById(R.id.arrow);
         if (this.mToolbar instanceof ARE_ToolbarDefault) {
@@ -322,6 +368,11 @@ public class AddNewsContentFragment extends Fragment {
         });
     }
 
+    @Override
+    public void onStop() {
+        super.onStop();
+        preferenceManager.setNewsContent(mEditText.getHtml());
+    }
 
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {

@@ -72,6 +72,7 @@ public class OTPActivity extends AppCompatActivity implements View.OnClickListen
         otpViewModel = ViewModelProviders.of(this).get(OTPViewModel.class);
         userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
         otpView = findViewById(R.id.otp_view);
+        preferenceManager = PreferenceManager.getInstance(this);
         doneButton = findViewById(R.id.done_btn);
         doneButton.setOnClickListener(this);
         if (getIntent().hasExtra("phone_number")) {
