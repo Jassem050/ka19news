@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +12,7 @@ import android.view.ViewGroup;
 import androidx.fragment.app.Fragment;
 
 import com.amitzinfy.ka19news.R;
+import com.amitzinfy.ka19news.utils.PreferenceManager;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -21,6 +23,7 @@ import com.amitzinfy.ka19news.R;
  * create an instance of this fragment.
  */
 public class LoginFragment extends Fragment {
+    private static final String TAG = "LoginFragment";
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
@@ -29,6 +32,7 @@ public class LoginFragment extends Fragment {
     private String mParam2;
 
     private OnFragmentInteractionListener mListener;
+    private PreferenceManager preferenceManager;
 
     public LoginFragment() {
         // Required empty public constructor
@@ -65,9 +69,11 @@ public class LoginFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_login, container, false);
-
+        preferenceManager = PreferenceManager.getInstance(getActivity());
         rootView.findViewById(R.id.login_btn)
-                .setOnClickListener(view -> startActivity(new Intent(getActivity(), PhoneNumberActivity.class)));
+                .setOnClickListener(view -> {
+                    Log.d(TAG, "onCreateView: accessToken: " + preferenceManager.getAccessToken());
+                    startActivity(new Intent(getActivity(), PhoneNumberActivity.class));});
         return rootView;
     }
 

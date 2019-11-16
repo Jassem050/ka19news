@@ -165,4 +165,27 @@ public class UserRepository {
         updateProfImage(access_token, file);
         return imageResponseMutableLiveData;
     }
+
+    private void logout(String accessToken){
+        ApiInterface apiInterface = RetrofitClient.getRetrofitClient().create(ApiInterface.class);
+        Call<UserResponse> call = apiInterface.logoutUser("Bearer " + accessToken);
+        call.enqueue(new Callback<UserResponse>() {
+            @Override
+            public void onResponse(Call<UserResponse> call, Response<UserResponse> response) {
+                if (response.isSuccessful() && response.body() != null){
+                    userResponseLiveData.postValue(response.body());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<UserResponse> call, Throwable t) {
+                Log.d(TAG, "onFailure: logout ", t);
+            }
+        });
+    }
+
+    public LiveData<UserResponse> logoutUser(String accessToken){
+        logout(accessToken);
+        return userResponseLiveData;
+    }
 }

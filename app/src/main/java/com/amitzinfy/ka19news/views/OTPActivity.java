@@ -91,14 +91,16 @@ public class OTPActivity extends AppCompatActivity implements View.OnClickListen
 
         otpView.setOtpCompletionListener(otp -> {
             Toast.makeText(OTPActivity.this, "Otp Entered", Toast.LENGTH_SHORT).show();
-            if (otpView.getText().toString().equals(oTPResponse.getOtp()) && oTPResponse.getType().equals("register")) {
-                Intent intent = new Intent(OTPActivity.this, RegisterActivity.class);
-                intent.putExtra("phone_number", phoneNumber);
-                OTPActivity.this.startActivity(intent);
-            } else if (otpView.getText().toString().equals(oTPResponse.getOtp()) && oTPResponse.getType().equals("login")) {
-                Toast.makeText(OTPActivity.this, "Login", Toast.LENGTH_SHORT).show();
-                loginUser(phoneNumber);
+            if (oTPResponse != null) {
+                if (otpView.getText().toString().equals(oTPResponse.getOtp()) && oTPResponse.getType().equals("register")) {
+                    Intent intent = new Intent(OTPActivity.this, RegisterActivity.class);
+                    intent.putExtra("phone_number", phoneNumber);
+                    OTPActivity.this.startActivity(intent);
+                } else if (otpView.getText().toString().equals(oTPResponse.getOtp()) && oTPResponse.getType().equals("login")) {
+                    Toast.makeText(OTPActivity.this, "Login", Toast.LENGTH_SHORT).show();
+                    loginUser(phoneNumber);
 
+                }
             }
         });
     }
@@ -203,10 +205,13 @@ public class OTPActivity extends AppCompatActivity implements View.OnClickListen
     @Override
     public void onClick(View view) {
         if (view.getId() == R.id.done_btn) {
-            if (otpView.getText().toString().equals(oTPResponse.getOtp()) && oTPResponse.getType().equals("register")) {
+            if (oTPResponse != null && otpView.getText().toString().equals(oTPResponse.getOtp()) 
+                    && oTPResponse.getType().equals("register")) {
                 Intent intent = new Intent(OTPActivity.this, RegisterActivity.class);
                 intent.putExtra("phone_number", phoneNumber);
                 startActivity(intent);
+            } else if (otpView.getText().toString().equals("")){
+                Toast.makeText(this, "Enter the OTP", Toast.LENGTH_SHORT).show();
             } else {
                 Toast.makeText(OTPActivity.this, "Login", Toast.LENGTH_SHORT).show();
                 loginUser(phoneNumber);

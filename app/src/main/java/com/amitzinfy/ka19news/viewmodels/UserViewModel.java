@@ -47,4 +47,8 @@ public class UserViewModel extends AndroidViewModel {
         Log.d(TAG, "updateProfImage: viewModel");
         return userRepository.updateProfilePhoto(access_token, file);
     }
+
+    public LiveData<UserResponse> logoutUser(String accessToken){
+        return userRepository.logoutUser(accessToken);
+    }
 }

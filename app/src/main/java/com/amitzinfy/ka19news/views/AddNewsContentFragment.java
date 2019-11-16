@@ -284,12 +284,14 @@ public class AddNewsContentFragment extends Fragment {
         MaterialButton okBtn = view.findViewById(R.id.ok_btn);
         okBtn.setOnClickListener(view1 -> {
             dialog.dismiss();
+            mEditText.setText("");
             getActivity().finish();
         });
     }
 
     private void loadPreviewFragment(){
         Fragment fragment = PreviewNewsFragment.newInstance("preview","preview");
+        if (getActivity() != null)
         getActivity().getSupportFragmentManager().beginTransaction().addToBackStack(null)
                 .replace(R.id.frame_container, fragment).commit();
     }

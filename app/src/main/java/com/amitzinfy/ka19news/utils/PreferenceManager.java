@@ -27,6 +27,12 @@ public class PreferenceManager {
     private static final String ACCESS_TOKEN = "access_token";
     private static final String USER_STATUS = "user_status";
     private static final String APP_STATUS = "app_status";
+    private static final String USER_NAME = "username";
+    private static final String USER_EMAIL = "email";
+    private static final String USER_PHONE_NO = "phoneno";
+    private static final String USER_ADDRESS = "address";
+    private static final String NEWS_POSTED = "newsPosted";
+    private static final String NEWS_ACCEPTED = "newsAccepted";
 
     // add news constants
     private static final String LANGUAGE_ID = "languageId";
@@ -142,6 +148,59 @@ public class PreferenceManager {
         return pref.getString(APP_STATUS, "reader");
     }
 
+    public void setUserName(String userName){
+        editor.putString(USER_NAME, userName);
+        editor.apply();
+    }
+
+    public String getUserName(){
+        return pref.getString(USER_NAME, null);
+    }
+
+    public void setUserEmail(String userEmail){
+        editor.putString(USER_EMAIL, userEmail);
+        editor.apply();
+    }
+
+    public String getUserEmail(){
+        return pref.getString(USER_EMAIL, null);
+    }
+
+    public void setUserPhoneNo(String userPhoneNo){
+        editor.putString(USER_PHONE_NO, userPhoneNo);
+        editor.apply();
+    }
+
+    public String getUserPhoneNo(){
+        return pref.getString(USER_PHONE_NO, null);
+    }
+
+    public void setUserAddress(String userAddress){
+        editor.putString(USER_ADDRESS, userAddress);
+        editor.apply();
+    }
+
+    public String getUserAddress(){
+        return pref.getString(USER_ADDRESS, null);
+    }
+
+    public void setNewsPosted(String newsPosted){
+        editor.putString(NEWS_POSTED, newsPosted);
+        editor.apply();
+    }
+
+    public String getNewsPosted(){
+        return pref.getString(NEWS_POSTED, null);
+    }
+
+    public void setNewsAccepted(String newsAccepted){
+        editor.putString(NEWS_ACCEPTED, newsAccepted);
+        editor.apply();
+    }
+
+    public String getNewsAccepted(){
+        return pref.getString(NEWS_ACCEPTED, null);
+    }
 
     /*
     *   Add News methods

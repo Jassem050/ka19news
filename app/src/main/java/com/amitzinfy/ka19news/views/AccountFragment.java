@@ -38,6 +38,7 @@ import com.chinalwb.are.glidesupport.GlideApp;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.card.MaterialCardView;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.textview.MaterialTextView;
 
 import java.io.File;
@@ -77,7 +78,7 @@ public class AccountFragment extends Fragment {
     private Bitmap bitmap;
     private String encodedImage;
     private AppCompatImageView profileImage;
-    private MaterialCardView addNewsBtn, viewNewsBtn;
+    private MaterialCardView addNewsBtn, viewNewsBtn, logoutBtn;
 
     public AccountFragment() {
         // Required empty public constructor
@@ -122,6 +123,13 @@ public class AccountFragment extends Fragment {
             preferenceManager.setAppStatus(getString(R.string.reader_writer_status));
         }
 
+        if (preferenceManager.getUserName() != null && !preferenceManager.getUserName().equals("")){
+            displayUserInfo(preferenceManager.getUserName(), preferenceManager.getUserEmail(), preferenceManager.getUserPhoneNo(),
+                    preferenceManager.getUserAddress());
+        }
+        if (preferenceManager.getNewsPosted() != null && !preferenceManager.getNewsPosted().equals("")){
+            displayNewsCount(preferenceManager.getNewsPosted(), preferenceManager.getNewsAccepted());
+        }
         // for drawer hamburger animation
         if (getActivity() != null)
             drawerLayout = ((MainActivity) getActivity()).drawerLayout;
@@ -132,8 +140,13 @@ public class AccountFragment extends Fragment {
         actionBarDrawerToggle.setDrawerSlideAnimationEnabled(true);
         drawerLayout.addDrawerListener(actionBarDrawerToggle);
 
-        getUserDetails(preferenceManager.getAccessToken());
-        getAddedNewsCount(preferenceManager.getAccessToken());
+        if (preferenceManager.getAppStatus() != null &&
+                (preferenceManager.getAppStatus().equals(getString(R.string.reader_writer_status))
+                        || preferenceManager.getAppStatus().equals(getString(R.string.writer_status)))) {
+
+            getAddedNewsCount(preferenceManager.getAccessToken());
+            getUserDetails(preferenceManager.getAccessToken());
+        }
         return rootView;
     }
 
@@ -162,6 +175,7 @@ public class AccountFragment extends Fragment {
         profileImage = view.findViewById(R.id.profile_image);
         addNewsBtn = view.findViewById(R.id.add_news);
         viewNewsBtn = view.findViewById(R.id.view_btn_layout);
+        logoutBtn = view.findViewById(R.id.logout_btn_layout);
 
         preferenceManager = PreferenceManager.getInstance(getActivity());
         userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
@@ -180,26 +194,86 @@ public class AccountFragment extends Fragment {
         });
 
         addNewsBtn.setOnClickListener(view1 -> startActivity(new Intent(getActivity(), AddNewsActivity.class)));
+
+        logoutBtn.setOnClickListener(view1 -> showLogoutDialog());
+    }
+
+    private void showLogoutDialog(){
+        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getActivity());
+        builder.setCancelable(true);
+        builder.setTitle(getString(R.string.logout));
+        builder.setMessage("Are you sure? ");
+        builder.setPositiveButton("LOGOUT", (dialogInterface, i) -> logoutUser(preferenceManager.getAccessToken()));
+        builder.setNegativeButton("CANCEL", (dialogInterface, i) -> dialogInterface.dismiss());
+        builder.create().show();
+    }
+
+    private void logoutUser(String accessToken){
+        userViewModel.logoutUser(accessToken).observe(getViewLifecycleOwner(), userResponse -> {
+            preferenceManager.setAccessToken("");
+            preferenceManager.setAppStatus(getString(R.string.reader_status));
+            preferenceManager.setUserStatus(getString(R.string.logged_out_status));
+            clearUserInfoFromPref();
+            Intent intent = new Intent(getActivity(), MainActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(intent);
+        });
+    }
+
+    private void clearUserInfoFromPref(){
+        preferenceManager.setUserName("");
+        preferenceManager.setUserEmail("");
+        preferenceManager.setUserPhoneNo("");
+        preferenceManager.setUserAddress("");
+        preferenceManager.setNewsAccepted("");
+        preferenceManager.setNewsPosted("");
     }
 
     private void getUserDetails(String access_token){
         Log.d(TAG, "getUserDetails: ");
         userViewModel.getUserDetails(access_token).observe(getViewLifecycleOwner(), userResponse -> {
-            Log.d(TAG, "getUserDetails: user: " + userResponse.getUser().toString());
-            profileName.setText(userResponse.getUser().getName());
-            profileEmail.setText(userResponse.getUser().getEmail());
-            profileMobileNo.setText(userResponse.getUser().getMobileNumber());
-            profileAddress.setText(userResponse.getUser().getAddress());
-            if (getActivity() != null)
-            GlideApp.with(getActivity()).load(NetworkUtils.PROFILE_IMG_URL + userResponse.getUser().getImage()).into(profileImage);
+            if (userResponse != null && userResponse.getUser() != null) {
+                setUserInfoInPref(userResponse.getUser().getName(), userResponse.getUser().getEmail(),
+                        userResponse.getUser().getMobileNumber(), userResponse.getUser().getAddress());
+
+                if (getActivity() != null)
+                    GlideApp.with(getActivity()).load(NetworkUtils.PROFILE_IMG_URL + userResponse.getUser().getImage())
+                            .into(profileImage);
+            }
         });
     }
 
+    private void setUserInfoInPref(String name, String email, String phoneNo, String address){
+        preferenceManager.setUserName(name);
+        preferenceManager.setUserEmail(email);
+        preferenceManager.setUserPhoneNo(phoneNo);
+        preferenceManager.setUserAddress(address);
+        displayUserInfo(preferenceManager.getUserName(), preferenceManager.getUserEmail(), preferenceManager.getUserPhoneNo(),
+                preferenceManager.getUserAddress());
+    }
+
+    private void displayUserInfo(String name, String email, String phoneNo, String address){
+        profileName.setText(name);
+        profileEmail.setText(email);
+        profileMobileNo.setText(phoneNo);
+        profileAddress.setText(address);
+    }
+
     private void getAddedNewsCount(String access_token){
-        userViewModel.getAddedNewsCount(access_token).observe(getViewLifecycleOwner(), newsAdded -> {
-            newsAddCount.setText(String.valueOf(newsAdded.getNewsCount()));
-            newsAcceptCount.setText(String.valueOf(newsAdded.getNewsAcceptedCount()));
-        });
+        userViewModel.getAddedNewsCount(access_token).observe(getViewLifecycleOwner(),
+                newsAdded -> setNewsCountInPref(String.valueOf(newsAdded.getNewsCount()),
+                        String.valueOf(newsAdded.getNewsAcceptedCount())));
+    }
+
+    private void setNewsCountInPref(String newsAdded, String newsAccepted){
+        preferenceManager.setNewsPosted(newsAdded);
+        preferenceManager.setNewsAccepted(newsAccepted);
+        displayNewsCount(preferenceManager.getNewsPosted(), preferenceManager.getNewsAccepted());
+    }
+
+    private void displayNewsCount(String newsAdded, String newsAccepted){
+        newsAddCount.setText(newsAdded);
+        newsAcceptCount.setText(newsAccepted);
     }
 
     private void selectImage(){

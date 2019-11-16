@@ -11,6 +11,9 @@ public class UserResponse {
     @Expose
     @SerializedName("access_token")
     private String accessToken;
+    @Expose
+    @SerializedName("message")
+    private String message;
 
     public User getUser() {
         return user;
@@ -26,5 +29,13 @@ public class UserResponse {
 
     public void setAccessToken(String accessToken) {
         this.accessToken = accessToken;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
     }
 }

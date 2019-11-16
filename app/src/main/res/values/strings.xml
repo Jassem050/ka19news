@@ -104,5 +104,6 @@
     <string name="ok_btn">OK</string>
     <string name="news_uploaded_succesfully">News uploaded successfully</string>
     <string name="preview">Preview</string>
+    <string name="logout">Logout</string>
 
 </resources>

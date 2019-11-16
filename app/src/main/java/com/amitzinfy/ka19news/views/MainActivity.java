@@ -39,12 +39,13 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnFr
         init();
         setUpBottomNavView();
         setUpNavigationView();
-        Log.d(TAG, "onCreate: user_status " + preferenceManager.getUserStatus() + " " + preferenceManager.getAppStatus());
-        if (preferenceManager.getAppStatus().equals(getString(R.string.reader_status)) ||
-                preferenceManager.getAppStatus().equals(getString(R.string.reader_writer_status))) {
+//        Log.d(TAG, "onCreate: user_status " + preferenceManager.getUserStatus() + " " + preferenceManager.getAppStatus());
+        if (preferenceManager. getAppStatus() != null && (preferenceManager.getAppStatus().equals(getString(R.string.reader_status)) ||
+                preferenceManager.getAppStatus().equals(getString(R.string.reader_writer_status)))) {
             loadFragment(HomeFragment.newInstance("home", "home"));
             bottomNavigationView.setSelectedItemId(R.id.navigation_home);
-        } else if (preferenceManager.getAppStatus().equals(getString(R.string.writer_status))) {
+        } else if (preferenceManager. getAppStatus() != null &&
+                preferenceManager.getAppStatus().equals(getString(R.string.writer_status))) {
             loadFragment(AccountFragment.newInstance("account", "account"));
             bottomNavigationView.setSelectedItemId(R.id.navigation_account);
         }

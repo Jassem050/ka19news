@@ -86,4 +86,9 @@ public interface ApiInterface {
     @FormUrlEncoded
     @POST("find_cat")
     Call<List<Category>> getCategories(@Header("Authorization") String accessToken, @Field("language_id") String languageId);
+
+    @Headers("Accept: application/json")
+    @GET("logout")
+    Call<UserResponse> logoutUser(@Header("Authorization") String accessToken);
+
 }
