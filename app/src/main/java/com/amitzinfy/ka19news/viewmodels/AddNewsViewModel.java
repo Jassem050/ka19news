@@ -32,8 +32,8 @@ public class AddNewsViewModel extends AndroidViewModel {
 
     public LiveData<AddNewsResponse> postNews(String accessToken, File file, String languageId,
                                               String languageName, String categoryId, String newsTitle,
-                                              String newsContent, String imgCaption, String place){
+                                              String newsContent){
         return addNewsRepository.postNews(accessToken, file, languageId, languageName,
-                categoryId, newsTitle, newsContent, imgCaption, place);
+                categoryId, newsTitle, newsContent);
     }
 }

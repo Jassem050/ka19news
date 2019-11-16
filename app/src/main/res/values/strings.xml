@@ -100,5 +100,9 @@
     <string name="next_btn">Next</string>
     <string name="change_image_btn">Change Image</string>
     <string name="remove_image_btn">Remove Image</string>
+    <string name="send">Send</string>
+    <string name="ok_btn">OK</string>
+    <string name="news_uploaded_succesfully">News uploaded successfully</string>
+    <string name="preview">Preview</string>
 
 </resources>

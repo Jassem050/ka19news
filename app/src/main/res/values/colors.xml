@@ -12,6 +12,7 @@
     <color name="DividerColor">#EEEEEE</color>
     <color name="tab_text_color">#B0E0E6</color>
     <color name="shimmer_background">#dddddd</color>
+    <color name="transparent_bg">#94EEEEEE</color>
 
 
     <!-- dots inactive colors -->

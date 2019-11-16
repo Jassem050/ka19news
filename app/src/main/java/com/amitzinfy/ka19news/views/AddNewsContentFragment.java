@@ -15,10 +15,11 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
+import android.widget.RelativeLayout;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatImageView;
 import androidx.fragment.app.Fragment;
@@ -35,6 +36,8 @@ import com.chinalwb.are.styles.toolitems.ARE_ToolItem_AlignmentLeft;
 import com.chinalwb.are.styles.toolitems.ARE_ToolItem_AlignmentRight;
 import com.chinalwb.are.styles.toolitems.ARE_ToolItem_At;
 import com.chinalwb.are.styles.toolitems.ARE_ToolItem_Bold;
+import com.chinalwb.are.styles.toolitems.ARE_ToolItem_FontColor;
+import com.chinalwb.are.styles.toolitems.ARE_ToolItem_FontSize;
 import com.chinalwb.are.styles.toolitems.ARE_ToolItem_Hr;
 import com.chinalwb.are.styles.toolitems.ARE_ToolItem_Italic;
 import com.chinalwb.are.styles.toolitems.ARE_ToolItem_Link;
@@ -46,6 +49,8 @@ import com.chinalwb.are.styles.toolitems.ARE_ToolItem_Subscript;
 import com.chinalwb.are.styles.toolitems.ARE_ToolItem_Superscript;
 import com.chinalwb.are.styles.toolitems.ARE_ToolItem_Underline;
 import com.chinalwb.are.styles.toolitems.IARE_ToolItem;
+import com.google.android.material.button.MaterialButton;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.io.File;
 import java.io.IOException;
@@ -78,6 +83,7 @@ public class AddNewsContentFragment extends Fragment {
     private PreferenceManager preferenceManager;
     private ActionBar actionBar;
     private AddNewsViewModel addNewsViewModel;
+    private RelativeLayout bgSuccessLayout, progressBarLayout;
 
 
     public AddNewsContentFragment() {
@@ -118,8 +124,7 @@ public class AddNewsContentFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_add_news_content, container, false);
 
         initToolbar(rootView);
-
-        preferenceManager = PreferenceManager.getInstance(getActivity());
+        bindViews(rootView);
         if (getActivity() != null)
         addNewsViewModel = ViewModelProviders.of(getActivity()).get(AddNewsViewModel.class);
 
@@ -127,6 +132,12 @@ public class AddNewsContentFragment extends Fragment {
             mEditText.fromHtml(preferenceManager.getNewsContent());
         }
         return rootView;
+    }
+
+    private void bindViews(View view){
+        bgSuccessLayout = view.findViewById(R.id.bg_layout_success);
+        progressBarLayout = view.findViewById(R.id.progress_bar_layout);
+        preferenceManager = PreferenceManager.getInstance(getActivity());
     }
 
     private void setActionBar(View view) {
@@ -158,9 +169,13 @@ public class AddNewsContentFragment extends Fragment {
 //        IARE_ToolItem image = new ARE_ToolItem_Image();
 //        IARE_ToolItem video = new ARE_ToolItem_Video();
         IARE_ToolItem at = new ARE_ToolItem_At();
+        IARE_ToolItem font = new ARE_ToolItem_FontSize();
+        IARE_ToolItem color = new ARE_ToolItem_FontColor();
         mToolbar.addToolbarItem(bold);
         mToolbar.addToolbarItem(italic);
         mToolbar.addToolbarItem(underline);
+        mToolbar.addToolbarItem(font);
+        mToolbar.addToolbarItem(color);
         mToolbar.addToolbarItem(strikethrough);
         mToolbar.addToolbarItem(quote);
         mToolbar.addToolbarItem(listNumber);
@@ -235,16 +250,48 @@ public class AddNewsContentFragment extends Fragment {
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-
-        if (item.getItemId() == R.id.action_next) {
-            String newsContent = mEditText.getText().toString();
+        String newsContent = mEditText.getText().toString();
+        if (item.getItemId() == R.id.action_send) {
             if (newsContent.equals("")) {
                 mEditText.setError("Enter the content");
             } else {
+                progressBarLayout.setVisibility(View.VISIBLE);
                 postNews();
+            }
+        } else if (item.getItemId() == R.id.action_preview){
+            if (newsContent.equals("")){
+                mEditText.setError("Enter the content");
+            } else {
+                preferenceManager.setNewsContent(mEditText.getHtml());
+                loadPreviewFragment();
             }
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    /**
+     * hide action bar and
+     * success alert dialog
+     */
+    private void showSuccessDialog(){
+        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getActivity());
+        View view = getLayoutInflater().inflate(R.layout.success_layout, null);
+        builder.setView(view);
+        AlertDialog dialog = builder.create();
+        ((AppCompatActivity) getActivity()).getSupportActionBar().hide();
+        dialog.show();
+        bgSuccessLayout.setVisibility(View.VISIBLE);
+        MaterialButton okBtn = view.findViewById(R.id.ok_btn);
+        okBtn.setOnClickListener(view1 -> {
+            dialog.dismiss();
+            getActivity().finish();
+        });
+    }
+
+    private void loadPreviewFragment(){
+        Fragment fragment = PreviewNewsFragment.newInstance("preview","preview");
+        getActivity().getSupportFragmentManager().beginTransaction().addToBackStack(null)
+                .replace(R.id.frame_container, fragment).commit();
     }
 
     /**
@@ -262,15 +309,19 @@ public class AddNewsContentFragment extends Fragment {
         File imageFile = getImageFile(path);
         File compressedFile = getCompressedFile(imageFile);
         addNewsViewModel.postNews(preferenceManager.getAccessToken(), compressedFile,
-                languageId, languageName, categoryId, newsTitle, newsContent,
-                "cdvdvs", "dcdcd").observe(getViewLifecycleOwner(),
+                languageId, languageName, categoryId, newsTitle, newsContent).observe(getViewLifecycleOwner(),
                 addNewsResponse -> {
-                    Toast.makeText(AddNewsContentFragment.this.getActivity(), "News Added" + addNewsResponse.getSuccess(), Toast.LENGTH_SHORT).show();
+                    progressBarLayout.setVisibility(View.GONE);
+//                    Toast.makeText(AddNewsContentFragment.this.getActivity(), "News Added" + addNewsResponse.getSuccess(), Toast.LENGTH_SHORT).show();
                     AddNewsContentFragment.this.clearAllDataFromPref();
                     if (preferenceManager.getImgChooser().equals("camera")) {
                         if (imageFile != null) {
-                            imageFile.delete();
+                            if (imageFile.delete()){
+                                showSuccessDialog();
+                            }
                         }
+                    } else {
+                        showSuccessDialog();
                     }
                 });
 

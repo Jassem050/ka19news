@@ -9,21 +9,21 @@
         android:id="@+id/divider_one"
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        are:layout_constraintStart_toStartOf="parent"
-        are:layout_constraintEnd_toEndOf="parent"
-        are:layout_constraintTop_toTopOf="parent"
         android:layout_above="@+id/bottombar"
-        android:background="@color/colorPrimaryDark" />
+        android:background="@color/colorPrimaryDark"
+        are:layout_constraintEnd_toEndOf="parent"
+        are:layout_constraintStart_toStartOf="parent"
+        are:layout_constraintTop_toTopOf="parent" />
 
     <LinearLayout
         android:id="@+id/bottombar"
         android:layout_width="match_parent"
         android:layout_height="50dp"
+        android:orientation="horizontal"
+        android:weightSum="1000"
         are:layout_constraintLeft_toLeftOf="parent"
         are:layout_constraintRight_toRightOf="parent"
-        are:layout_constraintTop_toBottomOf="@+id/divider_one"
-        android:orientation="horizontal"
-        android:weightSum="1000">
+        are:layout_constraintTop_toBottomOf="@+id/divider_one">
 
         <com.chinalwb.are.styles.toolbar.ARE_ToolbarDefault
             android:id="@+id/areToolbar"
@@ -59,18 +59,18 @@
         android:id="@+id/divider_two"
         android:layout_width="match_parent"
         android:layout_height="1dp"
+        android:background="@color/shimmer_background"
         are:layout_constraintLeft_toLeftOf="parent"
         are:layout_constraintRight_toRightOf="parent"
-        are:layout_constraintTop_toBottomOf="@+id/bottombar"
-        android:background="@color/shimmer_background" />
+        are:layout_constraintTop_toBottomOf="@+id/bottombar" />
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@color/white"
         are:layout_constraintLeft_toLeftOf="parent"
         are:layout_constraintRight_toRightOf="parent"
-        are:layout_constraintTop_toBottomOf="@+id/divider_two"
-        android:background="@color/white">
+        are:layout_constraintTop_toBottomOf="@+id/divider_two">
 
         <com.chinalwb.are.AREditText
             android:id="@+id/arEditText"
@@ -80,5 +80,26 @@
             android:hint="@string/news_content_hint"
             android:textSize="50sp" />
     </androidx.core.widget.NestedScrollView>
+
+    <RelativeLayout
+        android:id="@+id/progress_bar_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/transparent_bg"
+        android:visibility="gone">
+
+        <ProgressBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:indeterminate="true" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/bg_layout_success"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/colorPrimary"
+        android:visibility="gone" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

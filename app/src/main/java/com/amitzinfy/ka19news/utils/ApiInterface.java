@@ -75,8 +75,8 @@ public interface ApiInterface {
     Call<AddNewsResponse> postNews(@Header("Authorization") String accessToken, @Part MultipartBody.Part file,
                                    @Part("language_id") RequestBody languageId, @Part("language_name") RequestBody languageName,
                                    @Part("cat_id") RequestBody categoryId, @Part("news_title") RequestBody newsTitle,
-                                   @Part("news_content") RequestBody newsContent, @Part("img_caption") RequestBody imgCaption,
-                                   @Part("place") RequestBody place);
+                                   @Part("news_content") RequestBody newsContent);
+    //, @Part("img_caption") RequestBody imgCaption,@Part("place") RequestBody place);
 
     @Headers("Accept: application/json")
     @POST("languages")

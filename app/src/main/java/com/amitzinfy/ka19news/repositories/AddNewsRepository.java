@@ -82,7 +82,7 @@ public class AddNewsRepository {
     }
 
     private void addNews(String accessToken, File file, String languageId, String languageName,
-                         String categoryId, String newsTitle, String newsContent, String imgCaption, String place){
+                         String categoryId, String newsTitle, String newsContent){
         ApiInterface apiInterface = RetrofitClient.getRetrofitClient().create(ApiInterface.class);
 
         RequestBody fileReqBody = RequestBody.create(MediaType.get("image/*"), file);
@@ -94,11 +94,11 @@ public class AddNewsRepository {
         RequestBody category_id = RequestBody.create(MediaType.parse("text/plain"), categoryId);
         RequestBody news_title = RequestBody.create(MediaType.parse("text/plain"), newsTitle);
         RequestBody news_content = RequestBody.create(MediaType.parse("text/plain"), newsContent);
-        RequestBody img_caption = RequestBody.create(MediaType.parse("text/plain"), imgCaption);
-        RequestBody place_loc = RequestBody.create(MediaType.parse("text/plain"), place);
+//        RequestBody img_caption = RequestBody.create(MediaType.parse("text/plain"), imgCaption);
+//        RequestBody place_loc = RequestBody.create(MediaType.parse("text/plain"), place);
 
         Call<AddNewsResponse> call = apiInterface.postNews("Bearer " + accessToken, part, language_id,
-                language_name, category_id, news_title, news_content, img_caption, place_loc);
+                language_name, category_id, news_title, news_content);
         call.enqueue(new Callback<AddNewsResponse>() {
             @Override
             public void onResponse(Call<AddNewsResponse> call, Response<AddNewsResponse> response) {
@@ -118,8 +118,8 @@ public class AddNewsRepository {
 
     public LiveData<AddNewsResponse> postNews(String accessToken, File file, String languageId,
                                               String languageName, String categoryId, String newsTitle,
-                                              String newsContent, String imgCaption, String place){
-        addNews(accessToken, file, languageId, languageName, categoryId, newsTitle, newsContent, imgCaption, place);
+                                              String newsContent){
+        addNews(accessToken, file, languageId, languageName, categoryId, newsTitle, newsContent);
         return addNewsResponseMutableLiveData;
     }
 }

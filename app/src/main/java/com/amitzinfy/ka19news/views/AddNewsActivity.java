@@ -11,7 +11,7 @@ import com.amitzinfy.ka19news.R;
 import com.amitzinfy.ka19news.utils.PreferenceManager;
 
 public class AddNewsActivity extends AppCompatActivity implements AddNewsDetailsFragment.OnFragmentInteractionListener,
-        AddNewsContentFragment.OnFragmentInteractionListener {
+        AddNewsContentFragment.OnFragmentInteractionListener, PreviewNewsFragment.OnFragmentInteractionListener {
 
     private ActionBar actionBar;
     private PreferenceManager preferenceManager;

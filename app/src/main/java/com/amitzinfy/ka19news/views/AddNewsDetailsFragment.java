@@ -540,10 +540,10 @@ public class AddNewsDetailsFragment extends Fragment implements View.OnClickList
      */
     private void showConfirmDialog(){
         MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getActivity());
-        builder.setTitle("Do you want to proceed without an image?");
+        builder.setTitle("Upload an image");
         builder.setCancelable(true);
-        builder.setPositiveButton("YES", (dialogInterface, i) -> loadAddNewsContentFragment());
-        builder.setNegativeButton("CANCEL", (dialogInterface, i) -> dialogInterface.dismiss());
+        builder.setPositiveButton("OK", (dialogInterface, i) -> dialogInterface.dismiss());
+//        builder.setNegativeButton("CANCEL", (dialogInterface, i) -> dialogInterface.dismiss());
         builder.create().show();
     }
 
