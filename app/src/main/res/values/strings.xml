@@ -105,5 +105,8 @@
     <string name="news_uploaded_succesfully">News uploaded successfully</string>
     <string name="preview">Preview</string>
     <string name="logout">Logout</string>
+    <string name="become_n_ka19news_n_contributer">Become   ka19news   Contributer</string>
+    <string name="account_caps">ACCOUNT</string>
+    <string name="login_create">Login/Create account to contribute news</string>
 
 </resources>

@@ -200,9 +200,9 @@ public class AccountFragment extends Fragment {
 
     private void showLogoutDialog(){
         MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getActivity());
-        builder.setCancelable(true);
+        builder.setCancelable(false);
         builder.setTitle(getString(R.string.logout));
-        builder.setMessage("Are you sure? ");
+        builder.setMessage("Are you sure you want to logout? ");
         builder.setPositiveButton("LOGOUT", (dialogInterface, i) -> logoutUser(preferenceManager.getAccessToken()));
         builder.setNegativeButton("CANCEL", (dialogInterface, i) -> dialogInterface.dismiss());
         builder.create().show();
@@ -317,8 +317,8 @@ public class AccountFragment extends Fragment {
                 try {
                      String imageName = file.getName().replaceAll(".[jpg][png][jpeg]", "");
                      compressImage = new Compressor(getActivity())
-                            .setMaxWidth(640)
-                            .setMaxHeight(480)
+                            .setMaxWidth(400)
+                            .setMaxHeight(300)
                             .setQuality(75)
                             .setCompressFormat(Bitmap.CompressFormat.WEBP)
                             .setDestinationDirectoryPath(Environment.getExternalStoragePublicDirectory(

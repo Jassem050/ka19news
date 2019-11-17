@@ -64,17 +64,24 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent">
 
-                    <androidx.appcompat.widget.AppCompatImageView
-                        android:id="@+id/profile_image"
+                    <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/profile_image_layout"
                         android:layout_width="100dp"
                         android:layout_height="100dp"
                         android:layout_margin="8dp"
-                        android:layout_marginStart="8dp"
-                        android:scaleType="fitXY"
+                        app:cardCornerRadius="20dp"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintLeft_toLeftOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintVertical_bias="0.024" />
+                        app:layout_constraintVertical_bias="0.024" >
+
+                        <androidx.appcompat.widget.AppCompatImageView
+                            android:id="@+id/profile_image"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+
+                            android:scaleType="fitXY" />
+                    </com.google.android.material.card.MaterialCardView>
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/upload_image_btn"
@@ -84,7 +91,7 @@
                         android:layout_margin="8dp"
                         android:text="@string/upload"
                         app:layout_constraintLeft_toLeftOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/profile_image" />
+                        app:layout_constraintTop_toBottomOf="@+id/profile_image_layout" />
 
                     <com.google.android.material.textview.MaterialTextView
                         android:id="@+id/profile_name"
@@ -96,7 +103,7 @@
                         android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle2"
                         android:textSize="20sp"
                         android:textStyle="bold"
-                        app:layout_constraintLeft_toRightOf="@+id/profile_image"
+                        app:layout_constraintLeft_toRightOf="@+id/profile_image_layout"
                         app:layout_constraintTop_toTopOf="parent" />
 
                     <androidx.appcompat.widget.AppCompatImageButton
@@ -125,7 +132,7 @@
                         android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
                         android:textSize="12sp"
                         android:textStyle="bold"
-                        app:layout_constraintLeft_toRightOf="@+id/profile_image"
+                        app:layout_constraintLeft_toRightOf="@+id/profile_image_layout"
                         app:layout_constraintTop_toBottomOf="@+id/profile_name" />
 
                     <com.google.android.material.textview.MaterialTextView
@@ -140,7 +147,7 @@
                         android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
                         android:textSize="12sp"
                         android:textStyle="bold"
-                        app:layout_constraintLeft_toRightOf="@+id/profile_image"
+                        app:layout_constraintLeft_toRightOf="@+id/profile_image_layout"
                         app:layout_constraintTop_toBottomOf="@+id/profile_email" />
 
                     <com.google.android.material.textview.MaterialTextView
@@ -155,7 +162,7 @@
                         android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
                         android:textSize="12sp"
                         android:textStyle="bold"
-                        app:layout_constraintLeft_toRightOf="@+id/profile_image"
+                        app:layout_constraintLeft_toRightOf="@+id/profile_image_layout"
                         app:layout_constraintTop_toBottomOf="@+id/profile_phone" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -156,6 +156,7 @@ public class UserRepository {
             @Override
             public void onFailure(Call<User> call, Throwable t) {
                 Log.d(TAG, "onFailure: updateImage: ", t);
+                call.clone().enqueue(this);
             }
         });
     }
@@ -180,6 +181,7 @@ public class UserRepository {
             @Override
             public void onFailure(Call<UserResponse> call, Throwable t) {
                 Log.d(TAG, "onFailure: logout ", t);
+                call.clone().enqueue(this);
             }
         });
     }

@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProviders;
 
@@ -31,15 +32,15 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnFr
     private NavigationView navigationView;
     private PreferenceManager preferenceManager;
     private MyFeedViewModel myFeedViewModel;
+    private Fragment.SavedState savedFragmentState;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         init();
-        setUpBottomNavView();
+        setUpBottomNavView(savedInstanceState);
         setUpNavigationView();
-//        Log.d(TAG, "onCreate: user_status " + preferenceManager.getUserStatus() + " " + preferenceManager.getAppStatus());
         if (preferenceManager. getAppStatus() != null && (preferenceManager.getAppStatus().equals(getString(R.string.reader_status)) ||
                 preferenceManager.getAppStatus().equals(getString(R.string.reader_writer_status)))) {
             loadFragment(HomeFragment.newInstance("home", "home"));
@@ -99,29 +100,40 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnFr
         });
     }
 
-    private void setUpBottomNavView() {
+    private void setUpBottomNavView(Bundle savedState) {
         bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
             Fragment fragment;
+            FragmentManager fragmentManager = getSupportFragmentManager();
             switch (item.getItemId()) {
                 case R.id.navigation_home:
-                    fragment = HomeFragment.newInstance("home", "home");
-                    loadFragment(fragment);
+                    if (!(fragmentManager.findFragmentById(R.id.content_main_frame) instanceof HomeFragment)) {
+                        fragment = HomeFragment.newInstance("home", "home");
+                        loadFragment(fragment);
+                    }
                     return true;
                 case R.id.navigation_headlines:
-                    fragment = HeadLineFragment.newInstance("headlines", "headlines");
-                    loadFragment(fragment);
+                    if (!(fragmentManager.findFragmentById(R.id.content_main_frame) instanceof HeadLineFragment)) {
+                        fragment = HeadLineFragment.newInstance("headlines", "headlines");
+                        loadFragment(fragment);
+                    }
                     return true;
                 case R.id.navigation_favourites:
-                    fragment = FavouriteFragment.newInstance("favourites", "favourites");
-                    loadFragment(fragment);
+                    if (!(fragmentManager.findFragmentById(R.id.content_main_frame) instanceof FavouriteFragment)) {
+                        fragment = FavouriteFragment.newInstance("favourites", "favourites");
+                        loadFragment(fragment);
+                    }
                     return true;
                 case R.id.navigation_account:
                     if (preferenceManager.getUserStatus().equals("logged_in")) {
-                        fragment = AccountFragment.newInstance("account", "account");
-                        loadFragment(fragment);
+                        if (!(fragmentManager.findFragmentById(R.id.content_main_frame) instanceof AccountFragment)) {
+                            fragment = AccountFragment.newInstance("account", "account");
+                            loadFragment(fragment);
+                        }
                     } else if (preferenceManager.getUserStatus().equals("logged_out")) {
-                        fragment = LoginFragment.newInstance("login", "login");
-                        loadFragment(fragment);
+                        if (!(fragmentManager.findFragmentById(R.id.content_main_frame) instanceof LoginFragment)) {
+                            fragment = LoginFragment.newInstance("login", "login");
+                            loadFragment(fragment);
+                        }
                     }
                     return true;
             }
@@ -145,5 +157,10 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnFr
     @Override
     public void onDrawerButtonClicked() {
         drawerLayout.openDrawer(GravityCompat.START);
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
     }
 }

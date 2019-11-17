@@ -106,6 +106,7 @@ public class MyFeedRepository {
             public void onResponse(Call<List<News>> call, Response<List<News>> response) {
                 if (response.isSuccessful()){
                     if (response.body() != null){
+                        Collections.reverse(response.body());
                         newsList.postValue(response.body());
                     }
                 }

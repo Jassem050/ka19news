@@ -107,6 +107,7 @@ public class HomeFragment extends Fragment implements MyFeedNewsListAdapter.News
 
         setToolbar(rootView);
         init(rootView);
+
         if (preferenceManager.getUserStatus().equals(getString(R.string.logged_in_status))) {
             preferenceManager.setAppStatus(getString(R.string.reader_writer_status));
         }
