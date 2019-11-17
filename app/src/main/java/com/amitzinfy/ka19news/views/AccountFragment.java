@@ -29,6 +29,7 @@ import androidx.core.content.ContextCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.amitzinfy.ka19news.R;
 import com.amitzinfy.ka19news.utils.NetworkUtils;
@@ -79,6 +80,7 @@ public class AccountFragment extends Fragment {
     private String encodedImage;
     private AppCompatImageView profileImage;
     private MaterialCardView addNewsBtn, viewNewsBtn, logoutBtn;
+    private SwipeRefreshLayout swipeRefreshLayout;
 
     public AccountFragment() {
         // Required empty public constructor
@@ -147,6 +149,16 @@ public class AccountFragment extends Fragment {
             getAddedNewsCount(preferenceManager.getAccessToken());
             getUserDetails(preferenceManager.getAccessToken());
         }
+
+        swipeRefreshLayout.setOnRefreshListener(() -> {
+            if (preferenceManager.getAppStatus() != null &&
+                    (preferenceManager.getAppStatus().equals(getString(R.string.reader_writer_status))
+                            || preferenceManager.getAppStatus().equals(getString(R.string.writer_status)))) {
+
+                getAddedNewsCount(preferenceManager.getAccessToken());
+                getUserDetails(preferenceManager.getAccessToken());
+            }
+        });
         return rootView;
     }
 
@@ -176,6 +188,7 @@ public class AccountFragment extends Fragment {
         addNewsBtn = view.findViewById(R.id.add_news);
         viewNewsBtn = view.findViewById(R.id.view_btn_layout);
         logoutBtn = view.findViewById(R.id.logout_btn_layout);
+        swipeRefreshLayout = view.findViewById(R.id.account_swipe_refresh);
 
         preferenceManager = PreferenceManager.getInstance(getActivity());
         userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
@@ -233,6 +246,7 @@ public class AccountFragment extends Fragment {
         Log.d(TAG, "getUserDetails: ");
         userViewModel.getUserDetails(access_token).observe(getViewLifecycleOwner(), userResponse -> {
             if (userResponse != null && userResponse.getUser() != null) {
+                swipeRefreshLayout.setRefreshing(false);
                 setUserInfoInPref(userResponse.getUser().getName(), userResponse.getUser().getEmail(),
                         userResponse.getUser().getMobileNumber(), userResponse.getUser().getAddress());
 
@@ -260,9 +274,11 @@ public class AccountFragment extends Fragment {
     }
 
     private void getAddedNewsCount(String access_token){
-        userViewModel.getAddedNewsCount(access_token).observe(getViewLifecycleOwner(),
-                newsAdded -> setNewsCountInPref(String.valueOf(newsAdded.getNewsCount()),
-                        String.valueOf(newsAdded.getNewsAcceptedCount())));
+        userViewModel.getAddedNewsCount(access_token).observe(getViewLifecycleOwner(), newsAdded -> {
+                    swipeRefreshLayout.setRefreshing(false);
+                    setNewsCountInPref(String.valueOf(newsAdded.getNewsCount()),
+                            String.valueOf(newsAdded.getNewsAcceptedCount()));
+                });
     }
 
     private void setNewsCountInPref(String newsAdded, String newsAccepted){
