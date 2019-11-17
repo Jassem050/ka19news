@@ -32,14 +32,13 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnFr
     private NavigationView navigationView;
     private PreferenceManager preferenceManager;
     private MyFeedViewModel myFeedViewModel;
-    private Fragment.SavedState savedFragmentState;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         init();
-        setUpBottomNavView(savedInstanceState);
+        setUpBottomNavView();
         setUpNavigationView();
         if (preferenceManager. getAppStatus() != null && (preferenceManager.getAppStatus().equals(getString(R.string.reader_status)) ||
                 preferenceManager.getAppStatus().equals(getString(R.string.reader_writer_status)))) {
@@ -100,15 +99,15 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnFr
         });
     }
 
-    private void setUpBottomNavView(Bundle savedState) {
+    private void setUpBottomNavView() {
         bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
             Fragment fragment;
             FragmentManager fragmentManager = getSupportFragmentManager();
             switch (item.getItemId()) {
                 case R.id.navigation_home:
                     if (!(fragmentManager.findFragmentById(R.id.content_main_frame) instanceof HomeFragment)) {
-                        fragment = HomeFragment.newInstance("home", "home");
-                        loadFragment(fragment);
+                            fragment = HomeFragment.newInstance("home", "home");
+                            loadFragment(fragment);
                     }
                     return true;
                 case R.id.navigation_headlines:
