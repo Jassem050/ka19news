@@ -111,5 +111,8 @@
     <string name="update_btn">Update</string>
     <string name="mobile_number_hint">Enter your mobile number</string>
     <string name="by">by</string>
+    <string name="status_accepted">status: accepted</string>
+    <string name="status_rejected">status: rejected</string>
+    <string name="status_pending">status: pending</string>
 
 </resources>

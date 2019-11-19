@@ -29,12 +29,13 @@ public class UserNewsAdapter extends RecyclerView.Adapter<UserNewsAdapter.UserNe
         private AppCompatTextView newsCategory;
         private AppCompatTextView newsStatus;
 
-        public UserNewsViewHolder(@NonNull View itemView) {
+        public UserNewsViewHolder(@NonNull View itemView, UserNewsClickListener userNewsClickListener) {
             super(itemView);
             newsTitle = itemView.findViewById(R.id.news_title);
             newsImage = itemView.findViewById(R.id.news_image);
             newsCategory = itemView.findViewById(R.id.news_category);
             newsStatus = itemView.findViewById(R.id.news_status);
+            itemView.setOnClickListener(view -> userNewsClickListener.onNewsItemClick(getAdapterPosition()));
         }
     }
 
@@ -51,7 +52,7 @@ public class UserNewsAdapter extends RecyclerView.Adapter<UserNewsAdapter.UserNe
     @Override
     public UserNewsViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.news_item_row_2, parent, false);
-        return new UserNewsViewHolder(view);
+        return new UserNewsViewHolder(view, userNewsClickListener);
     }
 
     @Override
@@ -61,12 +62,21 @@ public class UserNewsAdapter extends RecyclerView.Adapter<UserNewsAdapter.UserNe
         GlideApp.with(context).load(NetworkUtils.IMAGE_URL + news.getImage())
                 .placeholder(R.drawable.placeholder_image).into(holder.newsImage);
         holder.newsCategory.setText(news.getCategoryName());
-//        if (news.)
+        if (news.getWriterId() != null && news.getNewsStatus().equals("1")){
+            holder.newsStatus.setText(context.getString(R.string.status_accepted));
+            holder.newsStatus.setTextColor(context.getResources().getColor(R.color.accept_green));
+        } else if (news.getWriterId() != null && news.getNewsStatus().equals("2")){
+            holder.newsStatus.setText(context.getString(R.string.status_rejected));
+            holder.newsStatus.setTextColor(context.getResources().getColor(R.color.reject_red));
+        } else {
+            holder.newsStatus.setText(context.getString(R.string.status_pending));
+            holder.newsStatus.setTextColor(context.getResources().getColor(R.color.pending_yellow));
+        }
     }
 
     @Override
     public int getItemCount() {
-        return 0;
+        return newsList != null ? newsList.size() : 0;
     }
 
     public interface UserNewsClickListener{

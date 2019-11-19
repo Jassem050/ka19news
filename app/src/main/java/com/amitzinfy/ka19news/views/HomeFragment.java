@@ -305,6 +305,8 @@ public class HomeFragment extends Fragment implements MyFeedNewsListAdapter.News
         intent.putExtra("news_image_caption", news.getImageCaption());
         intent.putExtra("news_category", news.getCategoryName());
         intent.putExtra("news_time", news.getTime());
+        intent.putExtra("writer_id", news.getWriterId());
+        intent.putExtra("admin_id", news.getAdmin_id());
         startActivity(intent);
     }
 

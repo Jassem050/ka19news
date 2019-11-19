@@ -23,10 +23,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/news_title"
-            android:paddingStart="8dp"
-            android:paddingTop="8dp"
-            android:paddingBottom="8dp"
-            android:paddingEnd="8dp"
+            android:padding="8dp"
             android:text="@string/by" />
 
         <androidx.appcompat.widget.AppCompatTextView
@@ -35,7 +32,10 @@
             android:layout_height="wrap_content"
             android:layout_below="@+id/news_title"
             android:layout_toEndOf="@+id/news_editedby"
-            android:padding="8dp"
+            android:paddingStart="0dp"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:paddingEnd="8dp"
             android:textColor="@color/colorPrimary"
             android:textStyle="bold" />
 

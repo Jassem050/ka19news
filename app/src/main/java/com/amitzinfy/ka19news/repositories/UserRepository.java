@@ -6,6 +6,7 @@ import android.util.Log;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import com.amitzinfy.ka19news.models.retrofit.News;
 import com.amitzinfy.ka19news.models.retrofit.NewsAdded;
 import com.amitzinfy.ka19news.models.retrofit.User;
 import com.amitzinfy.ka19news.models.retrofit.UserResponse;
@@ -13,6 +14,7 @@ import com.amitzinfy.ka19news.utils.ApiInterface;
 import com.amitzinfy.ka19news.utils.RetrofitClient;
 
 import java.io.File;
+import java.util.List;
 
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -28,6 +30,7 @@ public class UserRepository {
     private MutableLiveData<UserResponse> userResponseLiveData = new MutableLiveData<>() ;
     private MutableLiveData<NewsAdded> newsAddedMutableLiveData = new MutableLiveData<>();
     private MutableLiveData<User> imageResponseMutableLiveData = new MutableLiveData<>();
+    private MutableLiveData<List<News>> newsListMutableLiveData = new MutableLiveData<>();
 
     public UserRepository(Application application) {}
 
@@ -215,5 +218,31 @@ public class UserRepository {
                                                     String address, String dateOfBirth) {
         updateProfile(accessToken, name, email, phoneNumber, gender, address, dateOfBirth);
         return userResponseLiveData;
+    }
+
+    private void getUserAddedNews(String accessToken){
+        ApiInterface apiInterface = RetrofitClient.getRetrofitClient().create(ApiInterface.class);
+        Call<List<News>> call = apiInterface.getUserAddedNews("Bearer " + accessToken);
+        call.enqueue(new Callback<List<News>>() {
+            @Override
+            public void onResponse(Call<List<News>> call, Response<List<News>> response) {
+                if (response.isSuccessful() && response.body() != null){
+                    newsListMutableLiveData.postValue(response.body());
+                } else {
+                    Log.d(TAG, "onResponse: userNewsfail: " + response);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<News>> call, Throwable t) {
+                Log.d(TAG, "onFailure: userNews", t);
+                call.clone().enqueue(this);
+            }
+        });
+    }
+
+    public LiveData<List<News>> getUserNews(String accessToken){
+        getUserAddedNews(accessToken);
+        return newsListMutableLiveData;
     }
 }

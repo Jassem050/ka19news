@@ -216,6 +216,11 @@ public class AccountFragment extends Fragment {
             Intent intent = new Intent(getActivity(), EditProfileActivity.class);
             startActivity(intent);
         });
+
+        viewNewsBtn.setOnClickListener(view1 -> {
+            Intent intent = new Intent(getActivity(), ViewUserNewsActivity.class);
+            startActivity(intent);
+        });
     }
 
     private void showLogoutDialog(){

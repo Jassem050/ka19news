@@ -13,7 +13,7 @@ import com.amitzinfy.ka19news.models.room.FavouriteNews;
 import com.amitzinfy.ka19news.models.room.FeedCategory;
 import com.amitzinfy.ka19news.models.room.NewsCategory;
 
-@Database(entities = {FavouriteNews.class, NewsCategory.class, FeedCategory.class}, version = 4 , exportSchema = false)
+@Database(entities = {FavouriteNews.class, NewsCategory.class, FeedCategory.class}, version = 6 , exportSchema = false)
 public abstract class NewsRoomDatabase extends RoomDatabase {
 
     public abstract FavouriteNewsDao favouriteNewsDao();

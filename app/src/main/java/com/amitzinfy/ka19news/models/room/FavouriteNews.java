@@ -27,14 +27,18 @@ public class FavouriteNews {
     @ColumnInfo(name = "news_category")
     private String category;
 
+    @ColumnInfo(name = "writer_name")
+    private String writerName;
+
     public FavouriteNews(int id, @NonNull String title, @NonNull String description, String image,
-                         String category, String imageCaption){
+                         String category, String imageCaption, String writerName){
         this.id = id;
         this.title = title;
         this.description = description;
         this.image = image;
         this.category = category;
         this.imageCaption = imageCaption;
+        this.writerName = writerName;
     }
 
     public int getId() {
@@ -67,5 +71,13 @@ public class FavouriteNews {
 
     public void setImageCaption(String imageCaption) {
         this.imageCaption = imageCaption;
+    }
+
+    public String getWriterName() {
+        return writerName;
+    }
+
+    public void setWriterName(String writerName) {
+        this.writerName = writerName;
     }
 }

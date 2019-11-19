@@ -22,7 +22,6 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import com.amitzinfy.ka19news.R;
 import com.amitzinfy.ka19news.adapters.CategoryNewsAdapter;
 import com.amitzinfy.ka19news.models.retrofit.News;
-import com.amitzinfy.ka19news.models.room.FavouriteNews;
 import com.amitzinfy.ka19news.utils.PreferenceManager;
 import com.amitzinfy.ka19news.viewmodels.HeadLinesViewModel;
 import com.facebook.shimmer.ShimmerFrameLayout;
@@ -105,14 +104,14 @@ public class DynamicTabFragment extends Fragment implements CategoryNewsAdapter.
 
     // initializing or binding views
     private void init(View view){
-        recyclerView = (RecyclerView) view.findViewById(R.id.headline_recycler_view);
+        recyclerView = view.findViewById(R.id.headline_recycler_view);
         categoryNewsAdapter = new CategoryNewsAdapter(getActivity(), this);
         recyclerView.setAdapter(categoryNewsAdapter);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
-        swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.headline_swiperefresh);
-        shimmerFrameLayout = (ShimmerFrameLayout) view.findViewById(R.id.shimmer_layout);
+        swipeRefreshLayout = view.findViewById(R.id.headline_swiperefresh);
+        shimmerFrameLayout = view.findViewById(R.id.shimmer_layout);
         shimmerFrameLayout.startShimmer();
         headLinesViewModel = ViewModelProviders.of(this).get(HeadLinesViewModel.class);
         preferenceManager = PreferenceManager.getInstance(getActivity());
@@ -162,16 +161,16 @@ public class DynamicTabFragment extends Fragment implements CategoryNewsAdapter.
     public void onItemToggleButtonChecked(int position) {
         News news = newsList.get(position);
         Log.d(TAG, "onItemToggleButtonChecked: id: " + news.getId());
-        headLinesViewModel.insertFavNews(new FavouriteNews(news.getId(),news.getTitle(), news.getDescription(),
-                news.getImage(), news.getCategoryName(), news.getImageCaption()));
+//        headLinesViewModel.insertFavNews(new FavouriteNews(news.getId(),news.getTitle(), news.getDescription(),
+//                news.getImage(), news.getCategoryName(), news.getImageCaption(), news.getWriterId()));
     }
 
     @Override
     public void onItemToggleButtonUnChecked(int position) {
         News news = newsList.get(position);
         Log.d(TAG, "onItemToggleButtonUnChecked: id: " + news.getId());
-        headLinesViewModel.deleteFavNews(new FavouriteNews(news.getId(),news.getTitle(), news.getDescription(),
-                news.getImage(), news.getCategoryName(), news.getImageCaption()));
+//        headLinesViewModel.deleteFavNews(new FavouriteNews(news.getId(),news.getTitle(), news.getDescription(),
+//                news.getImage(), news.getCategoryName(), news.getImageCaption(), news.getWriterId()));
     }
 
     @Override
@@ -197,6 +196,8 @@ public class DynamicTabFragment extends Fragment implements CategoryNewsAdapter.
         intent.putExtra("news_image_caption", news.getImageCaption());
         intent.putExtra("news_category", news.getCategoryName());
         intent.putExtra("news_time", news.getTime());
+        intent.putExtra("writer_id", news.getWriterId());
+        intent.putExtra("admin_id", news.getAdmin_id());
         startActivity(intent);
     }
 

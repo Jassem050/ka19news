@@ -103,4 +103,7 @@ public interface ApiInterface {
     @POST("user_news")
     Call<List<News>> getUserAddedNews(@Header("Authorization") String accessToken);
 
+    @GET("writer_name/{writer_id}")
+    Call<User> getWriterDetails(@Path("writer_id") String writer_id);
+
 }

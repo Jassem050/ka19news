@@ -7,12 +7,14 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 
+import com.amitzinfy.ka19news.models.retrofit.News;
 import com.amitzinfy.ka19news.models.retrofit.NewsAdded;
 import com.amitzinfy.ka19news.models.retrofit.User;
 import com.amitzinfy.ka19news.models.retrofit.UserResponse;
 import com.amitzinfy.ka19news.repositories.UserRepository;
 
 import java.io.File;
+import java.util.List;
 
 public class UserViewModel extends AndroidViewModel {
     private static final String TAG = "UserViewModel";
@@ -55,5 +57,9 @@ public class UserViewModel extends AndroidViewModel {
     public LiveData<UserResponse> updateProfile(String accessToken, String name, String email, String phoneNumber, String gender,
                                                 String address, String dateOfBirth){
         return userRepository.updateProfileInfo(accessToken, name, email, phoneNumber, gender, address, dateOfBirth);
+    }
+
+    public LiveData<List<News>> getUserNews(String accessToken){
+        return userRepository.getUserNews(accessToken);
     }
 }

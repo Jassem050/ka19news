@@ -28,7 +28,6 @@ import com.airbnb.lottie.LottieAnimationView;
 import com.amitzinfy.ka19news.R;
 import com.amitzinfy.ka19news.adapters.SearchNewsAdapter;
 import com.amitzinfy.ka19news.models.retrofit.News;
-import com.amitzinfy.ka19news.models.room.FavouriteNews;
 import com.amitzinfy.ka19news.viewmodels.SearchNewsViewModel;
 import com.google.android.material.appbar.MaterialToolbar;
 
@@ -59,21 +58,21 @@ public class SearchResultsActivity extends AppCompatActivity implements SearchNe
     }
 
     private void init(){
-        materialToolbar = (MaterialToolbar) findViewById(R.id.search_results_toolbar);
+        materialToolbar = findViewById(R.id.search_results_toolbar);
         setSupportActionBar(materialToolbar);
         actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.setDisplayShowTitleEnabled(false);
         }
         searchNewsAdapter = new SearchNewsAdapter(this, this);
-        recyclerView = (RecyclerView) findViewById(R.id.search_recyclerview);
+        recyclerView = findViewById(R.id.search_recyclerview);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setHasFixedSize(true);
         searchNewsViewModel = ViewModelProviders.of(this).get(SearchNewsViewModel.class);
-        searchAnimation = (LottieAnimationView) findViewById(R.id.search_progress);
+        searchAnimation = findViewById(R.id.search_progress);
         handler = new Handler();
-        searchQueryText = (AppCompatTextView) findViewById(R.id.search_query);
-        noResultsText = (AppCompatTextView) findViewById(R.id.no_results);
+        searchQueryText = findViewById(R.id.search_query);
+        noResultsText = findViewById(R.id.no_results);
 
     }
 
@@ -118,7 +117,7 @@ public class SearchResultsActivity extends AppCompatActivity implements SearchNe
         searchView.setIconified(false);
         searchView.requestFocus();
         searchView.onActionViewExpanded();
-        ImageView closeButton = (ImageView)searchView.findViewById(R.id.search_close_btn);
+        ImageView closeButton = searchView.findViewById(R.id.search_close_btn);
         closeButton.setOnClickListener(view -> {
             Log.d(TAG, "onClick: clicked");
             searchView.clearFocus();
@@ -201,16 +200,16 @@ public class SearchResultsActivity extends AppCompatActivity implements SearchNe
     public void onItemToggleButtonChecked(int position) {
         News news = newsList.get(position);
         Log.d(TAG, "onItemToggleButtonChecked: id: " + news.getId());
-        searchNewsViewModel.insertFavNews(new FavouriteNews(news.getId(),news.getTitle(), news.getDescription(),
-                news.getImage(), news.getCategoryName(), news.getImageCaption()));
+//        searchNewsViewModel.insertFavNews(new FavouriteNews(news.getId(),news.getTitle(), news.getDescription(),
+//                news.getImage(), news.getCategoryName(), news.getImageCaption(), news.getWriterId()));
     }
 
     @Override
     public void onItemToggleButtonUnChecked(int position) {
         News news = newsList.get(position);
         Log.d(TAG, "onItemToggleButtonUnChecked: id: " + news.getId());
-        searchNewsViewModel.deleteFavNews(new FavouriteNews(news.getId(),news.getTitle(), news.getDescription(),
-                news.getImage(), news.getCategoryName(), news.getImageCaption()));
+//        searchNewsViewModel.deleteFavNews(new FavouriteNews(news.getId(),news.getTitle(), news.getDescription(),
+//                news.getImage(), news.getCategoryName(), news.getImageCaption(), news.getWriterId()));
     }
 
     @Override
