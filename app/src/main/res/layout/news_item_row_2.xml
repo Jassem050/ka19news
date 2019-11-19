@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?attr/selectableItemBackground"
+    android:padding="8dp">
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/news_category"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="6dp"
+        android:text="@string/category_placeholder_text"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true"
+        android:layout_toStartOf="@+id/news_status"
+        android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"/>
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/news_status"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentTop="true"
+        android:padding="3dp"
+        android:text="status: accepted"
+        android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"/>
+    <LinearLayout
+        android:id="@+id/title_row"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/news_category"
+        android:orientation="horizontal">
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/news_title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="62"
+            android:fontFamily="@font/lato"
+            android:text="@string/title_placeholder_text"
+            android:textSize="17sp"
+            app:fontFamily="@font/lato_bold" />
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="0dp"
+            android:layout_weight="30"
+            android:layout_height="80dp"
+            app:cardElevation="5dp"
+            android:background="@drawable/bg_round">
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/news_image"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="fitXY"
+                android:src="@drawable/four"/>
+
+        </com.google.android.material.card.MaterialCardView>
+
+    </LinearLayout>
+
+    <RelativeLayout
+        android:id="@+id/date_row"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="16dp"
+        android:layout_below="@+id/title_row">
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/news_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/time_placeholder_text"/>
+
+        <androidx.appcompat.widget.AppCompatToggleButton
+            android:id="@+id/news_toggle_btn"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:background="@drawable/button_favourite"
+            android:textOff=""
+            android:textOn=""
+            android:checked="false"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:visibility="gone"
+            android:layout_toStartOf="@+id/news_share_btn" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/news_share_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:background="?attr/selectableItemBackground"
+            android:clickable="true"
+            android:contextClickable="true"
+            android:focusable="true"
+            android:paddingLeft="8dp"
+            android:paddingTop="2dp"
+            android:paddingRight="8dp"
+            android:text="@string/share" />
+    </RelativeLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/DividerColor"
+        android:layout_below="@+id/date_row"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"/>
+
+</RelativeLayout>

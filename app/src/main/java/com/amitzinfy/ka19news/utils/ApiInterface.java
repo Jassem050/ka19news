@@ -99,4 +99,8 @@ public interface ApiInterface {
                                      @Field("gender") String gender, @Field("location") String address,
                                      @Field("dob") String dateOfBirth);
 
+    @Headers("Accept: application/json")
+    @POST("user_news")
+    Call<List<News>> getUserAddedNews(@Header("Authorization") String accessToken);
+
 }
