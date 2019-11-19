@@ -110,7 +110,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
                 Log.d(TAG, "onClick: inif");
                 registerUser(name, email, address, gender, dateOfBirth, phoneNumber);
             } else {
-                Toast.makeText(this, "Enter all the feilds", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Enter all the fields", Toast.LENGTH_SHORT).show();
             }
         }
     }

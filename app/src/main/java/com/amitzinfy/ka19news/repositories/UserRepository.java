@@ -190,4 +190,30 @@ public class UserRepository {
         logout(accessToken);
         return userResponseLiveData;
     }
+
+    private void updateProfile(String accessToken, String name, String email, String phoneNumber, String gender,
+                               String address, String dateOfBirth) {
+        ApiInterface apiInterface = RetrofitClient.getRetrofitClient().create(ApiInterface.class);
+        Call<UserResponse> call = apiInterface.updateProfile("Bearer " + accessToken, name, email,
+                phoneNumber, gender, address, dateOfBirth);
+        call.enqueue(new Callback<UserResponse>() {
+            @Override
+            public void onResponse(Call<UserResponse> call, Response<UserResponse> response) {
+                if (response.isSuccessful() && response.body() != null){
+                    userResponseLiveData.postValue(response.body());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<UserResponse> call, Throwable t) {
+                Log.d(TAG, "onFailure: uupdateProfile: ", t);
+            }
+        });
+    }
+
+    public LiveData<UserResponse> updateProfileInfo(String accessToken, String name, String email, String phoneNumber, String gender,
+                                                    String address, String dateOfBirth) {
+        updateProfile(accessToken, name, email, phoneNumber, gender, address, dateOfBirth);
+        return userResponseLiveData;
+    }
 }

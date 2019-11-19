@@ -24,6 +24,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.AppCompatImageButton;
 import androidx.appcompat.widget.AppCompatImageView;
 import androidx.core.content.ContextCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -81,6 +82,7 @@ public class AccountFragment extends Fragment {
     private AppCompatImageView profileImage;
     private MaterialCardView addNewsBtn, viewNewsBtn, logoutBtn;
     private SwipeRefreshLayout swipeRefreshLayout;
+    private AppCompatImageButton editProfileBtn;
 
     public AccountFragment() {
         // Required empty public constructor
@@ -189,6 +191,7 @@ public class AccountFragment extends Fragment {
         viewNewsBtn = view.findViewById(R.id.view_btn_layout);
         logoutBtn = view.findViewById(R.id.logout_btn_layout);
         swipeRefreshLayout = view.findViewById(R.id.account_swipe_refresh);
+        editProfileBtn = view.findViewById(R.id.edit_personal_info);
 
         preferenceManager = PreferenceManager.getInstance(getActivity());
         userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
@@ -209,6 +212,10 @@ public class AccountFragment extends Fragment {
         addNewsBtn.setOnClickListener(view1 -> startActivity(new Intent(getActivity(), AddNewsActivity.class)));
 
         logoutBtn.setOnClickListener(view1 -> showLogoutDialog());
+        editProfileBtn.setOnClickListener(view1 -> {
+            Intent intent = new Intent(getActivity(), EditProfileActivity.class);
+            startActivity(intent);
+        });
     }
 
     private void showLogoutDialog(){
@@ -248,7 +255,8 @@ public class AccountFragment extends Fragment {
             if (userResponse != null && userResponse.getUser() != null) {
                 swipeRefreshLayout.setRefreshing(false);
                 setUserInfoInPref(userResponse.getUser().getName(), userResponse.getUser().getEmail(),
-                        userResponse.getUser().getMobileNumber(), userResponse.getUser().getAddress());
+                        userResponse.getUser().getMobileNumber(), userResponse.getUser().getAddress(),
+                        userResponse.getUser().getGender(), userResponse.getUser().getDateOfBirth());
 
                 if (getActivity() != null)
                     GlideApp.with(getActivity()).load(NetworkUtils.PROFILE_IMG_URL + userResponse.getUser().getImage())
@@ -257,11 +265,13 @@ public class AccountFragment extends Fragment {
         });
     }
 
-    private void setUserInfoInPref(String name, String email, String phoneNo, String address){
+    private void setUserInfoInPref(String name, String email, String phoneNo, String address, String gender, String dob){
         preferenceManager.setUserName(name);
         preferenceManager.setUserEmail(email);
         preferenceManager.setUserPhoneNo(phoneNo);
         preferenceManager.setUserAddress(address);
+        preferenceManager.setUserGender(gender);
+        preferenceManager.setUserDob(dob);
         displayUserInfo(preferenceManager.getUserName(), preferenceManager.getUserEmail(), preferenceManager.getUserPhoneNo(),
                 preferenceManager.getUserAddress());
     }
@@ -447,6 +457,12 @@ public class AccountFragment extends Fragment {
             throw new RuntimeException(context.toString()
                     + " must implement OnFragmentInteractionListener");
         }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        getUserDetails(preferenceManager.getAccessToken());
     }
 
     @Override

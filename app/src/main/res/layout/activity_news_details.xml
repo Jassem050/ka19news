@@ -16,7 +16,6 @@
             android:layout_height="wrap_content"
             android:fontFamily="@font/lato_bold"
             android:padding="8dp"
-            android:text="World Cup final shows how sport reconfirms the power of self-belief"
             android:textAppearance="@style/TextAppearance.MaterialComponents.Headline5" />
 
         <androidx.appcompat.widget.AppCompatTextView
@@ -24,19 +23,19 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/news_title"
-            android:paddingLeft="8dp"
+            android:paddingStart="8dp"
             android:paddingTop="8dp"
             android:paddingBottom="8dp"
-            android:text="Edited by " />
+            android:paddingEnd="8dp"
+            android:text="@string/by" />
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/news_author"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/news_title"
-            android:layout_toRightOf="@+id/news_editedby"
+            android:layout_toEndOf="@+id/news_editedby"
             android:padding="8dp"
-            android:text="KA19NEWS"
             android:textColor="@color/colorPrimary"
             android:textStyle="bold" />
 
@@ -45,7 +44,7 @@
             android:layout_width="2dp"
             android:layout_height="40dp"
             android:layout_below="@+id/news_title"
-            android:layout_toRightOf="@+id/news_author"
+            android:layout_toEndOf="@+id/news_author"
             android:background="@color/DividerColor" />
 
         <androidx.appcompat.widget.AppCompatTextView
@@ -53,7 +52,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/news_title"
-            android:layout_toRightOf="@+id/line_divider"
+            android:layout_toEndOf="@+id/line_divider"
             android:padding="8dp"
             android:text="Updated: July 16, 2019 15:09 IST" />
 
@@ -71,8 +70,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@+id/news_image"
-            android:padding="8dp"
-            android:text="World cup final show how sport reconfirms power of self belief" />
+            android:padding="8dp"/>
 
         <View
             android:id="@+id/image_divider"

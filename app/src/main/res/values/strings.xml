@@ -67,7 +67,7 @@
     <string name="continue_btn_string">Continue</string>
     <string name="create_an_account">Create an Account</string>
     <string name="name_hint">Enter your name</string>
-    <string name="email_hint">Enter your email (Optional)</string>
+    <string name="email_hint">Enter your email</string>
     <string name="address_hint">Enter your address</string>
     <string name="male">Male</string>
     <string name="female">Female</string>
@@ -105,8 +105,11 @@
     <string name="news_uploaded_succesfully">News uploaded successfully</string>
     <string name="preview">Preview</string>
     <string name="logout">Logout</string>
-    <string name="become_n_ka19news_n_contributer">Become   ka19news   Contributer</string>
+    <string name="become_n_ka19news_n_contributer">Become   ka19news   Contributor</string>
     <string name="account_caps">ACCOUNT</string>
     <string name="login_create">Login/Create account to contribute news</string>
+    <string name="update_btn">Update</string>
+    <string name="mobile_number_hint">Enter your mobile number</string>
+    <string name="by">by</string>
 
 </resources>

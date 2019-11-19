@@ -51,4 +51,9 @@ public class UserViewModel extends AndroidViewModel {
     public LiveData<UserResponse> logoutUser(String accessToken){
         return userRepository.logoutUser(accessToken);
     }
+
+    public LiveData<UserResponse> updateProfile(String accessToken, String name, String email, String phoneNumber, String gender,
+                                                String address, String dateOfBirth){
+        return userRepository.updateProfileInfo(accessToken, name, email, phoneNumber, gender, address, dateOfBirth);
+    }
 }

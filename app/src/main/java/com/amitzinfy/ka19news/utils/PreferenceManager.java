@@ -30,6 +30,8 @@ public class PreferenceManager {
     private static final String USER_NAME = "username";
     private static final String USER_EMAIL = "email";
     private static final String USER_PHONE_NO = "phoneno";
+    private static final String USER_GENDER = "gender";
+    private static final String USER_DOB = "dob";
     private static final String USER_ADDRESS = "address";
     private static final String NEWS_POSTED = "newsPosted";
     private static final String NEWS_ACCEPTED = "newsAccepted";
@@ -182,6 +184,24 @@ public class PreferenceManager {
 
     public String getUserAddress(){
         return pref.getString(USER_ADDRESS, null);
+    }
+
+    public void setUserGender(String userGender){
+        editor.putString(USER_GENDER, userGender);
+        editor.apply();
+    }
+
+    public String getUserGender(){
+        return pref.getString(USER_GENDER, null);
+    }
+
+    public void setUserDob(String userDob){
+        editor.putString(USER_DOB, userDob);
+        editor.apply();
+    }
+
+    public String getUserDob(){
+        return pref.getString(USER_DOB, null);
     }
 
     public void setNewsPosted(String newsPosted){

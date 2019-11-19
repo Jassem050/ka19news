@@ -91,4 +91,12 @@ public interface ApiInterface {
     @GET("logout")
     Call<UserResponse> logoutUser(@Header("Authorization") String accessToken);
 
+    @Headers("Accept: application/json")
+    @FormUrlEncoded
+    @POST("update_profile")
+    Call<UserResponse> updateProfile(@Header("Authorization") String accessToken, @Field("name") String name,
+                                     @Field("email") String email, @Field("mobile") String phoneNumber,
+                                     @Field("gender") String gender, @Field("location") String address,
+                                     @Field("dob") String dateOfBirth);
+
 }
