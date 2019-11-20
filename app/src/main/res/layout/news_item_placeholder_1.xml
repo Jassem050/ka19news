@@ -29,14 +29,14 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="10dp"
-                android:layout_marginRight="18dp"
+                android:layout_marginEnd="18dp"
                 android:layout_marginBottom="8dp"
                 android:background="@color/shimmer_background"/>
 
             <View
                 android:layout_width="match_parent"
                 android:layout_height="10dp"
-                android:layout_marginRight="18dp"
+                android:layout_marginEnd="18dp"
                 android:background="@color/shimmer_background"/>
 
         </LinearLayout>
@@ -69,17 +69,17 @@
         <View
             android:id="@+id/news_date"
             android:layout_width="0dp"
-            android:layout_weight="50"
+            android:layout_weight="60"
             android:layout_height="10dp"
-            android:layout_marginRight="8dp"
+            android:layout_marginEnd="8dp"
             android:background="@color/shimmer_background"/>
 
         <View
             android:id="@+id/news_toggle_btn"
             android:layout_width="0dp"
-            android:layout_weight="50"
+            android:layout_weight="40"
             android:layout_height="10dp"
-            android:layout_marginLeft="10dp"
+            android:layout_marginStart="10dp"
             android:background="@color/shimmer_background"/>
     </LinearLayout>
 

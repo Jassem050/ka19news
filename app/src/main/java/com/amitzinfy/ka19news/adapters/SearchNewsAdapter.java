@@ -1,6 +1,7 @@
 package com.amitzinfy.ka19news.adapters;
 
 import android.content.Context;
+import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +18,9 @@ import com.amitzinfy.ka19news.models.retrofit.News;
 import com.amitzinfy.ka19news.utils.NetworkUtils;
 import com.chinalwb.are.glidesupport.GlideApp;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.List;
 
 public class SearchNewsAdapter extends RecyclerView.Adapter<SearchNewsAdapter.SearchNewsViewHolder> {
@@ -30,7 +34,7 @@ public class SearchNewsAdapter extends RecyclerView.Adapter<SearchNewsAdapter.Se
         private AppCompatImageView newsImage;
         private AppCompatToggleButton favToggleButton;
         private AppCompatTextView newsCategory;
-        private AppCompatTextView newsShareBtn;
+        private AppCompatTextView newsShareBtn, newsTime;
 
         public SearchNewsViewHolder(@NonNull View itemView, NewsItemClickListener newsItemClickListener) {
             super(itemView);
@@ -39,6 +43,7 @@ public class SearchNewsAdapter extends RecyclerView.Adapter<SearchNewsAdapter.Se
             favToggleButton = itemView.findViewById(R.id.news_toggle_btn);
             newsCategory = itemView.findViewById(R.id.news_category);
             newsShareBtn = itemView.findViewById(R.id.news_share_btn);
+            newsTime = itemView.findViewById(R.id.news_date);
 
             favToggleButton.setOnCheckedChangeListener((compoundButton, b) -> {
                 if (b){
@@ -83,6 +88,18 @@ public class SearchNewsAdapter extends RecyclerView.Adapter<SearchNewsAdapter.Se
         holder.newsCategory.setText(news.getCategoryName());
         holder.itemView.setOnClickListener(view -> newsItemClickListener.onItemClicked(holder.getAdapterPosition()));
         holder.newsShareBtn.setOnClickListener(view -> newsItemClickListener.onShareButtonClicked(holder.getAdapterPosition()));
+
+        Calendar cal = Calendar.getInstance();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        try {
+            cal.setTime(sdf.parse(news.getDate() + " " + news.getTime()));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        long timeInMillis = cal.getTimeInMillis();
+        String time = DateUtils.getRelativeTimeSpanString(timeInMillis,  System.currentTimeMillis(),DateUtils.SECOND_IN_MILLIS,
+                DateUtils.FORMAT_ABBREV_MONTH).toString();
+        holder.newsTime.setText(time);
     }
 
     @Override

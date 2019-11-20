@@ -24,6 +24,9 @@ public class News {
     @SerializedName("news_time")
     private String time;
     @Expose
+    @SerializedName("news_date")
+    private String date;
+    @Expose
     @SerializedName("category_name")
     private String categoryName;
     @Expose
@@ -142,5 +145,13 @@ public class News {
 
     public void setNewsStatus(String newsStatus) {
         this.newsStatus = newsStatus;
+    }
+
+    public String getDate() {
+        return date;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
     }
 }

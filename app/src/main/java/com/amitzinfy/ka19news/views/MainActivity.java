@@ -1,6 +1,9 @@
 package com.amitzinfy.ka19news.views;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -20,6 +23,8 @@ import com.amitzinfy.ka19news.utils.PreferenceManager;
 import com.amitzinfy.ka19news.viewmodels.MyFeedViewModel;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
+
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements HomeFragment.OnFragmentInteractionListener,
         HeadLineFragment.OnFragmentInteractionListener, FavouriteFragment.OnFragmentInteractionListener,
@@ -94,11 +99,72 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnFr
                     intent.putExtra(Intent.EXTRA_TEXT, deviceInfo);
                     startActivity(Intent.createChooser(intent, "Send Feedback"));
                     break;
+                case R.id.instagram:
+                    Uri uri = Uri.parse("https://www.instagram.com/ka19_news/");
+                    Intent insta = new Intent(Intent.ACTION_VIEW, uri);
+                    insta.setPackage("com.instagram.android");
+
+                    if (isIntentAvailable(this, insta)){
+                        startActivity(insta);
+                    } else{
+                        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.instagram.com/ka19_news/")));
+                    }
+                    break;
+                case R.id.facebook:
+                    PackageManager packageManager = this.getPackageManager();
+                    try {
+                        boolean activated =  packageManager.getApplicationInfo("com.facebook.katana", 0).enabled;
+                        if (isAppInstalled() && activated) {
+                            Intent facebookIntent = new Intent(Intent.ACTION_VIEW);
+                            String facebookUrl = getFacebookPageURL(this);
+                            facebookIntent.setData(Uri.parse(facebookUrl));
+                            startActivity(facebookIntent);
+
+                        } else {
+                            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.facebook.com/ka19news")));
+                            Toast.makeText(getApplicationContext(), "facebook app not installing", Toast.LENGTH_SHORT).show();
+                        }
+                    } catch (PackageManager.NameNotFoundException e) {
+                        e.printStackTrace();
+                    }
+
+
             }
             return false;
         });
     }
 
+    public static String FACEBOOK_URL = "https://www.facebook.com/ka19news";
+    public static String FACEBOOK_PAGE_ID = "2087654634803168";
+
+    //method to get the right URL to use in the intent
+    public String getFacebookPageURL(Context context) {
+        PackageManager packageManager = context.getPackageManager();
+        try {
+            int versionCode = packageManager.getPackageInfo("com.facebook.katana", 0).versionCode;
+            if (versionCode >= 3002850) { //newer versions of fb app
+                return "fb://page/" + FACEBOOK_PAGE_ID;
+            } else { //older versions of fb app
+                return "fb://page/" + FACEBOOK_PAGE_ID;
+            }
+        } catch (PackageManager.NameNotFoundException e) {
+            return FACEBOOK_URL; //normal web url
+        }
+    }
+
+    public boolean isAppInstalled() {
+        try {
+            getApplicationContext().getPackageManager().getApplicationInfo("com.facebook.katana", 0);
+            return true;
+        } catch (PackageManager.NameNotFoundException e) {
+            return false;
+        }
+    }
+    private boolean isIntentAvailable(Context ctx, Intent intent) {
+        final PackageManager packageManager = ctx.getPackageManager();
+        List<ResolveInfo> list = packageManager.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
+        return list.size() > 0;
+    }
     private void setUpBottomNavView() {
         bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
             Fragment fragment;

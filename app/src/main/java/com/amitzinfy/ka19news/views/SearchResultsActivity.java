@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.TextUtils;
+import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -31,6 +32,9 @@ import com.amitzinfy.ka19news.models.retrofit.News;
 import com.amitzinfy.ka19news.viewmodels.SearchNewsViewModel;
 import com.google.android.material.appbar.MaterialToolbar;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.List;
 
 public class SearchResultsActivity extends AppCompatActivity implements SearchNewsAdapter.NewsItemClickListener {
@@ -231,13 +235,25 @@ public class SearchResultsActivity extends AppCompatActivity implements SearchNe
     public void onItemClicked(int position) {
         News news = newsList.get(position);
         Intent intent = new Intent(this, NewsDetailsActivity.class);
+        Calendar cal = Calendar.getInstance();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        try {
+            cal.setTime(sdf.parse(news.getDate() + " " + news.getTime()));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        long timeInMillis = cal.getTimeInMillis();
+        String time = DateUtils.getRelativeTimeSpanString(timeInMillis,  System.currentTimeMillis(),DateUtils.SECOND_IN_MILLIS,
+                DateUtils.FORMAT_ABBREV_MONTH).toString();
         intent.putExtra("news_id", news.getId());
         intent.putExtra("news_title", news.getTitle());
         intent.putExtra("news_description", news.getDescription());
         intent.putExtra("news_image", news.getImage());
         intent.putExtra("news_image_caption", news.getImageCaption());
         intent.putExtra("news_category", news.getCategoryName());
-        intent.putExtra("news_time", news.getTime());
+        intent.putExtra("news_time", time);
+        intent.putExtra("writer_id", news.getWriterId());
+        intent.putExtra("admin_id", news.getAdmin_id());
         startActivity(intent);
     }
 

@@ -6,6 +6,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
@@ -31,12 +32,13 @@ public class NewsDetailsActivity extends AppCompatActivity {
     private AppCompatImageView newsImage;
     private WebView newsDescription;
     private String newsTitleString, newsDescriptionString, newsImageString, newsCategoryString, newsImageCaptionString;
-    private String newsWriterId, newsAdminId, newsWriterName, writerName;
+    private String newsWriterId, newsAdminId, newsWriterName, writerName, newsTimeString;
     private int newsId;
     private ActionBar actionBar;
     private AppCompatToggleButton toggleButton;
     private FavouritesViewModel favouritesViewModel;
     private NewsDetailsViewModel newsDetailsViewModel;
+    private FavouriteNews favouriteNews;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,6 +74,7 @@ public class NewsDetailsActivity extends AppCompatActivity {
             newsWriterId = bundle.getString("writer_id", null);
             newsAdminId = bundle.getString("admin_id");
             writerName = bundle.getString("writer_name", null);
+            newsTimeString = bundle.getString("news_time", null);
             Log.d(TAG, "init: writer_name: " + writerName + " : " + newsWriterId);
             Log.d(TAG, "init: newsID: " + newsId);
         }
@@ -120,13 +123,23 @@ public class NewsDetailsActivity extends AppCompatActivity {
             }
         });
 
-        FavouriteNews favouriteNews = new FavouriteNews(newsId, newsTitleString,
-                newsDescriptionString, newsImageString, newsCategoryString, newsImageCaptionString, newsAuthor.getText().toString());
+
         toggleButton.setOnCheckedChangeListener((compoundButton, b) -> {
             if (b){
+                if (newsWriterName != null && !newsWriterName.equals("")) {
+                    favouriteNews = new FavouriteNews(newsId, newsTitleString,
+                            newsDescriptionString, newsImageString, newsCategoryString,
+                            newsImageCaptionString, newsWriterName, newsTimeString);
+                } else {
+                    favouriteNews = new FavouriteNews(newsId, newsTitleString,
+                            newsDescriptionString, newsImageString, newsCategoryString,
+                            newsImageCaptionString, newsAuthor.getText().toString(), newsTimeString);
+                }
                 favouritesViewModel.insertFavNews(favouriteNews);
+                Toast.makeText(this, "Added to Favourites", Toast.LENGTH_SHORT).show();
             } else {
                 favouritesViewModel.deleteFavNews(favouriteNews);
+                Toast.makeText(this, "Removed from Favourites", Toast.LENGTH_SHORT).show();
             }
         });
         return super.onCreateOptionsMenu(menu);

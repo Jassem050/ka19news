@@ -29,7 +29,7 @@ public class FavouriteNewsAdapter extends RecyclerView.Adapter<FavouriteNewsAdap
         private AppCompatTextView newsTitle;
         private AppCompatImageView newsImage;
         private AppCompatToggleButton favToggleButton;
-        private AppCompatTextView newsCategory;
+        private AppCompatTextView newsCategory, newsTime;
 
         public FavNewsViewHolder(@NonNull View itemView, FavNewsItemClickListener favNewsItemClickListener) {
             super(itemView);
@@ -37,6 +37,7 @@ public class FavouriteNewsAdapter extends RecyclerView.Adapter<FavouriteNewsAdap
             newsImage = itemView.findViewById(R.id.news_image);
             favToggleButton = itemView.findViewById(R.id.news_toggle_btn);
             newsCategory = itemView.findViewById(R.id.news_category);
+            newsTime = itemView.findViewById(R.id.news_date);
 
             favToggleButton.setOnCheckedChangeListener((compoundButton, b) -> {
                 if (!b){
@@ -76,7 +77,7 @@ public class FavouriteNewsAdapter extends RecyclerView.Adapter<FavouriteNewsAdap
         favNewsItemClickListener.setItemToggleButton(holder.favToggleButton, holder.getAdapterPosition());
         holder.newsCategory.setText(favouriteNews.getCategory());
         holder.itemView.setOnClickListener(view -> favNewsItemClickListener.onItemClicked(holder.getAdapterPosition()));
-
+        holder.newsTime.setText(favouriteNews.getTime());
     }
 
     @Override
