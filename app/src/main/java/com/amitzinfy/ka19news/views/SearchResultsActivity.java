@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.TextUtils;
+import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -28,10 +29,12 @@ import com.airbnb.lottie.LottieAnimationView;
 import com.amitzinfy.ka19news.R;
 import com.amitzinfy.ka19news.adapters.SearchNewsAdapter;
 import com.amitzinfy.ka19news.models.retrofit.News;
-import com.amitzinfy.ka19news.models.room.FavouriteNews;
 import com.amitzinfy.ka19news.viewmodels.SearchNewsViewModel;
 import com.google.android.material.appbar.MaterialToolbar;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.List;
 
 public class SearchResultsActivity extends AppCompatActivity implements SearchNewsAdapter.NewsItemClickListener {
@@ -59,35 +62,39 @@ public class SearchResultsActivity extends AppCompatActivity implements SearchNe
     }
 
     private void init(){
-        materialToolbar = (MaterialToolbar) findViewById(R.id.search_results_toolbar);
+        materialToolbar = findViewById(R.id.search_results_toolbar);
         setSupportActionBar(materialToolbar);
         actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.setDisplayShowTitleEnabled(false);
         }
         searchNewsAdapter = new SearchNewsAdapter(this, this);
-        recyclerView = (RecyclerView) findViewById(R.id.search_recyclerview);
+        recyclerView = findViewById(R.id.search_recyclerview);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setHasFixedSize(true);
-        recyclerView.setAdapter(searchNewsAdapter);
         searchNewsViewModel = ViewModelProviders.of(this).get(SearchNewsViewModel.class);
-        searchAnimation = (LottieAnimationView) findViewById(R.id.search_progress);
+        searchAnimation = findViewById(R.id.search_progress);
         handler = new Handler();
-        searchQueryText = (AppCompatTextView) findViewById(R.id.search_query);
-        noResultsText = (AppCompatTextView) findViewById(R.id.no_results);
+        searchQueryText = findViewById(R.id.search_query);
+        noResultsText = findViewById(R.id.no_results);
 
     }
 
     private void subscribe(String searchQuery){
+        noResultsText.setVisibility(View.GONE);
         newsObserver = news -> {
             if (news != null && news.size() > 0) {
+                searchAnimation.setVisibility(View.GONE);
                 noResultsText.setVisibility(View.GONE);
                 Log.d(TAG, "onChanged: searchresultsactivity: " + news.get(0).getTitle());
                 newsList = news;
-                searchNewsAdapter.setNewsList(news);
+                searchNewsAdapter.setNewsList(newsList);
                 searchNewsAdapter.notifyDataSetChanged();
+                recyclerView.setAdapter(searchNewsAdapter);
+                recyclerView.setVisibility(View.VISIBLE);
             } else {
                 recyclerView.setVisibility(View.GONE);
+                searchAnimation.setVisibility(View.GONE);
                 handler.postDelayed(mRunnable = () -> noResultsText.setVisibility(View.VISIBLE), 1500);
             }
         };
@@ -114,14 +121,16 @@ public class SearchResultsActivity extends AppCompatActivity implements SearchNe
         searchView.setIconified(false);
         searchView.requestFocus();
         searchView.onActionViewExpanded();
-        ImageView closeButton = (ImageView)searchView.findViewById(R.id.search_close_btn);
+        ImageView closeButton = searchView.findViewById(R.id.search_close_btn);
         closeButton.setOnClickListener(view -> {
             Log.d(TAG, "onClick: clicked");
             searchView.clearFocus();
             searchView.setQuery("", true);
             closeButton.setVisibility(View.GONE);
+            newsList.clear();
             searchAnimation.setVisibility(View.GONE);
             searchQueryText.setVisibility(View.GONE);
+            recyclerView.invalidate();
             recyclerView.setVisibility(View.GONE);
             noResultsText.setVisibility(View.GONE);
         });
@@ -135,12 +144,7 @@ public class SearchResultsActivity extends AppCompatActivity implements SearchNe
                 searchAnimation.setVisibility(View.VISIBLE);
                 searchQueryText.setText(String.format("%s%s", getString(R.string.search_results_text) + ": ", query));
                 if (!TextUtils.isEmpty(query) && query.length() > 1) {
-                    handler.postDelayed(mRunnable = () -> {
-                        Toast.makeText(SearchResultsActivity.this, query, Toast.LENGTH_SHORT).show();
-                        subscribe(query);
-                        recyclerView.setVisibility(View.VISIBLE);
-                        searchAnimation.setVisibility(View.GONE);
-                    }, 1500);
+                    subscribe(query);
 
                 }
                 return false;
@@ -200,16 +204,16 @@ public class SearchResultsActivity extends AppCompatActivity implements SearchNe
     public void onItemToggleButtonChecked(int position) {
         News news = newsList.get(position);
         Log.d(TAG, "onItemToggleButtonChecked: id: " + news.getId());
-        searchNewsViewModel.insertFavNews(new FavouriteNews(news.getId(),news.getTitle(), news.getDescription(),
-                news.getImage(), news.getCategoryName(), news.getImageCaption()));
+//        searchNewsViewModel.insertFavNews(new FavouriteNews(news.getId(),news.getTitle(), news.getDescription(),
+//                news.getImage(), news.getCategoryName(), news.getImageCaption(), news.getWriterId()));
     }
 
     @Override
     public void onItemToggleButtonUnChecked(int position) {
         News news = newsList.get(position);
         Log.d(TAG, "onItemToggleButtonUnChecked: id: " + news.getId());
-        searchNewsViewModel.deleteFavNews(new FavouriteNews(news.getId(),news.getTitle(), news.getDescription(),
-                news.getImage(), news.getCategoryName(), news.getImageCaption()));
+//        searchNewsViewModel.deleteFavNews(new FavouriteNews(news.getId(),news.getTitle(), news.getDescription(),
+//                news.getImage(), news.getCategoryName(), news.getImageCaption(), news.getWriterId()));
     }
 
     @Override
@@ -231,13 +235,25 @@ public class SearchResultsActivity extends AppCompatActivity implements SearchNe
     public void onItemClicked(int position) {
         News news = newsList.get(position);
         Intent intent = new Intent(this, NewsDetailsActivity.class);
+        Calendar cal = Calendar.getInstance();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        try {
+            cal.setTime(sdf.parse(news.getDate() + " " + news.getTime()));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        long timeInMillis = cal.getTimeInMillis();
+        String time = DateUtils.getRelativeTimeSpanString(timeInMillis,  System.currentTimeMillis(),DateUtils.SECOND_IN_MILLIS,
+                DateUtils.FORMAT_ABBREV_MONTH).toString();
         intent.putExtra("news_id", news.getId());
         intent.putExtra("news_title", news.getTitle());
         intent.putExtra("news_description", news.getDescription());
         intent.putExtra("news_image", news.getImage());
         intent.putExtra("news_image_caption", news.getImageCaption());
         intent.putExtra("news_category", news.getCategoryName());
-        intent.putExtra("news_time", news.getTime());
+        intent.putExtra("news_time", time);
+        intent.putExtra("writer_id", news.getWriterId());
+        intent.putExtra("admin_id", news.getAdmin_id());
         startActivity(intent);
     }
 

@@ -12,6 +12,10 @@
     <color name="DividerColor">#EEEEEE</color>
     <color name="tab_text_color">#B0E0E6</color>
     <color name="shimmer_background">#dddddd</color>
+    <color name="transparent_bg">#94EEEEEE</color>
+    <color name="accept_green">#14a895</color>
+    <color name="pending_yellow">#FFC107</color>
+    <color name="reject_red">#CA0930</color>
 
 
     <!-- dots inactive colors -->

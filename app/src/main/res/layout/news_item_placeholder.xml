@@ -1,24 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingTop="8dp"
+    android:orientation="vertical"
     android:paddingLeft="8dp"
+    android:paddingTop="8dp"
     android:paddingRight="8dp">
 
     <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
         android:layout_height="220dp"
-        app:cardElevation="5dp"
-        android:background="@drawable/bg_round">
+        android:background="@drawable/bg_round"
+        app:cardElevation="5dp">
+
         <View
             android:id="@+id/news_image"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:scaleType="centerCrop"
-            android:background="@color/shimmer_background"/>
+            android:background="@color/shimmer_background"
+            android:scaleType="centerCrop" />
     </com.google.android.material.card.MaterialCardView>
 
 
@@ -28,7 +29,7 @@
         android:layout_height="10dp"
         android:layout_marginTop="8dp"
         android:layout_marginBottom="8dp"
-        android:background="@color/shimmer_background"/>
+        android:background="@color/shimmer_background" />
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -39,8 +40,7 @@
             android:id="@+id/news_date"
             android:layout_width="match_parent"
             android:layout_height="10dp"
-            android:background="@color/shimmer_background"/>
-
+            android:background="@color/shimmer_background" />
 
     </RelativeLayout>
 
@@ -48,6 +48,6 @@
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:layout_marginTop="8dp"
-        android:background="@color/DividerColor"/>
+        android:background="@color/DividerColor" />
 
 </LinearLayout>

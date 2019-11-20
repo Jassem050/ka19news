@@ -1,6 +1,7 @@
 package com.amitzinfy.ka19news.adapters;
 
 import android.content.Context;
+import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,9 +15,12 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.amitzinfy.ka19news.R;
 import com.amitzinfy.ka19news.models.retrofit.News;
-import com.amitzinfy.ka19news.utils.GlideApp;
 import com.amitzinfy.ka19news.utils.NetworkUtils;
+import com.chinalwb.are.glidesupport.GlideApp;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.List;
 
 public class MyFeedNewsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
@@ -30,7 +34,7 @@ public class MyFeedNewsListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
         private AppCompatImageView newsImage;
         private AppCompatToggleButton favToggleButton;
         private AppCompatTextView newsCategory;
-        private AppCompatTextView newsShareBtn;
+        private AppCompatTextView newsShareBtn, newsTime;
 
         public TopNewsViewHolder(@NonNull View itemView, NewsItemClickListener newsItemClickListener) {
             super(itemView);
@@ -39,6 +43,7 @@ public class MyFeedNewsListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
             favToggleButton = itemView.findViewById(R.id.news_toggle_btn);
 //            newsCategory = itemView.findViewById(R.id.news_category);
             newsShareBtn = itemView.findViewById(R.id.news_share_btn);
+            newsTime = itemView.findViewById(R.id.news_date);
         }
     }
 
@@ -48,7 +53,7 @@ public class MyFeedNewsListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
         private AppCompatImageView newsImage;
         private AppCompatToggleButton favToggleButton;
         private AppCompatTextView newsCategory;
-        private AppCompatTextView newsShareBtn;
+        private AppCompatTextView newsShareBtn, newsTime;
 
         public BottomNewsViewHolder(@NonNull View itemView, NewsItemClickListener newsItemClickListener) {
             super(itemView);
@@ -57,6 +62,7 @@ public class MyFeedNewsListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
             favToggleButton = itemView.findViewById(R.id.news_toggle_btn);
             newsCategory = itemView.findViewById(R.id.news_category);
             newsShareBtn = itemView.findViewById(R.id.news_share_btn);
+            newsTime = itemView.findViewById(R.id.news_date);
 
             favToggleButton.setOnCheckedChangeListener((compoundButton, b) -> {
                 if (b){
@@ -106,6 +112,18 @@ public class MyFeedNewsListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         News news = newsList.get(position);
+
+        Calendar cal = Calendar.getInstance();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        try {
+            cal.setTime(sdf.parse(news.getDate() + " " + news.getTime()));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        long timeInMillis = cal.getTimeInMillis();
+        String time = DateUtils.getRelativeTimeSpanString(timeInMillis,  System.currentTimeMillis(),DateUtils.SECOND_IN_MILLIS,
+                DateUtils.FORMAT_ABBREV_MONTH).toString();
+
         if (position == 0) {
             ((TopNewsViewHolder) holder).newsTitle.setText(news.getTitle());
             GlideApp.with(context).load(NetworkUtils.IMAGE_URL +  news.getImage()).placeholder(R.drawable.placeholder_image).
@@ -123,6 +141,7 @@ public class MyFeedNewsListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
                     newsItemClickListener.onItemToggleButtonUnChecked(holder.getAdapterPosition());
                 }
             });
+            ((TopNewsViewHolder) holder).newsTime.setText(time);
 
         } else {
             ((BottomNewsViewHolder) holder).newsTitle.setText(news.getTitle());
@@ -136,7 +155,7 @@ public class MyFeedNewsListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
             ((BottomNewsViewHolder) holder).newsShareBtn.setOnClickListener(view ->
                     newsItemClickListener.onShareButtonClicked(holder.getAdapterPosition()));
 
-
+            ((BottomNewsViewHolder) holder).newsTime.setText(time);
         }
     }
 

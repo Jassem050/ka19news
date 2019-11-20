@@ -133,13 +133,15 @@ public class FavouriteFragment extends Fragment implements FavouriteNewsAdapter.
     }
 
     private void setToolbar(View view){
-        materialToolbar = (MaterialToolbar) view.findViewById(R.id.favourite_toolbar);
+        materialToolbar = view.findViewById(R.id.favourite_toolbar);
         if (getActivity() != null) {
             ((AppCompatActivity) getActivity()).setSupportActionBar(materialToolbar);
             actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
-            actionBar.setTitle(getResources().getString(R.string.favourites));
-            actionBar.setHomeAsUpIndicator(R.drawable.ic_menu_black_24dp);
-            actionBar.setDisplayHomeAsUpEnabled(true);
+            if (actionBar != null) {
+                actionBar.setTitle(getResources().getString(R.string.favourites));
+                actionBar.setHomeAsUpIndicator(R.drawable.ic_menu_black_24dp);
+                actionBar.setDisplayHomeAsUpEnabled(true);
+            }
         }
     }
 
@@ -261,6 +263,8 @@ public class FavouriteFragment extends Fragment implements FavouriteNewsAdapter.
         intent.putExtra("news_image_caption", news.getImageCaption());
         intent.putExtra("news_category", news.getCategory());
 //        intent.putExtra("news_time", news.());
+        intent.putExtra("writer_name", news.getWriterName());
+//        intent.putExtra("admin_id", news.getAdmin_id());
         startActivity(intent);
     }
 

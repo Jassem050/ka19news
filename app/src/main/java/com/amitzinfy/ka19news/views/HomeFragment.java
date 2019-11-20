@@ -6,12 +6,14 @@ import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import androidx.annotation.NonNull;
@@ -37,6 +39,9 @@ import com.amitzinfy.ka19news.viewmodels.MyFeedViewModel;
 import com.facebook.shimmer.ShimmerFrameLayout;
 import com.google.android.material.appbar.MaterialToolbar;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.List;
 
 /**
@@ -107,7 +112,10 @@ public class HomeFragment extends Fragment implements MyFeedNewsListAdapter.News
         setToolbar(rootView);
         init(rootView);
 
-        if (preferenceManager.getLanguageName().equals("English")) {
+        if (preferenceManager.getUserStatus().equals(getString(R.string.logged_in_status))) {
+            preferenceManager.setAppStatus(getString(R.string.reader_writer_status));
+        }
+        if (preferenceManager.getLanguageName().equals(getString(R.string.english_language))) {
             subscribe();
         } else {
             getLanguageNews();
@@ -115,7 +123,7 @@ public class HomeFragment extends Fragment implements MyFeedNewsListAdapter.News
 
 
         swipeRefreshLayout.setOnRefreshListener(() -> {
-            if (preferenceManager.getLanguageName().equals("English")) {
+            if (preferenceManager.getLanguageName().equals(getString(R.string.english_language))) {
                 subscribe();
             } else {
                 getLanguageNews();
@@ -129,12 +137,17 @@ public class HomeFragment extends Fragment implements MyFeedNewsListAdapter.News
     private void subscribe(){
         newsObserver = news -> {
             if (news != null && news.size() > 0) {
-                newsList = news;
-                myFeedNewsListAdapter.setNewsList(newsList);
-                myFeedNewsListAdapter.notifyDataSetChanged();
-                shimmerFrameLayout.stopShimmer();
-                shimmerFrameLayout.setVisibility(View.GONE);
-                handler.postDelayed(runnable = () -> swipeRefreshLayout.setRefreshing(false), 1000);
+                String errorMessage = news.get(0).getMessageType();
+                if (errorMessage != null && errorMessage.equals("error")){
+                    Toast.makeText(getActivity(), news.get(0).getErrorMessage(), Toast.LENGTH_SHORT).show();
+                } else {
+                    newsList = news;
+                    myFeedNewsListAdapter.setNewsList(newsList);
+                    myFeedNewsListAdapter.notifyDataSetChanged();
+                    shimmerFrameLayout.stopShimmer();
+                    shimmerFrameLayout.setVisibility(View.GONE);
+                    handler.postDelayed(runnable = () -> swipeRefreshLayout.setRefreshing(false), 1000);
+                }
             }
         };
         myFeedViewModel.setLanguageId("English");
@@ -144,12 +157,17 @@ public class HomeFragment extends Fragment implements MyFeedNewsListAdapter.News
     private void getLanguageNews(){
         newsObserver = news -> {
             if (news != null && news.size() > 0) {
-                newsList = news;
-                myFeedNewsListAdapter.setNewsList(newsList);
-                myFeedNewsListAdapter.notifyDataSetChanged();
-                shimmerFrameLayout.stopShimmer();
-                shimmerFrameLayout.setVisibility(View.GONE);
-                handler.postDelayed(runnable = () -> swipeRefreshLayout.setRefreshing(false), 1000);
+                String errorMessage = news.get(0).getMessageType();
+                if (errorMessage != null && errorMessage.equals("error")){
+                    Toast.makeText(getActivity(), news.get(0).getErrorMessage(), Toast.LENGTH_SHORT).show();
+                } else {
+                    newsList = news;
+                    myFeedNewsListAdapter.setNewsList(newsList);
+                    myFeedNewsListAdapter.notifyDataSetChanged();
+                    shimmerFrameLayout.stopShimmer();
+                    shimmerFrameLayout.setVisibility(View.GONE);
+                    handler.postDelayed(runnable = () -> swipeRefreshLayout.setRefreshing(false), 1000);
+                }
             }
         };
         myFeedViewModel.getLanguageNews(preferenceManager.getLanguageName()).observe(getViewLifecycleOwner(), newsObserver);
@@ -162,8 +180,8 @@ public class HomeFragment extends Fragment implements MyFeedNewsListAdapter.News
         recyclerView.setHasFixedSize(true);
         recyclerView.setAdapter(myFeedNewsListAdapter);
         myFeedViewModel = ViewModelProviders.of(this).get(MyFeedViewModel.class);
-        swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_refresh_layout);
-        shimmerFrameLayout = (ShimmerFrameLayout) view.findViewById(R.id.shimmer_layout);
+        swipeRefreshLayout = view.findViewById(R.id.swipe_refresh_layout);
+        shimmerFrameLayout = view.findViewById(R.id.shimmer_layout);
         shimmerFrameLayout.startShimmer();
         preferenceManager = PreferenceManager.getInstance(getActivity());
         // for drawer hamburger animation
@@ -191,13 +209,16 @@ public class HomeFragment extends Fragment implements MyFeedNewsListAdapter.News
     }
 
     private void setToolbar(View view){
-        materialToolbar = (MaterialToolbar) view.findViewById(R.id.myfeed_toolbar);
+        materialToolbar = view.findViewById(R.id.myfeed_toolbar);
         if (getActivity() != null) {
             ((AppCompatActivity) getActivity()).setSupportActionBar(materialToolbar);
             actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
-            actionBar.setTitle(getResources().getString(R.string.app_name));
-//            actionBar.setHomeAsUpIndicator(R.drawable.ic_menu_black_24dp);
-            actionBar.setDisplayHomeAsUpEnabled(true);
+            if (actionBar != null) {
+                actionBar.setTitle(getResources().getString(R.string.app_name));
+                //            actionBar.setHomeAsUpIndicator(R.drawable.ic_menu_black_24dp);
+                actionBar.setDisplayHomeAsUpEnabled(true);
+            }
+
         }
     }
 
@@ -280,6 +301,16 @@ public class HomeFragment extends Fragment implements MyFeedNewsListAdapter.News
     @Override
     public void onItemClicked(int position) {
         News news = newsList.get(position);
+        Calendar cal = Calendar.getInstance();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        try {
+            cal.setTime(sdf.parse(news.getDate() + " " + news.getTime()));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        long timeInMillis = cal.getTimeInMillis();
+        String time = DateUtils.getRelativeTimeSpanString(timeInMillis,  System.currentTimeMillis(),DateUtils.SECOND_IN_MILLIS,
+                DateUtils.FORMAT_ABBREV_MONTH).toString();
         Intent intent = new Intent(getActivity(), NewsDetailsActivity.class);
         intent.putExtra("news_id", news.getId());
         intent.putExtra("news_title", news.getTitle());
@@ -287,7 +318,9 @@ public class HomeFragment extends Fragment implements MyFeedNewsListAdapter.News
         intent.putExtra("news_image", news.getImage());
         intent.putExtra("news_image_caption", news.getImageCaption());
         intent.putExtra("news_category", news.getCategoryName());
-        intent.putExtra("news_time", news.getTime());
+        intent.putExtra("news_time", time);
+        intent.putExtra("writer_id", news.getWriterId());
+        intent.putExtra("admin_id", news.getAdmin_id());
         startActivity(intent);
     }
 

@@ -24,11 +24,31 @@ public class News {
     @SerializedName("news_time")
     private String time;
     @Expose
+    @SerializedName("news_date")
+    private String date;
+    @Expose
     @SerializedName("category_name")
     private String categoryName;
+    @Expose
+    @SerializedName("writer_id")
+    private String writerId;
+    @Expose
+    @SerializedName("admin_id")
+    private String admin_id;
+    @Expose
+    @SerializedName("news_status")
+    private String newsStatus;
+
+    private String messageType;
+    private String errorMessage;
 
     public News(String title) {
         this.title = title;
+    }
+
+    public News(String messageType, String errorMessage){
+        this.messageType = messageType;
+        this.errorMessage = errorMessage;
     }
 
     public int getId() {
@@ -85,5 +105,53 @@ public class News {
 
     public void setImageCaption(String imageCaption) {
         this.imageCaption = imageCaption;
+    }
+
+    public String getMessageType() {
+        return messageType;
+    }
+
+    public void setMessageType(String messageType) {
+        this.messageType = messageType;
+    }
+
+    public String getErrorMessage() {
+        return errorMessage;
+    }
+
+    public void setErrorMessage(String errorMessage) {
+        this.errorMessage = errorMessage;
+    }
+
+    public String getWriterId() {
+        return writerId;
+    }
+
+    public void setWriterId(String writerId) {
+        this.writerId = writerId;
+    }
+
+    public String getAdmin_id() {
+        return admin_id;
+    }
+
+    public void setAdmin_id(String admin_id) {
+        this.admin_id = admin_id;
+    }
+
+    public String getNewsStatus() {
+        return newsStatus;
+    }
+
+    public void setNewsStatus(String newsStatus) {
+        this.newsStatus = newsStatus;
+    }
+
+    public String getDate() {
+        return date;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
     }
 }

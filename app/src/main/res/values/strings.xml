@@ -56,4 +56,63 @@
     <string name="time_placeholder_text">9 hours ago</string>
     <string name="newspaper">newspaper</string>
 
+
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="account">Account</string>
+    <string name="login">Login</string>
+    <string name="login_info_text">Enter your mobile number, we will send you  \n\t\t\t\t\t\t\t\t\t OTP to verify later</string>
+    <string name="done">Done</string>
+    <string name="otp_info_text">Enter 4 digit number that sent to</string>
+    <string name="phone_number_hint">10 digit mobile number</string>
+    <string name="continue_btn_string">Continue</string>
+    <string name="create_an_account">Create an Account</string>
+    <string name="name_hint">Enter your name</string>
+    <string name="email_hint">Enter your email</string>
+    <string name="address_hint">Enter your address</string>
+    <string name="male">Male</string>
+    <string name="female">Female</string>
+    <string name="date_of_birth_hint">Date of Birth</string>
+    <string name="register_btn">Register</string>
+    <string name="personal_information">Personal Information</string>
+    <string name="upload">Upload</string>
+    <string name="other">Other</string>
+    <string name="add_news">Add News</string>
+    <string name="news_posted">News Posted</string>
+    <string name="news_accepted">News Accepted</string>
+    <string name="view_news">View News</string>
+
+    <!-- user and app status -->
+    <string name="logged_in_status">logged_in</string>
+    <string name="logged_out_status">logged_out</string>
+    <string name="reader_writer_status">reader_writer</string>
+    <string name="reader_status">reader</string>
+    <string name="writer_status">writer</string>
+
+    <!-- languages   -->
+    <string name="english_language">English</string>
+    <string name="zero">0</string>
+    <string name="click_to_add_image">Click to Add Image</string>
+    <string name="select_language_hint">Select Language</string>
+    <string name="select_category_hint">Select Category</string>
+    <string name="news_title_hint">News Title</string>
+    <string name="arrow_content_descp">arrow</string>
+    <string name="news_content_hint">Type your news content here......</string>
+    <string name="next_btn">Next</string>
+    <string name="change_image_btn">Change Image</string>
+    <string name="remove_image_btn">Remove Image</string>
+    <string name="send">Send</string>
+    <string name="ok_btn">OK</string>
+    <string name="news_uploaded_succesfully">News uploaded successfully</string>
+    <string name="preview">Preview</string>
+    <string name="logout">Logout</string>
+    <string name="become_n_ka19news_n_contributer">Become   ka19news   Contributor</string>
+    <string name="account_caps">ACCOUNT</string>
+    <string name="login_create">Login/Create account to contribute news</string>
+    <string name="update_btn">Update</string>
+    <string name="mobile_number_hint">Enter your mobile number</string>
+    <string name="by">by</string>
+    <string name="status_accepted">status: accepted</string>
+    <string name="status_rejected">status: rejected</string>
+    <string name="status_pending">status: pending</string>
+
 </resources>

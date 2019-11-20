@@ -15,6 +15,7 @@ import com.amitzinfy.ka19news.models.room.FavouriteNews;
 import com.amitzinfy.ka19news.utils.ApiInterface;
 import com.amitzinfy.ka19news.utils.RetrofitClient;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -25,6 +26,7 @@ import retrofit2.Response;
 
 public class MyFeedRepository {
     private static final String TAG = "MyFeedRepository";
+    private static final int TOTAL_RETRY = 3;
 
     private MutableLiveData<List<Category>> categoryList = new MutableLiveData<>();
     private MutableLiveData<List<News>> newsList = new MutableLiveData<>();
@@ -32,6 +34,7 @@ public class MyFeedRepository {
     private  NewsRoomDatabase newsRoomDatabase;
     private FavouriteNewsDao favouriteNewsDao;
     private int favNewsLength;
+    private List<News> serverError;
 
     public MyFeedRepository(Application application){
         newsRoomDatabase = NewsRoomDatabase.getDatabase(application);
@@ -39,6 +42,7 @@ public class MyFeedRepository {
     }
 
     private void loadNewsList(String languageName, String ids){
+        final int[] retry = {0};
         ApiInterface apiInterface = RetrofitClient.getRetrofitClient().create(ApiInterface.class);
         Call<List<News>> call = apiInterface.getFeedNews(languageName, ids);
         call.enqueue(new Callback<List<News>>() {
@@ -56,7 +60,14 @@ public class MyFeedRepository {
             @Override
             public void onFailure(Call<List<News>> call, Throwable t) {
                 Log.d(TAG, "onFailure: news: " + t);
-
+                serverError = new ArrayList<>();
+                serverError.add(0, new News("error", "Could not connect to server"));
+                newsList.postValue(serverError);
+                if (retry[0] < TOTAL_RETRY) {
+                    call.clone().enqueue(this);
+                    retry[0]++;
+                }
+                serverError = null;
             }
         });
     }
@@ -79,6 +90,7 @@ public class MyFeedRepository {
             @Override
             public void onFailure(Call<List<Category>> call, Throwable t) {
                 Log.d(TAG, "onFailure: " + t);
+                call.clone().enqueue(this);
             }
         });
 
@@ -86,6 +98,7 @@ public class MyFeedRepository {
 
 
     private void loadLanguageNews(String languageName){
+        final int[] retry = {0};
         ApiInterface apiInterface = RetrofitClient.getRetrofitClient().create(ApiInterface.class);
         Call<List<News>> call = apiInterface.getLanguageNews(languageName);
         call.enqueue(new Callback<List<News>>() {
@@ -93,6 +106,7 @@ public class MyFeedRepository {
             public void onResponse(Call<List<News>> call, Response<List<News>> response) {
                 if (response.isSuccessful()){
                     if (response.body() != null){
+                        Collections.reverse(response.body());
                         newsList.postValue(response.body());
                     }
                 }
@@ -101,6 +115,14 @@ public class MyFeedRepository {
             @Override
             public void onFailure(Call<List<News>> call, Throwable t) {
                 Log.d(TAG, "onFailure: languageNews: " + t);
+                serverError = new ArrayList<>();
+                serverError.add(0, new News("error", "could not connect to server"));
+                newsList.postValue(serverError);
+                if (retry[0] < TOTAL_RETRY) {
+                    call.clone().enqueue(this);
+                    retry[0]++;
+                }
+                serverError = null;
             }
         });
     }
