@@ -356,6 +356,11 @@ public class HomeFragment extends Fragment implements MyFeedNewsListAdapter.News
     @Override
     public void onResume() {
         super.onResume();
+        if (preferenceManager.getLanguageName().equals(getString(R.string.english_language))) {
+            subscribe();
+        } else {
+            getLanguageNews();
+        }
     }
 
     @Override
