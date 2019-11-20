@@ -6,7 +6,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
@@ -136,10 +135,8 @@ public class NewsDetailsActivity extends AppCompatActivity {
                             newsImageCaptionString, newsAuthor.getText().toString(), newsTimeString);
                 }
                 favouritesViewModel.insertFavNews(favouriteNews);
-                Toast.makeText(this, "Added to Favourites", Toast.LENGTH_SHORT).show();
             } else {
                 favouritesViewModel.deleteFavNews(favouriteNews);
-                Toast.makeText(this, "Removed from Favourites", Toast.LENGTH_SHORT).show();
             }
         });
         return super.onCreateOptionsMenu(menu);
