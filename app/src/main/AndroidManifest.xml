@@ -23,8 +23,10 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".views.ViewUserNewsActivity"/>
-        <activity android:name=".views.EditProfileActivity" />
+        <activity android:name=".views.ViewUserNewsActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".views.EditProfileActivity"
+            android:screenOrientation="portrait"/>
 
         <provider
             android:name="androidx.core.content.FileProvider"

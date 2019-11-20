@@ -7,7 +7,6 @@ import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -73,20 +72,23 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnFr
                 case R.id.english:
                     Toast.makeText(MainActivity.this, "english", Toast.LENGTH_SHORT).show();
                     preferenceManager.setLanguageName("English");
-                    Log.d(TAG, "onNavigationItemSelected: language_id: " + preferenceManager.getLanguageName());
                     myFeedViewModel.setLanguageId(preferenceManager.getLanguageName());
                     bottomNavigationView.setSelectedItemId(R.id.navigation_home);
+                    if ((getSupportFragmentManager().findFragmentById(R.id.content_main_frame) instanceof HomeFragment)) {
+                        loadFragment(HomeFragment.newInstance("home", "home"));
+                    }
                     break;
                 case R.id.kannada:
                     Toast.makeText(MainActivity.this, "Kannada", Toast.LENGTH_SHORT).show();
                     preferenceManager.setLanguageName("Kannada");
-                    Log.d(TAG, "onNavigationItemSelected: language_id: " + preferenceManager.getLanguageName());
                     myFeedViewModel.setLanguageId(preferenceManager.getLanguageName());
                     bottomNavigationView.setSelectedItemId(R.id.navigation_home);
+                    if ((getSupportFragmentManager().findFragmentById(R.id.content_main_frame) instanceof HomeFragment)) {
+                        loadFragment(HomeFragment.newInstance("home", "home"));
+                    }
                     break;
                 case R.id.myfeed:
                     startActivity(new Intent(this, MyFeedPersonalizationActivity.class));
-                    Log.d(TAG, "setUpNavigationView: manufctrr: " + Build.MANUFACTURER + Build.MODEL);
                     break;
                 case R.id.feedback:
                     String deviceInfo = "\n\n\n\n" + "Device: " + Build.DEVICE + "\n" + "Brand: " + Build.BRAND + "\n"

@@ -1,10 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:fillViewport="true"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".views.MyFeedPersonalizationActivity">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/feed_title_1"
@@ -40,29 +45,6 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
-        <!--<com.google.android.material.chip.Chip-->
-            <!--style="@style/Widget.MaterialComponents.Chip.Choice"-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:text="Technology"-->
-            <!--android:textColor="@color/chip_text_color"-->
-            <!--app:chipStrokeColor="@color/colorPrimary"-->
-            <!--app:chipStrokeWidth="2dp"-->
-            <!--app:chipEndPadding="8dp"-->
-            <!--app:chipStartPadding="8dp"-->
-            <!--app:chipBackgroundColor="@color/chip_bg_color" />-->
-
-        <!--<com.google.android.material.chip.Chip-->
-            <!--style="@style/Widget.MaterialComponents.Chip.Choice"-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:text="Business"-->
-            <!--android:textColor="@color/chip_text_color"-->
-            <!--app:chipStrokeColor="@color/colorPrimary"-->
-            <!--app:chipStrokeWidth="2dp"-->
-            <!--app:chipEndPadding="8dp"-->
-            <!--app:chipStartPadding="8dp"-->
-            <!--app:chipBackgroundColor="@color/chip_bg_color" />-->
     </com.google.android.material.chip.ChipGroup>
 
     <com.google.android.material.button.MaterialButton
@@ -70,7 +52,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/save"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:padding="18dp"
+        app:cornerRadius="20dp"
+        android:layout_margin="16dp"
+        app:layout_constraintTop_toBottomOf="@+id/feed_chip_group"
         app:layout_constraintRight_toRightOf="parent"/>
 
 
@@ -91,5 +76,5 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         android:visibility="gone"/>
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.core.widget.NestedScrollView>
