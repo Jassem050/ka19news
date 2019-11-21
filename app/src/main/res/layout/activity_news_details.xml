@@ -53,8 +53,8 @@
             android:layout_height="wrap_content"
             android:layout_below="@+id/news_title"
             android:layout_toEndOf="@+id/line_divider"
-            android:padding="8dp"
-            android:text="Updated: July 16, 2019 15:09 IST" />
+            style="@style/TextAppearance.MaterialComponents.Caption"
+            android:padding="8dp" />
 
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/news_image"
