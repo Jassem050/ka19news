@@ -26,6 +26,7 @@ import com.google.android.gms.common.api.CommonStatusCodes;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.textview.MaterialTextView;
 import com.mukesh.OtpView;
 
 import java.util.regex.Matcher;
@@ -45,6 +46,7 @@ public class OTPActivity extends AppCompatActivity implements View.OnClickListen
     private OTPResponse oTPResponse;
     private UserViewModel userViewModel;
     private PreferenceManager preferenceManager;
+    private MaterialTextView phoneTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,6 +74,7 @@ public class OTPActivity extends AppCompatActivity implements View.OnClickListen
         otpViewModel = ViewModelProviders.of(this).get(OTPViewModel.class);
         userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
         otpView = findViewById(R.id.otp_view);
+        phoneTextView = findViewById(R.id.phone_text);
         preferenceManager = PreferenceManager.getInstance(this);
         doneButton = findViewById(R.id.done_btn);
         doneButton.setOnClickListener(this);
@@ -84,6 +87,7 @@ public class OTPActivity extends AppCompatActivity implements View.OnClickListen
         }
 
         if (phoneNumber != null){
+            phoneTextView.setText("+91 " + phoneNumber);
             Log.d(TAG, "bindViews: phoneNumber: " + phoneNumber);
             getOtpInfo(phoneNumber);
         }

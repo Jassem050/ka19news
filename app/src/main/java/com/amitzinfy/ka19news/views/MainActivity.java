@@ -114,26 +114,40 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnFr
                     break;
                 case R.id.facebook:
                     PackageManager packageManager = this.getPackageManager();
-                    try {
-                        boolean activated =  packageManager.getApplicationInfo("com.facebook.katana", 0).enabled;
-                        if (isAppInstalled() && activated) {
+
+                        if (isAppInstalled()) {
                             Intent facebookIntent = new Intent(Intent.ACTION_VIEW);
                             String facebookUrl = getFacebookPageURL(this);
                             facebookIntent.setData(Uri.parse(facebookUrl));
                             startActivity(facebookIntent);
-
                         } else {
                             startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.facebook.com/ka19news")));
-                            Toast.makeText(getApplicationContext(), "facebook app not installing", Toast.LENGTH_SHORT).show();
                         }
-                    } catch (PackageManager.NameNotFoundException e) {
-                        e.printStackTrace();
-                    }
 
+                    break;
+                case R.id.twitter:
+                    startTwitter(this);
+                    break;
 
             }
             return false;
         });
+    }
+
+    public void startTwitter(Context context) {
+
+        Intent intent;
+        try {
+            // get the Twitter app if possible
+            context.getPackageManager().getPackageInfo("com.twitter.android", 0);
+            intent = new Intent(Intent.ACTION_VIEW, Uri.parse("twitter://user?screen_name=ka19_news"));
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//            return intent;
+        } catch (Exception e) {
+            // no Twitter app, revert to browser
+            intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://twitter.com/ka19_news"));
+        }
+        startActivity(intent);
     }
 
     public static String FACEBOOK_URL = "https://www.facebook.com/ka19news";
@@ -157,7 +171,8 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnFr
     public boolean isAppInstalled() {
         try {
             getApplicationContext().getPackageManager().getApplicationInfo("com.facebook.katana", 0);
-            return true;
+            boolean activated = getPackageManager().getApplicationInfo("com.facebook.katana", 0).enabled;
+            return activated;
         } catch (PackageManager.NameNotFoundException e) {
             return false;
         }

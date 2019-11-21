@@ -27,11 +27,11 @@ public class NewsDetailsActivity extends AppCompatActivity {
 
     private static final String TAG = "NewsDetailsActivity";
 
-    private AppCompatTextView newsTitle, newsTime, newsImageCaption, newsAuthor;
+    private AppCompatTextView newsTitle, newsUpdatedTime, newsImageCaption, newsAuthor;
     private AppCompatImageView newsImage;
     private WebView newsDescription;
     private String newsTitleString, newsDescriptionString, newsImageString, newsCategoryString, newsImageCaptionString;
-    private String newsWriterId, newsAdminId, newsWriterName, writerName, newsTimeString;
+    private String newsWriterId, newsAdminId, newsWriterName, writerName, newsTimeString, newsUpdateTimeString;
     private int newsId;
     private ActionBar actionBar;
     private AppCompatToggleButton toggleButton;
@@ -63,6 +63,7 @@ public class NewsDetailsActivity extends AppCompatActivity {
         newsDescription = findViewById(R.id.news_description);
         newsImageCaption = findViewById(R.id.news_image_caption);
         newsAuthor = findViewById(R.id.news_author);
+        newsUpdatedTime = findViewById(R.id.news_updated_time);
         if (bundle != null) {
             newsTitleString = bundle.getString("news_title");
             newsDescriptionString = bundle.getString("news_description");
@@ -74,6 +75,7 @@ public class NewsDetailsActivity extends AppCompatActivity {
             newsAdminId = bundle.getString("admin_id");
             writerName = bundle.getString("writer_name", null);
             newsTimeString = bundle.getString("news_time", null);
+            newsUpdateTimeString = bundle.getString("news_date");
             Log.d(TAG, "init: writer_name: " + writerName + " : " + newsWriterId);
             Log.d(TAG, "init: newsID: " + newsId);
         }
@@ -92,6 +94,7 @@ public class NewsDetailsActivity extends AppCompatActivity {
             newsAuthor.setText(getString(R.string.app_name));
         }
         newsTitle.setText(newsTitleString);
+        newsUpdatedTime.setText("Updated: " + newsUpdateTimeString + " IST");
         newsImageCaption.setText(newsImageCaptionString);
         newsDescription.loadDataWithBaseURL(null, newsDescriptionString, "text/html","UTF-8", null);
         newsDescription.getSettings().setAppCacheEnabled(true);
@@ -128,11 +131,11 @@ public class NewsDetailsActivity extends AppCompatActivity {
                 if (newsWriterName != null && !newsWriterName.equals("")) {
                     favouriteNews = new FavouriteNews(newsId, newsTitleString,
                             newsDescriptionString, newsImageString, newsCategoryString,
-                            newsImageCaptionString, newsWriterName, newsTimeString);
+                            newsImageCaptionString, newsWriterName, newsTimeString, newsUpdateTimeString);
                 } else {
                     favouriteNews = new FavouriteNews(newsId, newsTitleString,
                             newsDescriptionString, newsImageString, newsCategoryString,
-                            newsImageCaptionString, newsAuthor.getText().toString(), newsTimeString);
+                            newsImageCaptionString, newsAuthor.getText().toString(), newsTimeString, newsUpdateTimeString);
                 }
                 favouritesViewModel.insertFavNews(favouriteNews);
             } else {

@@ -42,6 +42,7 @@ import com.google.android.material.appbar.MaterialToolbar;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -319,9 +320,24 @@ public class HomeFragment extends Fragment implements MyFeedNewsListAdapter.News
         intent.putExtra("news_image_caption", news.getImageCaption());
         intent.putExtra("news_category", news.getCategoryName());
         intent.putExtra("news_time", time);
+        intent.putExtra("news_date", formatDate("yyyy-MM-dd HH:mm:ss", "MMMM dd, yyyy HH:mm",
+                news.getDate()+ " " + news.getTime()));
         intent.putExtra("writer_id", news.getWriterId());
         intent.putExtra("admin_id", news.getAdmin_id());
         startActivity(intent);
+    }
+
+    public static String formatDate(String fromFormat, String toFormat, String dateToFormat) {
+        SimpleDateFormat inFormat = new SimpleDateFormat(fromFormat);
+        Date date = null;
+        try {
+            date = inFormat.parse(dateToFormat);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        SimpleDateFormat outFormat = new SimpleDateFormat(toFormat);
+
+        return outFormat.format(date);
     }
 
     @Override

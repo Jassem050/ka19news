@@ -33,8 +33,11 @@ public class FavouriteNews {
     @ColumnInfo(name = "news_time")
     private String time;
 
+    @ColumnInfo(name = "news_updated_at")
+    private String updateTime;
+
     public FavouriteNews(int id, @NonNull String title, @NonNull String description, String image,
-                         String category, String imageCaption, String writerName, String time){
+                         String category, String imageCaption, String writerName, String time, String updateTime){
         this.id = id;
         this.title = title;
         this.description = description;
@@ -43,6 +46,7 @@ public class FavouriteNews {
         this.imageCaption = imageCaption;
         this.writerName = writerName;
         this.time = time;
+        this.updateTime = updateTime;
     }
 
     public int getId() {
@@ -91,5 +95,13 @@ public class FavouriteNews {
 
     public void setTime(String time) {
         this.time = time;
+    }
+
+    public String getUpdateTime() {
+        return updateTime;
+    }
+
+    public void setUpdateTime(String updateTime) {
+        this.updateTime = updateTime;
     }
 }

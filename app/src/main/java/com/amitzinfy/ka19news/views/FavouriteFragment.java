@@ -262,7 +262,7 @@ public class FavouriteFragment extends Fragment implements FavouriteNewsAdapter.
         intent.putExtra("news_image", news.getImage());
         intent.putExtra("news_image_caption", news.getImageCaption());
         intent.putExtra("news_category", news.getCategory());
-//        intent.putExtra("news_time", news.());
+        intent.putExtra("news_date", news.getUpdateTime());
         intent.putExtra("writer_name", news.getWriterName());
 //        intent.putExtra("admin_id", news.getAdmin_id());
         startActivity(intent);
