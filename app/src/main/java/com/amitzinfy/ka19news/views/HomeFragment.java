@@ -44,6 +44,8 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
+import java.util.Objects;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -122,7 +124,6 @@ public class HomeFragment extends Fragment implements MyFeedNewsListAdapter.News
             getLanguageNews();
         }
 
-
         swipeRefreshLayout.setOnRefreshListener(() -> {
             if (preferenceManager.getLanguageName().equals(getString(R.string.english_language))) {
                 subscribe();
@@ -154,6 +155,7 @@ public class HomeFragment extends Fragment implements MyFeedNewsListAdapter.News
         myFeedViewModel.setLanguageId("English");
         myFeedViewModel.getNewsList(preferenceManager.getCategory()).observe(getViewLifecycleOwner(), newsObserver);
     }
+
 
     private void getLanguageNews(){
         newsObserver = news -> {
@@ -303,9 +305,10 @@ public class HomeFragment extends Fragment implements MyFeedNewsListAdapter.News
     public void onItemClicked(int position) {
         News news = newsList.get(position);
         Calendar cal = Calendar.getInstance();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH);
         try {
-            cal.setTime(sdf.parse(news.getDate() + " " + news.getTime()));
+
+            cal.setTime(Objects.requireNonNull(sdf.parse(news.getDate() + " " + news.getTime())));
         } catch (ParseException e) {
             e.printStackTrace();
         }
@@ -327,17 +330,17 @@ public class HomeFragment extends Fragment implements MyFeedNewsListAdapter.News
         startActivity(intent);
     }
 
-    public static String formatDate(String fromFormat, String toFormat, String dateToFormat) {
-        SimpleDateFormat inFormat = new SimpleDateFormat(fromFormat);
+    private static String formatDate(String fromFormat, String toFormat, String dateToFormat) {
+        SimpleDateFormat inFormat = new SimpleDateFormat(fromFormat, Locale.ENGLISH);
         Date date = null;
         try {
             date = inFormat.parse(dateToFormat);
         } catch (ParseException e) {
             e.printStackTrace();
         }
-        SimpleDateFormat outFormat = new SimpleDateFormat(toFormat);
+        SimpleDateFormat outFormat = new SimpleDateFormat(toFormat, Locale.ENGLISH);
 
-        return outFormat.format(date);
+        return outFormat.format(Objects.requireNonNull(date));
     }
 
     @Override

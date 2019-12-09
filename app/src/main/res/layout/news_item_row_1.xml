@@ -87,7 +87,8 @@
             android:paddingLeft="8dp"
             android:paddingTop="2dp"
             android:paddingRight="8dp"
-            android:text="@string/share" />
+            android:text="@string/share"
+            android:visibility="gone"/>
     </RelativeLayout>
 
     <View

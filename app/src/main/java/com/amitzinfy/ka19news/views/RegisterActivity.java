@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.DatePicker;
 import android.widget.RadioGroup;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -29,6 +30,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
     private UserResponse userResp;
     private String gender, phoneNumber;
     private PreferenceManager preferenceManager;
+    private RelativeLayout progressBarLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +51,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
         registerButton.setOnClickListener(this);
         userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
         preferenceManager = PreferenceManager.getInstance(this);
+        progressBarLayout = findViewById(R.id.progress_bar_layout);
 
         genderRadioGroup.setOnCheckedChangeListener((radioGroup, i) -> {
             int selectedId = radioGroup.getCheckedRadioButtonId();
@@ -79,7 +82,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
         userViewModel.registerUser(name, email, address, gender, dateOfBirth, phoneNumber)
                 .observe(this, userResponse -> {
             this.userResp = userResponse;
-            Log.d(TAG, "registerUser: activity " + this.userResp.getAccessToken());
+            progressBarLayout.setVisibility(View.GONE);
             Intent intent = new Intent(RegisterActivity.this, MainActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             preferenceManager.setAppStatus(getString(R.string.writer_status));
@@ -92,7 +95,8 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
     @Override
     public void onClick(View view) {
         if (view.getId() == R.id.register_btn){
-            Log.d(TAG, "onClick: in");
+            progressBarLayout.setVisibility(View.VISIBLE);
+            registerButton.setEnabled(false);
             int day = datePicker.getDayOfMonth();
             int month = datePicker.getMonth() + 1;
             int year = datePicker.getYear();
@@ -107,9 +111,10 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
             Log.d(TAG, "onClick: dateOfBirth : " + dateOfBirth);
             
             if (!name.equals("") && gender!= null && !gender.equals("") && !address.equals("") && !dateOfBirth.equals("")) {
-                Log.d(TAG, "onClick: inif");
                 registerUser(name, email, address, gender, dateOfBirth, phoneNumber);
             } else {
+                registerButton.setEnabled(true);
+                progressBarLayout.setVisibility(View.GONE);
                 Toast.makeText(this, "Enter all the fields", Toast.LENGTH_SHORT).show();
             }
         }

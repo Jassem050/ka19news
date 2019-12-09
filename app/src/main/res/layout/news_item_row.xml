@@ -69,6 +69,7 @@
             android:clickable="true"
             android:focusable="true"
             android:contextClickable="true"
+            android:visibility="gone"
             android:layout_alignParentEnd="true" />
     </RelativeLayout>
 

@@ -25,7 +25,7 @@
         android:layout_alignParentEnd="true"
         android:layout_alignParentTop="true"
         android:padding="3dp"
-        android:text="status: accepted"
+        android:text="@string/status_accepted"
         android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"/>
     <LinearLayout
         android:id="@+id/title_row"
@@ -100,7 +100,8 @@
             android:paddingLeft="8dp"
             android:paddingTop="2dp"
             android:paddingRight="8dp"
-            android:text="@string/share" />
+            android:text="@string/share"
+            android:visibility="gone"/>
     </RelativeLayout>
 
     <View
