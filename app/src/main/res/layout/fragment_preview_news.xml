@@ -27,8 +27,9 @@
             android:layout_below="@+id/news_title"
             android:paddingStart="8dp"
             android:paddingTop="8dp"
+            android:visibility="gone"
             android:paddingBottom="8dp"
-            android:text="Edited by " />
+            android:text="@string/edited_by" />
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/news_author"
@@ -37,6 +38,7 @@
             android:layout_below="@+id/news_title"
             android:layout_toEndOf="@+id/news_editedby"
             android:padding="8dp"
+            android:visibility="gone"
             android:textColor="@color/colorPrimary"
             android:textStyle="bold" />
 
@@ -45,6 +47,7 @@
             android:layout_width="2dp"
             android:layout_height="40dp"
             android:layout_below="@+id/news_title"
+            android:visibility="gone"
             android:layout_toEndOf="@+id/news_author"
             android:background="@color/DividerColor" />
 
@@ -55,6 +58,7 @@
             android:layout_below="@+id/news_title"
             android:layout_toEndOf="@+id/line_divider"
             android:padding="8dp"
+            android:visibility="gone"
             android:text="Updated: July 16, 2019 15:09 IST" />
 
         <androidx.appcompat.widget.AppCompatImageView
@@ -71,6 +75,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@+id/news_image"
+            android:visibility="gone"
             android:padding="8dp"
             android:text="World cup final show how sport reconfirms power of self belief" />
 

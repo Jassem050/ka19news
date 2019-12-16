@@ -10,6 +10,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import androidx.appcompat.app.ActionBar;
@@ -47,6 +48,7 @@ public class OTPActivity extends AppCompatActivity implements View.OnClickListen
     private UserViewModel userViewModel;
     private PreferenceManager preferenceManager;
     private MaterialTextView phoneTextView;
+    private RelativeLayout progressBarLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,6 +80,7 @@ public class OTPActivity extends AppCompatActivity implements View.OnClickListen
         preferenceManager = PreferenceManager.getInstance(this);
         doneButton = findViewById(R.id.done_btn);
         doneButton.setOnClickListener(this);
+        progressBarLayout = findViewById(R.id.progress_bar_layout);
         if (getIntent().hasExtra("phone_number")) {
             Bundle extras = getIntent().getExtras();
 
@@ -87,7 +90,7 @@ public class OTPActivity extends AppCompatActivity implements View.OnClickListen
         }
 
         if (phoneNumber != null){
-            phoneTextView.setText("+91 " + phoneNumber);
+            phoneTextView.setText(String.format("+91 %s", phoneNumber));
             Log.d(TAG, "bindViews: phoneNumber: " + phoneNumber);
             getOtpInfo(phoneNumber);
         }
@@ -96,6 +99,7 @@ public class OTPActivity extends AppCompatActivity implements View.OnClickListen
         otpView.setOtpCompletionListener(otp -> {
             Toast.makeText(OTPActivity.this, "Otp Entered", Toast.LENGTH_SHORT).show();
             if (oTPResponse != null) {
+                progressBarLayout.setVisibility(View.VISIBLE);
                 if (otpView.getText().toString().equals(oTPResponse.getOtp()) && oTPResponse.getType().equals("register")) {
                     Intent intent = new Intent(OTPActivity.this, RegisterActivity.class);
                     intent.putExtra("phone_number", phoneNumber);
@@ -113,18 +117,16 @@ public class OTPActivity extends AppCompatActivity implements View.OnClickListen
      *  Retrieve OTP
      */
     private void getOtpInfo(String phoneNumber){
-        Log.d(TAG, "getOtpInfo: entered");
         otpViewModel.getOTP(phoneNumber).observe(this, otpResponse -> {
             otpText = otpResponse.getOtp();
             oTPResponse = otpResponse;
-            Log.d(TAG, "onChanged: otp: " + otpText);
         });
     }
 
     private void loginUser(String phoneNumber){
         userViewModel.loginUser(phoneNumber).observe(this, userResponse -> {
-            Log.d(TAG, "loginUser: success");
             Log.d(TAG, "loginUser: access_token: " + userResponse.getAccessToken());
+            progressBarLayout.setVisibility(View.GONE);
             Intent intent = new Intent(this, MainActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             preferenceManager.setAppStatus(getString(R.string.writer_status));
@@ -215,9 +217,10 @@ public class OTPActivity extends AppCompatActivity implements View.OnClickListen
                 intent.putExtra("phone_number", phoneNumber);
                 startActivity(intent);
             } else if (otpView.getText().toString().equals("")){
+                progressBarLayout.setVisibility(View.GONE);
                 Toast.makeText(this, "Enter the OTP", Toast.LENGTH_SHORT).show();
             } else {
-                Toast.makeText(OTPActivity.this, "Login", Toast.LENGTH_SHORT).show();
+                progressBarLayout.setVisibility(View.VISIBLE);
                 loginUser(phoneNumber);
             }
         }

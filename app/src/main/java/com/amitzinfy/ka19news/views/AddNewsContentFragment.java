@@ -1,5 +1,6 @@
 package com.amitzinfy.ka19news.views;
 
+import android.app.Activity;
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -15,7 +16,9 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
@@ -54,6 +57,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Objects;
 
 import id.zelory.compressor.Compressor;
 
@@ -125,6 +129,9 @@ public class AddNewsContentFragment extends Fragment {
 
         initToolbar(rootView);
         bindViews(rootView);
+        setActionBar(rootView);
+        mEditText.setLongClickable(false);
+
         if (getActivity() != null)
         addNewsViewModel = ViewModelProviders.of(getActivity()).get(AddNewsViewModel.class);
 
@@ -143,6 +150,9 @@ public class AddNewsContentFragment extends Fragment {
     private void setActionBar(View view) {
         if (getActivity() != null) {
             actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+            if (actionBar != null) {
+                actionBar.setTitle("");
+            }
         }
     }
 
@@ -250,12 +260,14 @@ public class AddNewsContentFragment extends Fragment {
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        String newsContent = mEditText.getText().toString();
+        String newsContent = Objects.requireNonNull(mEditText.getText()).toString();
         if (item.getItemId() == R.id.action_send) {
             if (newsContent.equals("")) {
                 mEditText.setError("Enter the content");
+                Toast.makeText(getActivity(), "Enter the Content of News", Toast.LENGTH_SHORT).show();
             } else {
                 progressBarLayout.setVisibility(View.VISIBLE);
+                hideKeyboardFrom(Objects.requireNonNull(getActivity()), mEditText);
                 postNews();
             }
         } else if (item.getItemId() == R.id.action_preview){
@@ -274,11 +286,11 @@ public class AddNewsContentFragment extends Fragment {
      * success alert dialog
      */
     private void showSuccessDialog(){
-        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getActivity());
+        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(Objects.requireNonNull(getActivity()));
         View view = getLayoutInflater().inflate(R.layout.success_layout, null);
         builder.setView(view);
         AlertDialog dialog = builder.create();
-        ((AppCompatActivity) getActivity()).getSupportActionBar().hide();
+        Objects.requireNonNull(((AppCompatActivity) getActivity()).getSupportActionBar()).hide();
         dialog.show();
         bgSuccessLayout.setVisibility(View.VISIBLE);
         MaterialButton okBtn = view.findViewById(R.id.ok_btn);
@@ -453,5 +465,10 @@ public class AddNewsContentFragment extends Fragment {
 
     public interface OnFragmentInteractionListener {
         void onFragmentInteraction(Uri uri);
+    }
+
+    private static void hideKeyboardFrom(Context context, View view) {
+        InputMethodManager imm = (InputMethodManager) context.getSystemService(Activity.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 }

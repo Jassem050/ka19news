@@ -45,6 +45,7 @@ import com.google.android.material.textview.MaterialTextView;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Objects;
 
 import id.zelory.compressor.Compressor;
 
@@ -224,7 +225,7 @@ public class AccountFragment extends Fragment {
     }
 
     private void showLogoutDialog(){
-        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getActivity());
+        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(Objects.requireNonNull(getActivity()));
         builder.setCancelable(false);
         builder.setTitle(getString(R.string.logout));
         builder.setMessage("Are you sure you want to logout? ");
@@ -468,6 +469,7 @@ public class AccountFragment extends Fragment {
     public void onResume() {
         super.onResume();
         getUserDetails(preferenceManager.getAccessToken());
+        getAddedNewsCount(preferenceManager.getAccessToken());
     }
 
     @Override

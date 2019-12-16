@@ -114,5 +114,6 @@
     <string name="status_rejected">status: rejected</string>
     <string name="status_pending">status: pending</string>
     <string name="status_accepted">status: accepted</string>
+    <string name="edited_by">Edited by</string>
 
 </resources>

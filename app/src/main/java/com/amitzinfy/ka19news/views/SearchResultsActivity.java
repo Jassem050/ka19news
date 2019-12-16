@@ -12,7 +12,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import androidx.appcompat.app.ActionBar;
@@ -37,6 +36,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 public class SearchResultsActivity extends AppCompatActivity implements SearchNewsAdapter.NewsItemClickListener {
 
@@ -84,19 +84,22 @@ public class SearchResultsActivity extends AppCompatActivity implements SearchNe
     private void subscribe(String searchQuery){
         noResultsText.setVisibility(View.GONE);
         newsObserver = news -> {
-            if (news != null && news.size() > 0) {
+            newsList = news;
+            if (newsList != null && newsList.size() > 0) {
                 searchAnimation.setVisibility(View.GONE);
                 noResultsText.setVisibility(View.GONE);
-                Log.d(TAG, "onChanged: searchresultsactivity: " + news.get(0).getTitle());
-                newsList = news;
                 searchNewsAdapter.setNewsList(newsList);
                 searchNewsAdapter.notifyDataSetChanged();
                 recyclerView.setAdapter(searchNewsAdapter);
                 recyclerView.setVisibility(View.VISIBLE);
             } else {
                 recyclerView.setVisibility(View.GONE);
-                searchAnimation.setVisibility(View.GONE);
-                handler.postDelayed(mRunnable = () -> noResultsText.setVisibility(View.VISIBLE), 1500);
+                handler.postDelayed(mRunnable = () ->  {
+                    if (newsList != null && newsList.size() == 0){
+                        searchAnimation.setVisibility(View.GONE);
+                        noResultsText.setVisibility(View.VISIBLE);
+                    }
+                }, 1500);
             }
         };
         searchNewsViewModel.setSearchQueryText(searchQuery);
@@ -142,10 +145,13 @@ public class SearchResultsActivity extends AppCompatActivity implements SearchNe
                 noResultsText.setVisibility(View.GONE);
                 searchQueryText.setVisibility(View.VISIBLE);
                 recyclerView.setVisibility(View.GONE);
-                searchAnimation.setVisibility(View.VISIBLE);
+                if (newsList != null) newsList.clear();
                 searchQueryText.setText(String.format("%s%s", getString(R.string.search_results_text) + ": ", query));
-                if (!TextUtils.isEmpty(query) && query.length() > 1) {
-                    subscribe(query);
+                if (!TextUtils.isEmpty(query) && query.length() > 0) {
+                    searchAnimation.setVisibility(View.VISIBLE);
+                    searchAnimation.playAnimation();
+                    handler.postDelayed(mRunnable = () -> subscribe(query), 1500);
+
 
                 }
                 return false;
@@ -153,6 +159,7 @@ public class SearchResultsActivity extends AppCompatActivity implements SearchNe
 
             @Override
             public boolean onQueryTextChange(String newText) {
+                noResultsText.setVisibility(View.GONE);
 //                searchQueryText.setVisibility(View.VISIBLE);
 //                recyclerView.setVisibility(View.GONE);
 //                searchAnimation.setVisibility(View.VISIBLE);
@@ -190,8 +197,8 @@ public class SearchResultsActivity extends AppCompatActivity implements SearchNe
     private void handleIntent(Intent intent){
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
             String query = intent.getStringExtra(SearchManager.QUERY);
-            Toast.makeText(this, query, Toast.LENGTH_SHORT).show();
-            subscribe(query);
+            noResultsText.setVisibility(View.GONE);
+//            subscribe(query);
         }
     }
 
@@ -270,7 +277,7 @@ public class SearchResultsActivity extends AppCompatActivity implements SearchNe
         }
         SimpleDateFormat outFormat = new SimpleDateFormat(toFormat);
 
-        return outFormat.format(date);
+        return outFormat.format(Objects.requireNonNull(date));
     }
 
     @Override
